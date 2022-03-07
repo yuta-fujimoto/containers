@@ -3,5 +3,5 @@
 *.o
 *.d
 
-./tester
+tester
 a.out

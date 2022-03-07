@@ -35,7 +35,9 @@ class _normal_iterator {
     return (*this);
   }
   reference operator*() { return (*v); }
+  const reference operator*() const { return (*v); }
   reference operator[](size_type p) { return (*(v + p)); }
+  const reference operator[](size_type p) const { return (*(v + p)); }
   _normal_iterator& operator++() {
     v++;
 

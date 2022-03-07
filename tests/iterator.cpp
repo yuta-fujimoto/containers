@@ -30,11 +30,11 @@ TEST_CASE("ITERATOR")
 
 		// overwrite, - operation
 		it = v.begin();
-		it[2] = 12;
-		v[3] = 18;
 		ft_it = ft_v.begin();
-		ft_it[2] = 12;
-		ft_v[3] = 18;
+		*(it + 3) = 12;
+		*(ft_it + 3) = 12;
+		it[2] = 18;
+		ft_it[2] = 18;
 		CHECK_EQ(it[2], ft_it[2]);
 		CHECK_EQ(*(it + 3), *(ft_it + 3));
 		CHECK_EQ(*(ite - 1), *(ft_ite - 1));

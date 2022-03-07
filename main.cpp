@@ -43,26 +43,22 @@ struct value {
 
 int main() {
   std::cout << "Constructor with initializer-list example:" << std::endl;
-  ft::vector<int> a;
-  a.push_back(3);
+  // a.push_back(3);
+  // a.push_back(3);
 //   a.push_back(4);
 //   a.push_back(5);
-  iter(a.begin(), a.size());
   std::cout << std::endl;
 
-  std::cout << "a.assign(first, last) example:" << std::endl;
+  std::cout << "=operator" << std::endl;
   ft::vector<int> data;
   data.push_back(5);
   data.push_back(6);
   data.push_back(7);
+  std::cout << data.size() << std::endl;
 //   a.assign(data.begin(), data.end());
-  std::cout << "<< " << a.size() << std::endl;
-  std::cout << "<< " << a.capacity() << std::endl;
-  a = data;
+  ft::vector<int> a(data);
+  iter(a.begin(), a.size());
   iter(data.begin(), data.size());
-  std::cout << "<< " << a.size() << std::endl;
-  std::cout << "<< " << a.capacity() << std::endl;
-  std::cout << a[1] << std::endl;
   std::cout << std::endl;
 
   return 0;

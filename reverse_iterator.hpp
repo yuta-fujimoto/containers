@@ -33,7 +33,9 @@ class _reverse_iterator {
     return (*this);
   }
   reference operator*() { return (*(v - 1)); }
+  const reference operator*() const { return (*(v - 1)); }
   reference operator[](size_type p) { return (*(v - p - 1)); }
+  const reference operator[](size_type p) const { return (*(v - p - 1)); }
   pointer operator->() const { return (&(*(v - 1))); }
   _reverse_iterator& operator++() {
     v--;

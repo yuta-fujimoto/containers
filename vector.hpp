@@ -36,6 +36,7 @@ class vector {
     alloc.construct(&*iter, value);
   }
   void destroy(pointer ptr) { alloc.destroy(ptr); }
+  // destroy_until backs last
   void destroy_until(reverse_iterator rbegin, reverse_iterator rend) {
     for (; rbegin != rend; ++rbegin, --last) {
       destroy(&*rbegin);
@@ -43,26 +44,12 @@ class vector {
   }
 
  public:
-  vector(const allocator_type& a = Allocator()) : alloc(a) {}
+  vector(const allocator_type& a = Allocator()) : alloc(a), last(first), reserved_last(first) {}
   vector(std::size_t size, const value_type& v = value_type(),
          Allocator a = Allocator())
       : alloc(a) {
     resize(size, v);
   }
-  // vector(std::size_t n = 0, Allocator a = Allocator())
-  //     : alloc(a),
-  //       first(a.allocate(n)),
-  //       last(first + n),
-  //       reserved_last(first + n) {}
-  // vector(std::size_t n, const value_type& v, Allocator a = Allocator())
-  //     : alloc(a),
-  //       first(a.allocate(n)),
-  //       last(first + n),
-  //       reserved_last(first + n) {
-  //   for (std::size_t i = 0; i < n; i++) {
-  //     // construct()
-  //   }
-  // }
   vector(const_iterator first, const_iterator last,
          const Allocator& a = Allocator())
       : vector(a) {
@@ -71,7 +58,7 @@ class vector {
   }
   vector(const_reverse_iterator first, const_reverse_iterator last,
          const Allocator& a = Allocator())
-      : vector(a) {
+      : alloc(a) {
     reserve(last - first);
     for (const_reverse_iterator i = first; i != last; ++i) push_back(*i);
   }
@@ -79,8 +66,13 @@ class vector {
     clear();
     deallocate();
   }
-  vector(const vector& x);
+  vector(const vector& x, const Allocator& a = Allocator()) : alloc(a)
+  {
+    *this = x;
+  }
   vector& operator=(const vector& x) {
+    if (this == &x)
+      return (*this);
     const size_type len = x.size();
     if (len > capacity()) {
       iterator ptr = allocate(len);
@@ -88,24 +80,26 @@ class vector {
       iterator old_last = last;
       size_type old_capacity = capacity();
 
-      reserved_last = first + len;
       first = ptr;
+      reserved_last = first + len;
+      last = first;
 
-      for (size_type i = 0; i < len; ++i, ++last)
+      for (size_type i = 0; i < len; ++i, ++last) {
         construct(&ptr[i], x[i]);
+      }
       destroy_until(&*old_last, &*old_first);
       alloc.deallocate(&*old_first, old_capacity);
     } else if (len > size()) {
-      destroy_until(&*last, &*first);
-      last = first;
+      clear();
+      // last = first;
       for (size_type i = 0; i < len; ++i, ++last)
         construct(&first[i], *(x.begin() + i));
     } else {
-      destroy_until(&*last, &*(last - len));
-      last = first;
+      destroy_until(&*(first + len), &*(first));
       for (size_type i = 0; i < len; ++i, ++last)
         construct(&first[i], *(x.begin() + i));
     }
+    return (*this);
   }
 
   iterator begin() { return (first); }
@@ -156,12 +150,13 @@ class vector {
          ++old_iter, ++last) {
       construct(last, *old_iter);
     }
-    // for (reverse_iterator riter = reverse_iterator(&*old_last),
-    //                       rend = reverse_iterator(&*old_first);
-    //      riter != rend; ++riter) {
-    //   destroy(&*riter);
-    // }
-    destroy_until(&*old_last, &*old_first);
+    for (reverse_iterator riter = reverse_iterator(&*old_last),
+                          rend = reverse_iterator(&*old_first);
+         riter != rend; ++riter) {
+      destroy(&*riter);
+    }
+    // cannot use because of segv
+    // destroy_until(&*old_last, &*old_first);
     alloc.deallocate(&*old_first, old_capacity);
   }
   void resize(size_type sz, value_type c = value_type()) {
@@ -186,7 +181,7 @@ class vector {
         c *= 2;
       reserve(c);
     }
-    *last = value;
+    construct(last, value);
     ++last;
   }
   // reassign containers
