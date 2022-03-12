@@ -37,7 +37,7 @@ FORCE:
 gdb: CXXFLAGS+=-g
 gdb: re
 
-debug: CXXFLAGS+=-g -fsanitize=address
+debug: CXXFLAGS+=-g -fsanitize=address -fsanitize=undefined
 debug: re
 
 cover: CXX=g++

@@ -183,6 +183,13 @@ class vector {
     construct(last, value);
     ++last;
   }
+  // std's pop back requires empty() = false if this is not achieved, segv occurs.  
+  void pop_back(void) {
+    if (empty())
+      return ;
+    destroy(&*last);
+    last--;
+  }
   // reassign containers
   template <class InputIterator>
   void assign(InputIterator f, InputIterator l) {

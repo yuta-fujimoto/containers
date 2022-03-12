@@ -63,9 +63,10 @@ int main() {
 
   std::vector<int> h;
 
-  h.assign('a', 'z');
-  std::cout << h[0] << std::endl;
-  std::cout << h[1] << std::endl;
-  std::cout << h.max_size() << std::endl;
+  h.pop_back();
+  h.reserve(100);
+  // std::cout << h[0] << std::endl;
+  // std::cout << h[1] << std::endl;
+  // std::cout << h.max_size() << std::endl;
   return 0;
 }

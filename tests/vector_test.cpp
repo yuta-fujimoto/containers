@@ -41,6 +41,7 @@ void check_all_value(ft::vector<T>& ft_v, std::vector<T>& v)
 
 TEST_CASE("VECTOR") {
   srand(time(NULL));
+  // need to split into unit funcs
   SUBCASE("WHOLE FUNCS AND VALUES") {
     std::vector<int> v;
     ft::vector<int> ft_v;
@@ -188,5 +189,24 @@ TEST_CASE("VECTOR") {
 
     CHECK_EQ(ft_test.max_size(), test.max_size());
     CHECK_EQ(ft_test2.max_size(), test2.max_size());
+  }
+  SUBCASE("POP BACK")
+  {
+    // ft::vector<int> ft_test;
+    // std::vector<int> test;
+    ft::vector<int> ft_test2;
+    std::vector<int> test2;
+
+    // to avoid segv this will return error(ex: pop_back => reserve),
+    // thus these tests don't carry out.
+    // ft_test.pop_back();
+    // test.pop_back();
+    // CHECK_EQ(test.empty(), ft_test.empty());
+    // CHECK_EQ(test.capacity(), ft_test.capacity());
+    // CHECK_EQ(test.size(), ft_test.size());
+    assign_random_value(ft_test2, test2, 2);
+    ft_test2.pop_back();
+    test2.pop_back();
+    check_all_value(ft_test2, test2);
   }
 }
