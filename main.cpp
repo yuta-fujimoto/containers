@@ -66,5 +66,6 @@ int main() {
   h.assign('a', 'z');
   std::cout << h[0] << std::endl;
   std::cout << h[1] << std::endl;
+  std::cout << h.max_size() << std::endl;
   return 0;
 }

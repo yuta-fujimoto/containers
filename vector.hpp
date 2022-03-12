@@ -3,6 +3,7 @@
 
 #include <exception>
 #include <iostream>
+#include <limits>
 
 #include "common.hpp"
 #include "normal_iterator.hpp"
@@ -26,7 +27,9 @@ class vector {
  private:
   allocator_type alloc;
   iterator first;
+  // end iterator of stored data
   iterator last;
+  // end iterator of allocated memory
   iterator reserved_last;
 
   pointer allocate(size_type n) { return (alloc.allocate(n)); }
@@ -182,15 +185,18 @@ class vector {
   }
   // reassign containers
   template <class InputIterator>
-  void assign(InputIterator f, InputIterator l)
-  {
+  void assign(InputIterator f, InputIterator l) {
     // it may be awfully slow....
     // if (capacity() < l - f)
     *this = vector(f, l);
   }
-  void assign(size_type n, const value_type& u)
-  {
-    *this = vector(n, u);
+  void assign(size_type n, const value_type& u) { *this = vector(n, u); }
+  // return max_size vector can store
+  size_type max_size() const {
+    const size_t alloc_max = alloc.max_size();
+    const size_t diffmax =
+        std::numeric_limits<ptrdiff_t>::max() / sizeof(value_type);
+    return (std::min(alloc_max, diffmax));
   }
 };
 }  // namespace ft

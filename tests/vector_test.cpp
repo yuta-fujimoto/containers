@@ -2,6 +2,18 @@
 #include "ctime"
 #include "test_common.hpp"
 
+struct value {
+  int x;
+  value(int x = 0) : x(x) {}
+  int get() const { return x; }
+  bool operator!=(value const& right) const { return (x != right.x); }
+  bool operator==(value const& right) const { return (x == right.x); }
+  bool operator>(value const& right) const { return (x > right.x); }
+  bool operator<(value const& right) const { return (x < right.x); }
+  bool operator>=(value const& right) const { return (x >= right.x); }
+  bool operator<=(value const& right) const { return (x <= right.x); }
+};
+
 template <typename T>
 void assign_random_value(ft::vector<T>& ft_v, std::vector<T>& v, std::size_t size) {
   int val;
@@ -26,17 +38,6 @@ void check_all_value(ft::vector<T>& ft_v, std::vector<T>& v)
   }
 }
 
-struct value {
-  int x;
-  value(int x = 0) : x(x) {}
-  int get() const { return x; }
-  bool operator!=(value const& right) const { return (x != right.x); }
-  bool operator==(value const& right) const { return (x == right.x); }
-  bool operator>(value const& right) const { return (x > right.x); }
-  bool operator<(value const& right) const { return (x < right.x); }
-  bool operator>=(value const& right) const { return (x >= right.x); }
-  bool operator<=(value const& right) const { return (x <= right.x); }
-};
 
 TEST_CASE("VECTOR") {
   srand(time(NULL));
@@ -177,5 +178,15 @@ TEST_CASE("VECTOR") {
     ft_test.assign(10, value);
     test.assign(10, value);
     check_all_value(ft_test, test);
+  }
+  SUBCASE("NUMERICAL LIMITS")
+  {
+    ft::vector<int> ft_test;
+    std::vector<int> test;
+    ft::vector<value> ft_test2;
+    std::vector<value> test2;
+
+    CHECK_EQ(ft_test.max_size(), test.max_size());
+    CHECK_EQ(ft_test2.max_size(), test2.max_size());
   }
 }

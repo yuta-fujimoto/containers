@@ -5,6 +5,7 @@
 
 namespace ft {
 
+// empty class
 struct input_iterator_tag {
 };
 struct output_iterator_tag {
