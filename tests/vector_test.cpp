@@ -113,7 +113,7 @@ TEST_CASE("VECTOR") {
     CHECK_EQ(v.size(), ft_v.size());
     CHECK_EQ(v[0], ft_v[0]);
   }
-  SUBCASE("ASSIGNMATION OPEARATOR") {
+  SUBCASE("ASSIGNMATION OPEARATOR/COPY_CONSTRUCTOR") {
     ft::vector<int> ft_v1;
     ft::vector<int> ft_v2;
     ft::vector<int> ft_v3;
@@ -127,19 +127,55 @@ TEST_CASE("VECTOR") {
     assign_random_value(ft_v1, v1, 10);
     ft_test = ft_v1;
     test = v1;
-    CAPTURE(ft_test);
     check_all_value(ft_test, test);
-    // size > right size
+    // size > right size (10 => 4!!)
     assign_random_value(ft_v2, v2, 4);
-    ft_test = ft_v1;
-    test = v1;
-    CAPTURE(ft_test);
+    ft_test = ft_v2;
+    test = v2;
     check_all_value(ft_test, test);
-    // size < right size < capacity
+    // size < right size < capacity (4 => 5)
     assign_random_value(ft_v3, v3, 5);
-    ft_test = ft_v1;
-    test = v1;
-    CAPTURE(ft_test);
+    ft_test = ft_v3;
+    test = v3;
+    check_all_value(ft_test, test);
+
+    // copy constructor
+    ft::vector<int> ft_copy_v(ft_test);
+    std::vector<int> copy_v(test);
+
+    check_all_value(ft_copy_v, copy_v);
+  }
+  SUBCASE("ASSIGN-ITERATOR")
+  {
+    ft::vector<int> ft_v1;
+    ft::vector<int> ft_v2;
+    ft::vector<int> ft_test;
+    std::vector<int> v1;
+    std::vector<int> v2;
+    std::vector<int> test;
+
+    assign_random_value(ft_v1, v1, 14);
+    ft_test.assign(ft_v1.begin(), ft_v1.end());
+    test.assign(v1.begin(), v1.end());
+    check_all_value(ft_test, test);
+    assign_random_value(ft_v2, v2, 7);
+    ft_test.assign(ft_v2.begin(), ft_v2.end());
+    test.assign(v2.begin(), v2.end());
+    check_all_value(ft_test, test);
+    ft_test.assign('f', 'g');
+    test.assign('f', 'g');
+  }
+  SUBCASE("ASSIGN-RANGE")
+  {
+    ft::vector<int> ft_test;
+    std::vector<int> test;
+    const int value = 10;
+
+    ft_test.assign(20, value);
+    test.assign(20, value);
+    check_all_value(ft_test, test);
+    ft_test.assign(10, value);
+    test.assign(10, value);
     check_all_value(ft_test, test);
   }
 }

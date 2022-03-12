@@ -61,5 +61,10 @@ int main() {
   iter(data.begin(), data.size());
   std::cout << std::endl;
 
+  std::vector<int> h;
+
+  h.assign('a', 'z');
+  std::cout << h[0] << std::endl;
+  std::cout << h[1] << std::endl;
   return 0;
 }

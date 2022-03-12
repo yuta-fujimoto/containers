@@ -44,7 +44,8 @@ class vector {
   }
 
  public:
-  vector(const allocator_type& a = Allocator()) : alloc(a), last(first), reserved_last(first) {}
+  vector(const allocator_type& a = Allocator())
+      : alloc(a), last(first), reserved_last(first) {}
   vector(std::size_t size, const value_type& v = value_type(),
          Allocator a = Allocator())
       : alloc(a) {
@@ -66,13 +67,11 @@ class vector {
     clear();
     deallocate();
   }
-  vector(const vector& x, const Allocator& a = Allocator()) : alloc(a)
-  {
+  vector(const vector& x, const Allocator& a = Allocator()) : alloc(a) {
     *this = x;
   }
   vector& operator=(const vector& x) {
-    if (this == &x)
-      return (*this);
+    if (this == &x) return (*this);
     const size_type len = x.size();
     if (len > capacity()) {
       iterator ptr = allocate(len);
@@ -87,15 +86,14 @@ class vector {
       for (size_type i = 0; i < len; ++i, ++last) {
         construct(&ptr[i], x[i]);
       }
-      destroy_until(&*old_last, &*old_first);
+      for (reverse_iterator riter = reverse_iterator(&*old_last),
+                            rend = reverse_iterator(&*old_first);
+           riter != rend; ++riter) {
+        destroy(&*riter);
+      }
       alloc.deallocate(&*old_first, old_capacity);
-    } else if (len > size()) {
-      clear();
-      // last = first;
-      for (size_type i = 0; i < len; ++i, ++last)
-        construct(&first[i], *(x.begin() + i));
     } else {
-      destroy_until(&*(first + len), &*(first));
+      destroy_until(&*(last), &*(first));
       for (size_type i = 0; i < len; ++i, ++last)
         construct(&first[i], *(x.begin() + i));
     }
@@ -155,8 +153,6 @@ class vector {
          riter != rend; ++riter) {
       destroy(&*riter);
     }
-    // cannot use because of segv
-    // destroy_until(&*old_last, &*old_first);
     alloc.deallocate(&*old_first, old_capacity);
   }
   void resize(size_type sz, value_type c = value_type()) {
@@ -185,11 +181,17 @@ class vector {
     ++last;
   }
   // reassign containers
-  // template <class InputIterator>
-  // void assign(InputIterator first, InputIterator last)
-  // {
-  //   for (iterator it = first )
-  // }
+  template <class InputIterator>
+  void assign(InputIterator f, InputIterator l)
+  {
+    // it may be awfully slow....
+    // if (capacity() < l - f)
+    *this = vector(f, l);
+  }
+  void assign(size_type n, const value_type& u)
+  {
+    *this = vector(n, u);
+  }
 };
 }  // namespace ft
 
