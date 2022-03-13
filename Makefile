@@ -30,8 +30,6 @@ re: fclean all
 .PHONY:	FORCE
 FORCE:
 
--include $(BINDIR)/*.d
-
 ## debug and test rules ##
 
 gdb: CXXFLAGS+=-g
@@ -95,3 +93,5 @@ t_fclean: t_clean
 	$(RM) -r tester tester.dSYM
 
 tre: t_fclean test
+
+-include $(BINDIR)/*.d

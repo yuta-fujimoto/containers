@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
-
+#include <stack>
 #include "enable_if.hpp"
 #include "is_integral.hpp"
 #include "iterator_traits.hpp"
@@ -56,16 +56,19 @@ int main() {
   data.push_back(7);
   std::cout << data.size() << std::endl;
 //   a.assign(data.begin(), data.end());
-  ft::vector<int> a(data);
-  iter(a.begin(), a.size());
-  iter(data.begin(), data.size());
   std::cout << std::endl;
 
-  std::vector<int> h;
+  ft::vector<int> h;
 
-  h.pop_back();
-  h.reserve(100);
-  // std::cout << h[0] << std::endl;
+  h.push_back(12);
+  h.push_back(12);
+  h.push_back(12);
+  h.push_back(12);
+  h.insert(h.begin(), data.begin(), data.end());
+  h.insert(h.end(), data.begin(), data.end());
+  // h.insert(h.end(), 1);
+  // h.insert(st.begin(), st.end(), h.end());
+  std::cout << h.capacity() << std::endl;
   // std::cout << h[1] << std::endl;
   // std::cout << h.max_size() << std::endl;
   return 0;

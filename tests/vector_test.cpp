@@ -15,7 +15,8 @@ struct value {
 };
 
 template <typename T>
-void assign_random_value(ft::vector<T>& ft_v, std::vector<T>& v, std::size_t size) {
+void assign_random_value(ft::vector<T>& ft_v, std::vector<T>& v,
+                         std::size_t size) {
   int val;
 
   for (std::size_t i = 0; i < size; i++) {
@@ -26,18 +27,16 @@ void assign_random_value(ft::vector<T>& ft_v, std::vector<T>& v, std::size_t siz
 }
 
 template <typename T>
-void check_all_value(ft::vector<T>& ft_v, std::vector<T>& v)
-{
+void check_all_value(ft::vector<T>& ft_v, std::vector<T>& v) {
   CHECK_EQ(ft_v.size(), v.size());
   CHECK_EQ(ft_v.capacity(), v.capacity());
 
   std::size_t s = ft_v.size();
-  for (std::size_t i = 0; i < s; i++)
-  {
+  for (std::size_t i = 0; i < s; i++) {
+    INFO(i);
     CHECK_EQ(ft_v[i], v[i]);
   }
 }
-
 
 TEST_CASE("VECTOR") {
   srand(time(NULL));
@@ -147,8 +146,7 @@ TEST_CASE("VECTOR") {
 
     check_all_value(ft_copy_v, copy_v);
   }
-  SUBCASE("ASSIGN-ITERATOR")
-  {
+  SUBCASE("ASSIGN-ITERATOR") {
     ft::vector<int> ft_v1;
     ft::vector<int> ft_v2;
     ft::vector<int> ft_test;
@@ -160,15 +158,18 @@ TEST_CASE("VECTOR") {
     ft_test.assign(ft_v1.begin(), ft_v1.end());
     test.assign(v1.begin(), v1.end());
     check_all_value(ft_test, test);
+
     assign_random_value(ft_v2, v2, 7);
     ft_test.assign(ft_v2.begin(), ft_v2.end());
     test.assign(v2.begin(), v2.end());
     check_all_value(ft_test, test);
+
+    // it works properly...
     ft_test.assign('f', 'g');
     test.assign('f', 'g');
+    check_all_value(ft_test, test);
   }
-  SUBCASE("ASSIGN-RANGE")
-  {
+  SUBCASE("ASSIGN-RANGE") {
     ft::vector<int> ft_test;
     std::vector<int> test;
     const int value = 10;
@@ -176,12 +177,12 @@ TEST_CASE("VECTOR") {
     ft_test.assign(20, value);
     test.assign(20, value);
     check_all_value(ft_test, test);
+
     ft_test.assign(10, value);
     test.assign(10, value);
     check_all_value(ft_test, test);
   }
-  SUBCASE("NUMERICAL LIMITS")
-  {
+  SUBCASE("NUMERICAL LIMITS") {
     ft::vector<int> ft_test;
     std::vector<int> test;
     ft::vector<value> ft_test2;
@@ -190,8 +191,7 @@ TEST_CASE("VECTOR") {
     CHECK_EQ(ft_test.max_size(), test.max_size());
     CHECK_EQ(ft_test2.max_size(), test2.max_size());
   }
-  SUBCASE("POP BACK")
-  {
+  SUBCASE("POP BACK") {
     // ft::vector<int> ft_test;
     // std::vector<int> test;
     ft::vector<int> ft_test2;
@@ -209,4 +209,53 @@ TEST_CASE("VECTOR") {
     test2.pop_back();
     check_all_value(ft_test2, test2);
   }
+  SUBCASE("INSERT-RANGE") {
+    ft::vector<int> ft_test;
+    ft::vector<int> ft_v1;
+    ft::vector<int> ft_v2;
+    std::vector<int> test;
+    std::vector<int> v1;
+    std::vector<int> v2;
+
+    // assign_random_value(ft_v1, v1, 10);
+    ft_test.insert(ft_test.begin(), 10, 10);
+    test.insert(test.begin(), 10, 10);
+    check_all_value(ft_test, test);
+
+    ft_test.insert(ft_test.begin(), 20, 20);
+    test.insert(test.begin(), 20, 20);
+    check_all_value(ft_test, test);
+
+    ft_test.insert(ft_test.end(), 1);
+    test.insert(test.end(), 1);
+    check_all_value(ft_test, test);
+
+    ft_test.insert(ft_test.begin(), 1);
+    test.insert(test.begin(), 1);
+    check_all_value(ft_test, test);
+  }
+  SUBCASE("INSERT-INTERATOR")
+  {
+    ft::vector<int> ft_v1;
+    ft::vector<int> ft_v2;
+    ft::vector<int> ft_test;
+    std::vector<int> v1;
+    std::vector<int> v2;
+    std::vector<int> test;
+
+    assign_random_value(ft_v1, v1, 3);
+    ft_test.insert(ft_test.begin(), ft_v1.begin(), ft_v1.end());
+    test.insert(test.begin(), v1.begin(), v1.end());
+    check_all_value(ft_test, test);
+
+    assign_random_value(ft_v2, v2, 7);
+    ft_test.insert(ft_test.begin(), ft_v2.begin(), ft_v2.end());
+    test.insert(test.begin(), v2.begin(), v2.end());
+    check_all_value(ft_test, test);
+
+    ft_test.insert(ft_test.end(), ft_v2.begin(), ft_v2.end());
+    test.insert(test.end(), v2.begin(), v2.end());
+    check_all_value(ft_test, test);
+  }
 }
+
