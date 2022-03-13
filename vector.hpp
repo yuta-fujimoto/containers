@@ -265,7 +265,32 @@ class vector {
     }
     return (first);
   }
-};
+  void swap(vector& x) {
+    iterator temp;
+    allocator_type allocTemp;
+
+    // alloc
+    allocTemp = x.alloc;
+    x.alloc = alloc;
+    alloc = allocTemp;
+
+    // first
+    temp = x.first_;
+    x.first_ = first_;
+    first_ = temp;
+
+    // last
+    temp = x.last_;
+    x.last_ = last_;
+    last_ = temp;
+
+    // reserved_last
+    temp = x.reserved_last_;
+    x.reserved_last_ = reserved_last_;
+    reserved_last_ = temp;
+  }
+  allocator_type get_allocator() const { return (alloc); }
+};  
 }  // namespace ft
 
 #endif

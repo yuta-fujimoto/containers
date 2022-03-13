@@ -284,4 +284,28 @@ TEST_CASE("VECTOR") {
     check_all_value(ft_test, test);
     CHECK_EQ(*ft_it, *it);
   }
+  SUBCASE("SWAP")
+  {
+    ft::vector<int> ft_test(5, 3);
+    ft::vector<int> ft_test1(3, 5);
+    std::vector<int> test(5, 3);
+    std::vector<int> test1(3, 5);
+
+    ft_test.swap(ft_test1);
+    test.swap(test1);
+    check_all_value(ft_test, test);
+    check_all_value(ft_test1, test1);
+
+    ft_test.swap(ft_test);
+    test.swap(test);
+    check_all_value(ft_test, test);
+  }
+  SUBCASE("GET_ALLOCATOR")
+  {
+    std::allocator<int> alloc;
+    ft::vector<int> v(alloc);
+
+    std::allocator<int> result = v.get_allocator();
+    CHECK(result == alloc);
+  }
 }

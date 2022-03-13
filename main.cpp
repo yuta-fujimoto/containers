@@ -53,8 +53,8 @@ int main() {
   std::cout << data.size() << std::endl;
   std::cout << std::endl;
 
-  std::vector<int> h;
-  std::vector<int>::iterator it;
+  ft::vector<int> h;
+  ft::vector<int>::iterator it;
 
   h.push_back(6);
   h.push_back(12);
@@ -66,6 +66,8 @@ int main() {
   // std::cout << h[0] << std::endl;
   it = h.erase(h.begin(), h.end());
   std::cout << *it << std::endl;
+  std::cout << h.size() << std::endl;
+  h.swap(h);
   // std::cout << h[0] << std::endl;
   // h.insert(h.end(), 1);
   // h.insert(st.begin(), st.end(), h.end());
