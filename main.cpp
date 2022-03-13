@@ -43,10 +43,6 @@ struct value {
 
 int main() {
   std::cout << "Constructor with initializer-list example:" << std::endl;
-  // a.push_back(3);
-  // a.push_back(3);
-//   a.push_back(4);
-//   a.push_back(5);
   std::cout << std::endl;
 
   std::cout << "=operator" << std::endl;
@@ -55,21 +51,26 @@ int main() {
   data.push_back(6);
   data.push_back(7);
   std::cout << data.size() << std::endl;
-//   a.assign(data.begin(), data.end());
   std::cout << std::endl;
 
-  ft::vector<int> h;
+  std::vector<int> h;
+  std::vector<int>::iterator it;
 
+  h.push_back(6);
   h.push_back(12);
-  h.push_back(12);
-  h.push_back(12);
-  h.push_back(12);
-  h.insert(h.begin(), data.begin(), data.end());
-  h.insert(h.end(), data.begin(), data.end());
+  h.push_back(122);
+  h.push_back(1222);
+  h.push_back(12222);
+  // std::cout << h[0] << std::endl;
+  // h.erase(h.begin());
+  // std::cout << h[0] << std::endl;
+  it = h.erase(h.begin(), h.end());
+  std::cout << *it << std::endl;
+  // std::cout << h[0] << std::endl;
   // h.insert(h.end(), 1);
   // h.insert(st.begin(), st.end(), h.end());
-  std::cout << h.capacity() << std::endl;
-  // std::cout << h[1] << std::endl;
+  // std::cout << h.capacity() << std::endl;
+  // std::cout << h.size() << std::endl;
   // std::cout << h.max_size() << std::endl;
   return 0;
 }

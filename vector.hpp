@@ -96,7 +96,7 @@ class vector {
       }
       alloc.deallocate(&*old_first, old_capacity);
     } else {
-      destroy_until(&*(last_), &*(first_));
+      destroy_until(&*(last_ - 1), &*(first_ - 1));
       for (size_type i = 0; i < len; ++i, ++last_)
         construct(&first_[i], *(x.begin() + i));
     }
@@ -233,17 +233,16 @@ class vector {
   // template <typename InputIterator, typename>
   void insert(iterator position, const_iterator first, const_iterator last) {
     const size_type n = last - first;
+    const size_type diff = position - first_;
     if (size() + n > capacity()) {
-      const size_type diff = position - first_;
       if (size() + n > capacity() * 2)
         reserve(size() + n);
       else
         reserve(capacity() * 2);
       position = first_ + diff;
     }
-    if (position != last_)
-    {
-      for (size_type i = size(); i > 0;) {
+    if (position != last_) {
+      for (size_type i = size(); i > diff;) {
         --i;
         // only copy
         *(position + n + i) = *(position + i);
@@ -254,15 +253,18 @@ class vector {
       construct(position + i, *(first + i));
     }
   }
-  // iterator erase (iterator position)
-  // {
-  //   erase(position, position + 1);
-  // }
-  // iterator erase (iterator first, iterator last)
-  // {
-  //   destroy_until(&*(last_ - 1), &*(first_ - 1));
-  //   for ()
-  // }
+  iterator erase(iterator position) { return (erase(position, position + 1)); }
+  iterator erase(iterator first, iterator last) {
+    const size_type diff = last - first;
+    iterator old_last = last_;
+
+    destroy_until(&*(last - 1), &*(first - 1));
+    for (iterator it = first; it != (old_last - diff); ++it) {
+      // only copy
+      *it = *(it + diff);
+    }
+    return (first);
+  }
 };
 }  // namespace ft
 

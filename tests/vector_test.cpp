@@ -1,5 +1,3 @@
-#include "cstdlib"
-#include "ctime"
 #include "test_common.hpp"
 
 struct value {
@@ -20,9 +18,8 @@ void assign_random_value(ft::vector<T>& ft_v, std::vector<T>& v,
   int val;
 
   for (std::size_t i = 0; i < size; i++) {
-    val = rand();
-    ft_v.push_back(val);
-    v.push_back(val);
+    ft_v.push_back(i);
+    v.push_back(i);
   }
 }
 
@@ -39,7 +36,6 @@ void check_all_value(ft::vector<T>& ft_v, std::vector<T>& v) {
 }
 
 TEST_CASE("VECTOR") {
-  srand(time(NULL));
   // need to split into unit funcs
   SUBCASE("WHOLE FUNCS AND VALUES") {
     std::vector<int> v;
@@ -234,8 +230,7 @@ TEST_CASE("VECTOR") {
     test.insert(test.begin(), 1);
     check_all_value(ft_test, test);
   }
-  SUBCASE("INSERT-INTERATOR")
-  {
+  SUBCASE("INSERT-INTERATOR") {
     ft::vector<int> ft_v1;
     ft::vector<int> ft_v2;
     ft::vector<int> ft_test;
@@ -257,5 +252,36 @@ TEST_CASE("VECTOR") {
     test.insert(test.end(), v2.begin(), v2.end());
     check_all_value(ft_test, test);
   }
-}
+  SUBCASE("ERASE") {
+    ft::vector<int> ft_test;
+    std::vector<int> test;
+    ft::vector<int>::iterator ft_it;
+    std::vector<int>::iterator it;
 
+    assign_random_value(ft_test, test, 10);
+    ft_it = ft_test.erase(ft_test.begin());
+    it = test.erase(test.begin());
+    check_all_value(ft_test, test);
+    CHECK_EQ(*ft_it, *it);
+
+    ft_it = ft_test.erase(ft_test.begin() + 1, ft_test.begin() + 4);
+    it = test.erase(test.begin() + 1, test.begin() + 4);
+    check_all_value(ft_test, test);
+    CHECK_EQ(*ft_it, *it);
+
+    // segv
+    // test.erase(test.end());
+    // ft_test.erase(ft_test.end());
+    // check_all_value(ft_test, test);
+
+    ft_it = ft_test.erase(ft_test.end() - 1);
+    it = test.erase(test.end() - 1);
+    check_all_value(ft_test, test);
+    CHECK_EQ(*ft_it, *it);
+
+    ft_it = ft_test.erase(ft_test.begin(), ft_test.end() - 1);
+    it = test.erase(test.begin(), test.end() - 1);
+    check_all_value(ft_test, test);
+    CHECK_EQ(*ft_it, *it);
+  }
+}
