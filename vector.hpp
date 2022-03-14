@@ -61,7 +61,7 @@ class vector {
   vector(InputIterator first, InputIterator last,
          const Allocator& a = Allocator(),
          typename enable_if<!is_integral<InputIterator>::value>::type* = 0)
-      : vector(a) {
+      : alloc(a) {
     reserve(last - first);
     for (InputIterator i = first; i != last; ++i) push_back(*i);
   }

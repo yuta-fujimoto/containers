@@ -52,7 +52,7 @@ cover:
 #  Google test #
 # -fsanitize=integer
 
-CXXFLAG		:= -std=c++11 -DDEBUG -g -fsanitize=address
+CXXFLAG		:= -std=c++98 -DDEBUG -g -fsanitize=address
 # gTestDir	:= ./.google_test
 # gVersion	:= release-1.11.0
 # gTestVer	:= googletest-$(gVersion)

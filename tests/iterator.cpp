@@ -53,7 +53,7 @@ TEST_CASE("ITERATOR")
 		// base
 		// decltype(v)::iterator base = it.base(); error ?? 
 		int* base = it.base();
-		decltype(ft_v)::iterator ft_base = ft_it.base();
+		ft::vector<int>::iterator ft_base = ft_it.base();
 		CHECK_EQ(*base, *ft_base);
 		++base;
 		++ft_base;
@@ -129,8 +129,8 @@ TEST_CASE("ITERATOR")
 		CHECK_EQ(it2->get(), x_get);
 
 		// base member functions
-		decltype(v)::iterator base = rie.base();
-		decltype(ft_v)::iterator ft_base = ft_rie.base();
+		std::vector<int>::iterator base = rie.base();
+		ft::vector<int>::iterator ft_base = ft_rie.base();
 		CHECK_EQ(*base, *ft_base);
 		++base;
 		++ft_base;

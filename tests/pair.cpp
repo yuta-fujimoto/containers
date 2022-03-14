@@ -10,10 +10,11 @@ TEST_CASE("PAIR")
 
 	CHECK_EQ(ft_p1.first, p1.first);
 	CHECK_EQ(ft_p1.second, p1.second);
-	p1.swap(p2);
-	ft_p1.swap(ft_p2);
-	CHECK_EQ(ft_p1.first, p1.first);
-	CHECK_EQ(ft_p1.second, p1.second);
+	// swap is since C++11
+	// p1.swap(p2);
+	// ft_p1.swap(ft_p2);
+	// CHECK_EQ(ft_p1.first, p1.first);
+	// CHECK_EQ(ft_p1.second, p1.second);
 	CHECK_EQ(ft_p1 > ft_p2, p1 > p2);
 	CHECK_EQ(ft_p1 < ft_p2, p1 < p2);
 }
