@@ -52,10 +52,7 @@ TEST_CASE("VECTOR") {
     v.reserve(1);
     ft_v.reserve(1);
     CHECK_EQ(v.empty(), ft_v.empty());
-    CHECK_EQ(v.capacity(), ft_v.capacity());
-    CHECK_EQ(v.size(), ft_v.size());
     assign_random_value(ft_v, v, 3);
-    CAPTURE(ft_v);
     check_all_value(ft_v, v);
 
     SUBCASE("EXCEPTION") {
@@ -82,12 +79,10 @@ TEST_CASE("VECTOR") {
     ft_v.resize(2);
     CHECK_EQ(v.capacity(), ft_v.capacity());
     CHECK_EQ(v.size(), ft_v.size());
-    v.resize(1000, 20);
-    ft_v.resize(1000, 20);
+    v.resize(100, 20);
+    ft_v.resize(100, 20);
     CHECK_EQ(v.capacity(), ft_v.capacity());
     CHECK_EQ(v.size(), ft_v.size());
-    CHECK_EQ(v[999], ft_v[999]);
-    CHECK_EQ(v[0], ft_v[0]);
   }
   SUBCASE("NOT INT") {
     ft::vector<value> ft_v(12, 4);
@@ -164,6 +159,7 @@ TEST_CASE("VECTOR") {
       // it works properly...
       ft_test.assign('f', 'g');
       test.assign('f', 'g');
+
       // ft_test.assign(1.23, 3.22);
       // test.assign(1.23, 3.22);
       check_all_value(ft_test, test);
@@ -210,51 +206,57 @@ TEST_CASE("VECTOR") {
     check_all_value(ft_test2, test2);
   }
   SUBCASE("INSERT-RANGE") {
-    ft::vector<int> ft_test;
-    ft::vector<int> ft_v1;
-    ft::vector<int> ft_v2;
-    std::vector<int> test;
-    std::vector<int> v1;
-    std::vector<int> v2;
+    SUBCASE("RANGE") {
+      ft::vector<int> ft_test;
+      ft::vector<int> ft_v1;
+      ft::vector<int> ft_v2;
+      ft::vector<int>::iterator ft_it;
+      std::vector<int> test;
+      std::vector<int> v1;
+      std::vector<int> v2;
+      std::vector<int>::iterator it;
 
-    // assign_random_value(ft_v1, v1, 10);
-    ft_test.insert(ft_test.begin(), 10, 10);
-    test.insert(test.begin(), 10, 10);
-    check_all_value(ft_test, test);
+      // assign_random_value(ft_v1, v1, 10);
+      ft_test.insert(ft_test.begin(), 10, 10);
+      test.insert(test.begin(), 10, 10);
+      check_all_value(ft_test, test);
 
-    ft_test.insert(ft_test.begin(), 20, 20);
-    test.insert(test.begin(), 20, 20);
-    check_all_value(ft_test, test);
+      ft_test.insert(ft_test.begin(), 20, 20);
+      test.insert(test.begin(), 20, 20);
+      check_all_value(ft_test, test);
 
-    ft_test.insert(ft_test.end(), 1);
-    test.insert(test.end(), 1);
-    check_all_value(ft_test, test);
+      ft_it = ft_test.insert(ft_test.end(), 1);
+      it = test.insert(test.end(), 1);
+      check_all_value(ft_test, test);
+      CHECK_EQ(*ft_it, *it);
 
-    ft_test.insert(ft_test.begin(), 1);
-    test.insert(test.begin(), 1);
-    check_all_value(ft_test, test);
-  }
-  SUBCASE("INSERT-INTERATOR") {
-    ft::vector<int> ft_v1;
-    ft::vector<int> ft_v2;
-    ft::vector<int> ft_test;
-    std::vector<int> v1;
-    std::vector<int> v2;
-    std::vector<int> test;
+      ft_it = ft_test.insert(ft_test.begin(), 1);
+      it = test.insert(test.begin(), 1);
+      check_all_value(ft_test, test);
+      CHECK_EQ(*ft_it, *it);
+    }
+    SUBCASE("ITERATOR") {
+      ft::vector<int> ft_v1;
+      ft::vector<int> ft_v2;
+      ft::vector<int> ft_test;
+      std::vector<int> v1;
+      std::vector<int> v2;
+      std::vector<int> test;
 
-    assign_random_value(ft_v1, v1, 3);
-    ft_test.insert(ft_test.begin(), ft_v1.begin(), ft_v1.end());
-    test.insert(test.begin(), v1.begin(), v1.end());
-    check_all_value(ft_test, test);
+      assign_random_value(ft_v1, v1, 3);
+      ft_test.insert(ft_test.begin(), ft_v1.begin(), ft_v1.end());
+      test.insert(test.begin(), v1.begin(), v1.end());
+      check_all_value(ft_test, test);
 
-    assign_random_value(ft_v2, v2, 7);
-    ft_test.insert(ft_test.begin(), ft_v2.begin(), ft_v2.end());
-    test.insert(test.begin(), v2.begin(), v2.end());
-    check_all_value(ft_test, test);
+      assign_random_value(ft_v2, v2, 7);
+      ft_test.insert(ft_test.begin(), ft_v2.begin(), ft_v2.end());
+      test.insert(test.begin(), v2.begin(), v2.end());
+      check_all_value(ft_test, test);
 
-    ft_test.insert(ft_test.end(), ft_v2.begin(), ft_v2.end());
-    test.insert(test.end(), v2.begin(), v2.end());
-    check_all_value(ft_test, test);
+      ft_test.insert(ft_test.end(), ft_v2.begin(), ft_v2.end());
+      test.insert(test.end(), v2.begin(), v2.end());
+      check_all_value(ft_test, test);
+    }
   }
   SUBCASE("ERASE") {
     ft::vector<int> ft_test;
@@ -288,8 +290,7 @@ TEST_CASE("VECTOR") {
     check_all_value(ft_test, test);
     CHECK_EQ(*ft_it, *it);
   }
-  SUBCASE("SWAP")
-  {
+  SUBCASE("SWAP") {
     ft::vector<int> ft_test(5, 3);
     ft::vector<int> ft_test1(3, 5);
     std::vector<int> test(5, 3);
@@ -304,12 +305,60 @@ TEST_CASE("VECTOR") {
     test.swap(test);
     check_all_value(ft_test, test);
   }
-  SUBCASE("GET_ALLOCATOR")
-  {
+  SUBCASE("GET_ALLOCATOR") {
     std::allocator<int> alloc;
     ft::vector<int> v(alloc);
 
     std::allocator<int> result = v.get_allocator();
     CHECK(result == alloc);
+  }
+  SUBCASE("COMPARISON OPERATOR")
+  {
+    ft::vector<value> ft_v1;
+    ft::vector<value> ft_v2;
+    std::vector<value> v1;
+    std::vector<value> v2;
+
+//  (0) vs (0)
+    ft_v1.push_back(value(0));
+    ft_v2.push_back(value(0));
+    v1.push_back(value(0));
+    v2.push_back(value(0));
+    CHECK_EQ((ft_v1 == ft_v2), (v1 == v2));
+    CHECK_EQ((ft_v1 != ft_v2), (v1 != v2));
+    CHECK_EQ((ft_v1 > ft_v2), (v1 > v2));
+    CHECK_EQ((ft_v1 < ft_v2), (v1 < v2));
+    CHECK_EQ((ft_v1 >= ft_v2), (v1 >= v2));
+    CHECK_EQ((ft_v1 <= ft_v2), (v1 <= v2));
+
+// (0, 1) vs (0)
+    ft_v1.push_back(value(1));
+    v1.push_back(value(1));
+    CHECK_EQ((ft_v1 == ft_v2), (v1 == v2));
+    CHECK_EQ((ft_v1 != ft_v2), (v1 != v2));
+    CHECK_EQ((ft_v1 > ft_v2), (v1 > v2));
+    CHECK_EQ((ft_v1 < ft_v2), (v1 < v2));
+    CHECK_EQ((ft_v1 >= ft_v2), (v1 >= v2));
+    CHECK_EQ((ft_v1 <= ft_v2), (v1 <= v2));
+
+//  (0, 1) vs (0, 2)
+    ft_v2.push_back(value(2));
+    v2.push_back(value(2));
+    CHECK_EQ((ft_v1 == ft_v2), (v1 == v2));
+    CHECK_EQ((ft_v1 != ft_v2), (v1 != v2));
+    CHECK_EQ((ft_v1 > ft_v2), (v1 > v2));
+    CHECK_EQ((ft_v1 < ft_v2), (v1 < v2));
+    CHECK_EQ((ft_v1 >= ft_v2), (v1 >= v2));
+    CHECK_EQ((ft_v1 <= ft_v2), (v1 <= v2));
+
+//  (0, 1, 1) vs (0, 2)
+    ft_v1.push_back(value(1));
+    v1.push_back(value(1));
+    CHECK_EQ((ft_v1 == ft_v2), (v1 == v2));
+    CHECK_EQ((ft_v1 != ft_v2), (v1 != v2));
+    CHECK_EQ((ft_v1 > ft_v2), (v1 > v2));
+    CHECK_EQ((ft_v1 < ft_v2), (v1 < v2));
+    CHECK_EQ((ft_v1 >= ft_v2), (v1 >= v2));
+    CHECK_EQ((ft_v1 <= ft_v2), (v1 <= v2));
   }
 }

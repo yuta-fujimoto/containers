@@ -8,6 +8,7 @@
 #include "common.hpp"
 #include "enable_if.hpp"
 #include "is_integral.hpp"
+#include "lexicographical_compare.hpp"
 #include "normal_iterator.hpp"
 #include "reverse_iterator.hpp"
 
@@ -56,18 +57,13 @@ class vector {
       : alloc(a) {
     resize(size, v);
   }
-  template<typename InputIterator> vector(
-      InputIterator first, InputIterator last, const Allocator& a = Allocator(),
-      typename enable_if<!is_integral<InputIterator>::value>::type* = 0)
+  template <typename InputIterator>
+  vector(InputIterator first, InputIterator last,
+         const Allocator& a = Allocator(),
+         typename enable_if<!is_integral<InputIterator>::value>::type* = 0)
       : vector(a) {
     reserve(last - first);
     for (InputIterator i = first; i != last; ++i) push_back(*i);
-  }
-  vector(const_reverse_iterator first, const_reverse_iterator last,
-         const Allocator& a = Allocator())
-      : alloc(a) {
-    reserve(last - first);
-    for (const_reverse_iterator i = first; i != last; ++i) push_back(*i);
   }
   ~vector() {
     clear();
@@ -115,6 +111,28 @@ class vector {
   size_type size() const { return (last_ - first_); }
   bool empty() { return begin() == end(); }
   size_type capacity() const { return (reserved_last_ - first_); }
+  bool operator!=(vector const& right) const {
+    return (!(*this == right));
+    // return (ft::lexicographical_compare(begin(), end(), right.begin(), right.end(),
+    //                                 std::not_equal_to<value_type>()));
+  }
+  bool operator==(vector const& right) const {
+    return (size() == right.size() && std::equal(begin(), end(), right.begin()));
+  }
+  bool operator>(vector const& right) const {
+    return (right < *this);
+  }
+  // equal to lexicographical_compare
+  bool operator<(vector const& right) const {
+    return (ft::lexicographical_compare(begin(), end(), right.begin(), right.end()));
+  }
+  // not equal to lexicographical_compare
+  bool operator>=(vector const& right) const {
+    return (!(*this < right));
+  }
+  bool operator<=(vector const& right) const {
+    return (!(right < *this));
+  }
   const_reference operator[](size_type i) const { return (first_[i]); }
   reference operator[](size_type i) { return (first_[i]); }
   reference at(size_type n) {
@@ -211,8 +229,10 @@ class vector {
     return (std::min(alloc_max, diffmax));
   }
   iterator insert(iterator position, const value_type& x) {
+    const size_type diff = position - first_;
+
     insert(position, 1, x);
-    return (position + 1);
+    return (first_ + diff);
   }
   void insert(iterator position, size_type n, const value_type& x) {
     if (size() + n > capacity()) {

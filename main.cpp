@@ -1,7 +1,8 @@
 #include <iostream>
 #include <iterator>
-#include <vector>
 #include <stack>
+#include <vector>
+
 #include "enable_if.hpp"
 #include "is_integral.hpp"
 #include "iterator_traits.hpp"
@@ -27,13 +28,9 @@ void iter(const T& array, std::size_t len) {
   std::size_t i;
 
   i = 0;
-  while (i < len) std::cout << array[i++] << std::endl;;
+  while (i < len) std::cout << array[i++] << std::endl;
+  ;
 }
-
-// template <typename T>
-// void out(T *t) {
-//   std::cout << *t << std::endl;
-// }
 
 struct value {
   int x;
@@ -53,26 +50,17 @@ int main() {
   std::cout << data.size() << std::endl;
   std::cout << std::endl;
 
-  ft::vector<int> h;
-  ft::vector<int>::iterator it;
+  std::vector<int> h1;
+  std::vector<int> h2;
 
-  h.push_back(6);
-  h.push_back(12);
-  h.push_back(122);
-  h.push_back(1222);
-  h.push_back(12222);
-  // std::cout << h[0] << std::endl;
-  // h.erase(h.begin());
-  // std::cout << h[0] << std::endl;
-  it = h.erase(h.begin(), h.end());
-  std::cout << *it << std::endl;
-  std::cout << h.size() << std::endl;
-  h.swap(h);
-  // std::cout << h[0] << std::endl;
-  // h.insert(h.end(), 1);
-  // h.insert(st.begin(), st.end(), h.end());
-  // std::cout << h.capacity() << std::endl;
-  // std::cout << h.size() << std::endl;
-  // std::cout << h.max_size() << std::endl;
+  h1.push_back(1);
+  h1.push_back(2);
+  h1.push_back(1);
+  h2.push_back(1);  
+  h2.push_back(3);
+  h2.push_back(2);
+  h2.push_back(1);
+  std::cout << (h1 >= h2) << std::endl;
+  std::cout << (h1 > h2) << std::endl;
   return 0;
 }
