@@ -142,41 +142,45 @@ TEST_CASE("VECTOR") {
 
     check_all_value(ft_copy_v, copy_v);
   }
-  SUBCASE("ASSIGN-ITERATOR") {
-    ft::vector<int> ft_v1;
-    ft::vector<int> ft_v2;
-    ft::vector<int> ft_test;
-    std::vector<int> v1;
-    std::vector<int> v2;
-    std::vector<int> test;
+  SUBCASE("ASSIGN") {
+    SUBCASE("ITERATOR") {
+      ft::vector<int> ft_v1;
+      ft::vector<int> ft_v2;
+      ft::vector<int> ft_test;
+      std::vector<int> v1;
+      std::vector<int> v2;
+      std::vector<int> test;
 
-    assign_random_value(ft_v1, v1, 14);
-    ft_test.assign(ft_v1.begin(), ft_v1.end());
-    test.assign(v1.begin(), v1.end());
-    check_all_value(ft_test, test);
+      assign_random_value(ft_v1, v1, 14);
+      ft_test.assign(ft_v1.begin(), ft_v1.end());
+      test.assign(v1.begin(), v1.end());
+      check_all_value(ft_test, test);
 
-    assign_random_value(ft_v2, v2, 7);
-    ft_test.assign(ft_v2.begin(), ft_v2.end());
-    test.assign(v2.begin(), v2.end());
-    check_all_value(ft_test, test);
+      assign_random_value(ft_v2, v2, 7);
+      ft_test.assign(ft_v2.begin(), ft_v2.end());
+      test.assign(v2.begin(), v2.end());
+      check_all_value(ft_test, test);
 
-    // it works properly...
-    ft_test.assign('f', 'g');
-    test.assign('f', 'g');
-    check_all_value(ft_test, test);
-  }
-  SUBCASE("ASSIGN-RANGE") {
-    ft::vector<int> ft_test;
-    std::vector<int> test;
-    const int value = 10;
+      // it works properly...
+      ft_test.assign('f', 'g');
+      test.assign('f', 'g');
+      // ft_test.assign(1.23, 3.22);
+      // test.assign(1.23, 3.22);
+      check_all_value(ft_test, test);
+    }
+    SUBCASE("RANGE") {
+      ft::vector<int> ft_test;
+      std::vector<int> test;
+      const int value = 10;
 
-    ft_test.assign(20, value);
-    test.assign(20, value);
-    check_all_value(ft_test, test);
+      ft_test.assign(20, value);
+      test.assign(20, value);
+      check_all_value(ft_test, test);
 
-    ft_test.assign(10, value);
-    test.assign(10, value);
-    check_all_value(ft_test, test);
+      ft_test.assign(10, value);
+      test.assign(10, value);
+      check_all_value(ft_test, test);
+    }
   }
   SUBCASE("NUMERICAL LIMITS") {
     ft::vector<int> ft_test;

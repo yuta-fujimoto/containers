@@ -6,6 +6,8 @@
 #include <limits>
 
 #include "common.hpp"
+#include "enable_if.hpp"
+#include "is_integral.hpp"
 #include "normal_iterator.hpp"
 #include "reverse_iterator.hpp"
 
@@ -54,11 +56,12 @@ class vector {
       : alloc(a) {
     resize(size, v);
   }
-  vector(const_iterator first, const_iterator last,
-         const Allocator& a = Allocator())
+  template<typename InputIterator> vector(
+      InputIterator first, InputIterator last, const Allocator& a = Allocator(),
+      typename enable_if<!is_integral<InputIterator>::value>::type* = 0)
       : vector(a) {
     reserve(last - first);
-    for (const_iterator i = first; i != last; ++i) push_back(*i);
+    for (InputIterator i = first; i != last; ++i) push_back(*i);
   }
   vector(const_reverse_iterator first, const_reverse_iterator last,
          const Allocator& a = Allocator())
@@ -163,7 +166,6 @@ class vector {
     if (sz < size()) {
       size_type diff = size() - sz;
       destroy_until(rbegin(), rbegin() + diff);
-      // last = first + sz;
     } else if (sz > size()) {
       reserve(sz);
       for (; last_ != reserved_last_; ++last_) {
@@ -193,7 +195,9 @@ class vector {
   // reassign containers
   // is it okay to template??
   template <class InputIterator>
-  void assign(InputIterator first, InputIterator last) {
+  void assign(
+      InputIterator first, InputIterator last,
+      typename enable_if<!is_integral<InputIterator>::value>::type* = 0) {
     // it may be awfully slow....
     // if (capacity() < l - f)
     *this = vector(first, last);
@@ -230,8 +234,10 @@ class vector {
       construct(position + i, x);
     }
   }
-  // template <typename InputIterator, typename>
-  void insert(iterator position, const_iterator first, const_iterator last) {
+  template <typename InputIterator>
+  void insert(
+      iterator position, InputIterator first, InputIterator last,
+      typename enable_if<!is_integral<InputIterator>::value>::type* = 0) {
     const size_type n = last - first;
     const size_type diff = position - first_;
     if (size() + n > capacity()) {
@@ -290,7 +296,7 @@ class vector {
     reserved_last_ = temp;
   }
   allocator_type get_allocator() const { return (alloc); }
-};  
+};
 }  // namespace ft
 
 #endif
