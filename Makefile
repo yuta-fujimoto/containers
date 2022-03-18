@@ -53,10 +53,6 @@ cover:
 # -fsanitize=integer
 
 CXXFLAG		:= -std=c++98 -DDEBUG -g -fsanitize=address
-# gTestDir	:= ./.google_test
-# gVersion	:= release-1.11.0
-# gTestVer	:= googletest-$(gVersion)
-# gTest		:= $(gTestDir)/gtest $(gTestDir)/$(gTestVer)
 INCLUDE		:= -I./.doctest/doctest/
 
 TESTDIR		:= ./tests/
@@ -67,31 +63,16 @@ TESTOBJS	:= $(addprefix $(SRCDIR), $(TESTSRCS_CPP:%.cpp=%.o))
 %.o: %.cpp
 	$(CXX) $(CXXFLAG) $(INCLUDE) -c $< -o $@
 
-# $(gTest):
-# 	mkdir -p $(gTestDir)
-# 	curl -OL https://github.com/google/googletest/archive/refs/tags/$(gVersion).tar.gz
-# 	tar -xvzf $(gVersion).tar.gz $(gTestVer)
-# 	$(RM) $(gVersion).tar.gz
-# 	python3 $(gTestVer)/googletest/scripts/fuse_gtest_files.py $(gTestDir)
-# 	mv $(gTestVer) $(gTestDir)
-
-# gtest: $(gTest) $(TESTOBJS)
-# 	$(CXX) $(CXXFLAG) \
-# 		$(TESTOBJS) \
-# 		$(gTestDir)/$(gTestVer)/googletest/src/gtest_main.cc \
-# 		$(gTestDir)/gtest/gtest-all.cc \
-# 		-I$(gTestDir) -I../ $(INCLUDE) $(LIBS) -lpthread -o tester && ./tester
-
 test: CXX=clang++
 test: $(TESTOBJS) $(OBJS)
 	$(CXX) $(CXXFLAG) $(TESTOBJS) -o tester && ./tester
 
-t_clean: FORCE
+tclean: FORCE
 	$(RM) $(TESTOBJS)
 
-t_fclean: t_clean
+tfclean: tclean
 	$(RM) -r tester tester.dSYM
 
-tre: t_fclean test
+tre: tfclean test
 
 -include $(BINDIR)/*.d
