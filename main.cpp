@@ -2,12 +2,14 @@
 #include <iterator>
 #include <stack>
 #include <vector>
-
+#include <map>
+#include <set>
 #include "enable_if.hpp"
 #include "is_integral.hpp"
 #include "iterator_traits.hpp"
 #include "pair.hpp"
 #include "vector.hpp"
+
 // 範囲の合計値を計算する
 template <class Iterator>
 typename ft::iterator_traits<Iterator>::value_type sum(Iterator first,
@@ -39,28 +41,18 @@ struct value {
 };
 
 int main() {
-  std::cout << "Constructor with initializer-list example:" << std::endl;
-  std::cout << std::endl;
+ std::map<int, int> a;
+ auto b = std::pair<int, int>(1, 1);
+  a.insert(b);
+  a.insert(std::pair<int, int>(3, 6));
+  a.insert(std::pair<int, int>(2, 4));
+  a.insert(std::pair<int, int>(4, 8));
+  a.insert(std::pair<int, int>(5, 10));
+  a.insert(std::pair<int, int>(4, 12));
 
-  std::cout << "=operator" << std::endl;
-  ft::vector<int> data;
-  data.push_back(5);
-  data.push_back(6);
-  data.push_back(7);
-  std::cout << data.size() << std::endl;
-  std::cout << std::endl;
-
-  std::vector<int> h1;
-  std::vector<int> h2;
-
-  h1.push_back(1);
-  h1.push_back(2);
-  h1.push_back(1);
-  h2.push_back(1);  
-  h2.push_back(3);
-  h2.push_back(2);
-  h2.push_back(1);
-  std::cout << (h1 >= h2) << std::endl;
-  std::cout << (h1 > h2) << std::endl;
-  return 0;
+  for (std::map<int, int>::iterator it = a.begin(); it != a.end(); ++it)
+  {
+      std::cout << it->second << std::endl;
+      // std::cout << it._M_node->_M_color << std::endl;
+  }
 }
