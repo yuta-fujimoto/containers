@@ -13,6 +13,7 @@ int main()
 	std::cout << it->first << std::endl;
 	while (it != T._M_end())
 	{
+		std::cout << "YES >> ";
 		std::cout << it->first << std::endl;
 		it++;
 	}

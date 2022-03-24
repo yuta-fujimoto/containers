@@ -32,6 +32,24 @@ class _RB_tree_node {
   _Link_type child[2];
   _RB_tree_color color;
 
+  _RB_tree_node() {
+    this->color = RED;
+    _M_reset();
+  }
+  void _M_move_data(_RB_tree_node &_from) {
+    this->color = _from.color;
+    this->parent = _from.parent;
+    this->left = _from.left;
+    this->right = _from.right;
+    this->parent->parent = &_from;
+
+    _from._M_reset();
+  }
+  void _M_reset() {
+    this->parent = 0;
+    this->left = this;
+    this->right = this;
+  }
   typename _Val::first_type getKey() const { return (val->first); }
   typename _Val::second_type getValue() const { return (val->second); }
   void print(int level) {
@@ -47,43 +65,39 @@ class _RB_tree_node {
 
 template <typename _Val>
 _RB_tree_node<_Val> *TreeMinimum(_RB_tree_node<_Val> *N) {
-  if (N == NIL)
-    return (NIL);
+  if (N == NIL) return (NIL);
   while (N->left != NIL) N = N->left;
   return (N);
 }
 template <typename _Val>
 _RB_tree_node<_Val> *TreeMaximum(_RB_tree_node<_Val> *N) {
-  if (N == NIL)
-    return (NIL);
-  while (N->right != NIL)
-  {
-    N = N->right;
-  } 
+  if (N == NIL) return (NIL);
+  while (N->right != NIL) N = N->right;
   return (N);
 }
 // the node with the smallest key greater than n's key
 template <typename _Val>
-_RB_tree_node<_Val> *TreeSuccessor(_RB_tree_node<_Val> *N) {
-  if (N->right != NIL) return (TreeMinimum(N->right));
-  _RB_tree_node<_Val> *X = N->parent;
-  while (X != NIL && N == X->right) {
-    N = X;
-    X = X->parent;
+_RB_tree_node<_Val> *TreeSuccessor(_RB_tree_node<_Val> *_X) {
+  if (_X->right != NIL) return (TreeMinimum(_X->right));
+  _RB_tree_node<_Val> *_Y = _X->parent;
+  while (_Y != NIL && _X == _Y->right) {
+    _X = _Y;
+    _Y = _Y->parent;
   }
-  std::cout <<"SUC " <<  N->getKey() << std::endl;
-  return (X);
+  if (_X->right != _Y)
+    _X = _Y;
+  return (_X);
 }
 // the node with the largest key smaller than n's key
 template <typename _Val>
-_RB_tree_node<_Val> *TreePredecessor(_RB_tree_node<_Val> *N) {
-  if (N->right != NIL) return (TreeMaximum(N->right));
-  _RB_tree_node<_Val> X = N->parent;
-  while (X != NIL && N == X->left) {
-    N = X;
-    X = X->parent;
+_RB_tree_node<_Val> *TreePredecessor(_RB_tree_node<_Val> *_X) {
+  if (_X->left != NIL) return (TreeMaximum(_X->left));
+  _RB_tree_node<_Val> *_Y = _X->parent;
+  while (_Y != NIL && _X == _Y->left) {
+    _X = _Y;
+    _Y = _Y->parent;
   }
-  return (X);
+  return (_Y);
 }
 
 template <typename _Val>
@@ -150,35 +164,35 @@ struct _Rb_tree_iterator {
   }
 };
 
-template <typename _Val>
-struct _Rb_tree_header : public _RB_tree_node<_Val> {
-  // PARENT: ROOT
-  // LEFT: BEGIN
-  // RIGHT: END - 1
-  size_t _M_node_count;
+// template <typename _Val>
+// struct _Rb_tree_header : public _RB_tree_node<_Val> {
+//   // PARENT: ROOT
+//   // LEFT: BEGIN
+//   // RIGHT: END - 1
+//   size_t _M_node_count;
 
-  _Rb_tree_header() {
-    this->color = RED;
-    _M_reset();
-  }
-  // WHAT'S ???
-  void _M_move_data(_Rb_tree_header &_from) {
-    this->color = _from.color;
-    this->parent = _from.parent;
-    this->left = _from.left;
-    this->right = _from.right;
-    this->parent->parent = &_from;
-    _M_node_count = _from._M_node_count;
+//   _Rb_tree_header() {
+//     this->color = RED;
+//     _M_reset();
+//   }
+//   // WHAT'S ???
+//   void _M_move_data(_Rb_tree_header &_from) {
+//     this->color = _from.color;
+//     this->parent = _from.parent;
+//     this->left = _from.left;
+//     this->right = _from.right;
+//     this->parent->parent = &_from;
+//     _M_node_count = _from._M_node_count;
 
-    _from._M_reset();
-  }
-  void _M_reset() {
-    this->parent = 0;
-    this->left = this;
-    this->right = this;
-    _M_node_count = 0;
-  }
-};
+//     _from._M_reset();
+//   }
+//   void _M_reset() {
+//     this->parent = 0;
+//     this->left = this;
+//     this->right = this;
+//     _M_node_count = 0;
+//   }
+// };
 
 // template<typename _Key, typename _Val, typename _KeyOfValue,
 // 	typename _Compare, typename _Alloc = std::allocator<_Val> >
@@ -189,7 +203,7 @@ class RBtree {
       _Node_allocator;
   typedef _RB_tree_node<_Val> *_Link_type;
 
-  _Rb_tree_header<_Val> _M_header;
+  _RB_tree_node<_Val> _M_header;
   _Node_allocator _node_alloc;
   _Alloc _alloc;
 
@@ -214,7 +228,7 @@ class RBtree {
     _node_alloc.deallocate(_p, 1);
   }
 #define childDir(N) (N == (N->parent)->right ? RIGHT : LEFT)
-  _Link_type RotateDirRoot(RBtree *T, _Link_type P, bool dir) {
+  _Link_type RotateDirRoot(_Link_type P, bool dir) {
     _Link_type G = P->parent;       // GrandParent
     _Link_type S = P->child[!dir];  // Son
     if (S == NIL) return (NIL);
@@ -227,16 +241,19 @@ class RBtree {
     P->parent = S;
     S->parent = G;
 
-    if (G != NIL)
+    if (G != &_M_header)
       G->child[P == G->right ? RIGHT : LEFT] = S;
     else
-      T->_M_header.parent = S;
+    {
+      _M_header.parent = S;
+      // S->parent = &_M_header;     S->parent = G;
+    }
     return (S);  // new root of subtree
   }
 
-#define RotateDir(N, dir) RotateDirRoot(this, N, dir)
-#define RotateLeft(N) RotateDirRoot(this, N, LEFT)
-#define RotateRight(N) RotateDirRoot(this, N, RIGHT)
+#define RotateDir(N, dir) RotateDirRoot(N, dir)
+#define RotateLeft(N) RotateDirRootN, LEFT)
+#define RotateRight(N) RotateDirRootN, RIGHT)
 
   void RBinsert2(_Link_type N, _Link_type P, bool dir) {
     _Link_type G;  // GrandParent
@@ -245,6 +262,7 @@ class RBtree {
     N->parent = P;
     if (P == NIL) {
       _M_header.parent = N;
+      N->parent = &_M_header;
       return;
     }
     P->child[dir] = N;
@@ -252,19 +270,23 @@ class RBtree {
       if (P->color == BLACK)  // Case_I1 (P: BLACK)
         return;
       G = P->parent;
-      if (G == NIL)  // Case_I4 (P: RED and ROOT)
-        goto Case_I4;
+      if (G == &_M_header)
+        goto Case_I4;  // Case_I4 (P: RED and ROOT)
       dir = childDir(P);
       U = G->child[!dir];
       if (U == NIL || U->color == BLACK)  // Case_I56 (U: BLACK)
+      {
         goto Case_I56;
+      }
       // Case_I2 (P+U: RED)
+      std::cout << "HELO: " << P->getKey() << std::endl;
+
       P->color = BLACK;
       U->color = BLACK;
       G->color = RED;
       N = G;
       P = N->parent;
-    } while (P != NIL);
+    } while (P != &_M_header);
     // Case_I3 (N: ROOT)
     return;
   Case_I4:
@@ -278,7 +300,7 @@ class RBtree {
       P = G->child[dir];
     }
     // Case_I6 (P: RED, U: BLACK, N: outer grandchild of G)
-    RotateDirRoot(this, G, !dir);
+    RotateDirRoot(G, !dir);
     P->color = BLACK;
     G->color = RED;
     return;
@@ -289,18 +311,18 @@ class RBtree {
     if (_M_header.parent == NIL) RBinsert2(N, NIL, LEFT);
     P = _M_header.parent;
     while (true) {
-      if (N->getKey() > P->getKey()) {
-        if (P->left == NIL) {
-          RBinsert2(N, P, LEFT);
-          return (N);
-        }
-        P = P->left;
-      } else if (N->getKey() < P->getKey()) {
+      if (N->getKey() < P->getKey()) {
         if (P->right == NIL) {
           RBinsert2(N, P, RIGHT);
           return (N);
         }
         P = P->right;
+      } else if (N->getKey() > P->getKey()) {
+        if (P->left == NIL) {
+          RBinsert2(N, P, LEFT);
+          return (N);
+        }
+        P = P->left;
       } else
         return (P);
     }
@@ -308,8 +330,10 @@ class RBtree {
 
   // REPLACE NODE N WITH R
   void SubtreeShift(RBtree *T, _Link_type N, _Link_type R) {
-    if (N->parent == NIL)
+    if (N == T->_M_header.parent) {
       T->_M_header.parent = R;
+      R->parent = &_M_header;
+    }
     else
       N->parent->child[childDir(N)] = R;
     if (R != NIL) R->parent = N->parent;
@@ -376,7 +400,7 @@ class RBtree {
     return;
   }
   void RBdelete1(RBtree *T, _Link_type N) {
-    if (N->parent == NIL && N->left == NIL && N->right == NIL) {
+    if (N == T->_M_header.parent && N->left == NIL && N->right == NIL) {
       T->_M_header.parent = NIL;
       return;
     }
@@ -443,8 +467,8 @@ class RBtree {
     _Link_type N = _M_create_node(v);
 
     _Link_type RES = RBinsert1(N);
-    _M_header.right = TreeMaximum(_M_header.parent);
-    _M_header.left = TreeMinimum(_M_header.parent);
+    _M_header.right = TreeMinimum(_M_header.parent);
+    _M_header.left = TreeMaximum(_M_header.parent);
     return (pair<iterator, bool>(RES, (RES == N)));
   }
   void RBclear(void) {
@@ -459,8 +483,9 @@ class RBtree {
 
     if (N == NIL) return;
     RBdelete1(this, N);
-    _M_header.right = TreeMaximum(_M_header.parent);
-    _M_header.left = TreeMinimum(_M_header.parent);
+
+    _M_header.right = TreeMinimum(_M_header.parent);
+    _M_header.left = TreeMaximum(_M_header.parent);
   }
   void printTree() {
     if (_M_header.parent == NIL) return;
