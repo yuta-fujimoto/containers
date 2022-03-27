@@ -1,4 +1,4 @@
-#include "../RBtree.hpp"
+#include "../_Rb_tree.hpp"
 // #include "rb_tree_test.hpp"
 #include <cstdlib>
 #include <ctime>
@@ -61,7 +61,7 @@ bool checkTree(ft::_RB_tree_node<_Val> *T) {
 
 int main() {
   srand(time(NULL));
-  std::ofstream ofs("rb_tree.txt");
+  std::ofstream ofs("Rb_tree.txt");
   // comment for debug
   // std::vector<int> a = {};
   // std::vector<int> b = {};
@@ -84,13 +84,13 @@ int main() {
   }
   for (auto i : b) {
     ofs << i << ", ";
-    T.RBdelete(i);
+    T._Rb_delete(i);
   }
   ofs << std::endl;
   if (!checkTree(T._M_root())) {
     return (0);
   }
-  T.RBclear();
+  T._Rb_clear();
   printTree(T._M_root());  // noting would be printed
 
   // [EMPTY TEST]
@@ -98,13 +98,13 @@ int main() {
   T.RBinsert(ft::pair<int, int>(2, 2));
   T.RBinsert(ft::pair<int, int>(3, 2));
   T.RBinsert(ft::pair<int, int>(4, 2));
-  T.RBdelete(2);
-  T.RBdelete(3);
-  T.RBdelete(4);
-  T.RBdelete(1);
+  T._Rb_delete(2);
+  T._Rb_delete(3);
+  T._Rb_delete(4);
+  T._Rb_delete(1);
   printTree(T._M_root());  // noting would be printed
 
-  // in coverage test, Case_D2 doesn't be passed, but
+  // in coverage test, Case_D2 doesn't be passed, but(TODO)
   ft::RBtree<int, ft::pair<int, int> >::iterator it;
   int i = 0;
   for (i = 0; i < 10; ++i) {
