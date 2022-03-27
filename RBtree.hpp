@@ -12,7 +12,7 @@
 #include "pair.hpp"
 
 namespace ft {
-enum _RB_tree_color { BLACK = false, RED = true };
+enum _RB_tree_color { BLACK = 0, RED = 1, HEAD = 2 };
 // LEFT/RIGHT ratation
 #define LEFT false
 #define RIGHT true
@@ -34,21 +34,6 @@ class _RB_tree_node {
 
   _RB_tree_node() {
     this->color = RED;
-    _M_reset();
-  }
-  void _M_move_data(_RB_tree_node &_from) {
-    this->color = _from.color;
-    this->parent = _from.parent;
-    this->left = _from.left;
-    this->right = _from.right;
-    this->parent->parent = &_from;
-
-    _from._M_reset();
-  }
-  void _M_reset() {
-    this->parent = 0;
-    this->left = this;
-    this->right = this;
   }
   typename _Val::first_type getKey() const { return (val->first); }
   typename _Val::second_type getValue() const { return (val->second); }
@@ -84,13 +69,17 @@ _RB_tree_node<_Val> *TreeSuccessor(_RB_tree_node<_Val> *_X) {
     _X = _Y;
     _Y = _Y->parent;
   }
-  if (_X->right != _Y)
+  // size(tree) != 1
+  if (_X->right != _Y) {
     _X = _Y;
+  }
   return (_X);
 }
 // the node with the largest key smaller than n's key
 template <typename _Val>
 _RB_tree_node<_Val> *TreePredecessor(_RB_tree_node<_Val> *_X) {
+  // _X is _M_header (not root)
+  if (_X->color == HEAD) return (_X->right);
   if (_X->left != NIL) return (TreeMaximum(_X->left));
   _RB_tree_node<_Val> *_Y = _X->parent;
   while (_Y != NIL && _X == _Y->left) {
@@ -164,35 +153,34 @@ struct _Rb_tree_iterator {
   }
 };
 
-// template <typename _Val>
-// struct _Rb_tree_header : public _RB_tree_node<_Val> {
-//   // PARENT: ROOT
-//   // LEFT: BEGIN
-//   // RIGHT: END - 1
-//   size_t _M_node_count;
+template <typename _Val>
+struct _Rb_tree_header : public _RB_tree_node<_Val> {
+  // PARENT: ROOT
+  // LEFT: BEGIN
+  // RIGHT: END - 1
+  size_t _M_node_count;
 
-//   _Rb_tree_header() {
-//     this->color = RED;
-//     _M_reset();
-//   }
-//   // WHAT'S ???
-//   void _M_move_data(_Rb_tree_header &_from) {
-//     this->color = _from.color;
-//     this->parent = _from.parent;
-//     this->left = _from.left;
-//     this->right = _from.right;
-//     this->parent->parent = &_from;
-//     _M_node_count = _from._M_node_count;
+  _Rb_tree_header() {
+    this->color = HEAD;
+    _M_reset();
+  }
+  void _M_move_data(_Rb_tree_header &_from) {
+    this->color = _from.color;
+    this->parent = _from.parent;
+    this->left = _from.left;
+    this->right = _from.right;
+    this->parent->parent = &_from;
+    _M_node_count = _from._M_node_count;
 
-//     _from._M_reset();
-//   }
-//   void _M_reset() {
-//     this->parent = 0;
-//     this->left = this;
-//     this->right = this;
-//     _M_node_count = 0;
-//   }
-// };
+    _from._M_reset();
+  }
+  void _M_reset() {
+    this->parent = 0;
+    this->left = this;
+    this->right = this;
+    _M_node_count = 0;
+  }
+};
 
 // template<typename _Key, typename _Val, typename _KeyOfValue,
 // 	typename _Compare, typename _Alloc = std::allocator<_Val> >
@@ -203,7 +191,7 @@ class RBtree {
       _Node_allocator;
   typedef _RB_tree_node<_Val> *_Link_type;
 
-  _RB_tree_node<_Val> _M_header;
+  _Rb_tree_header<_Val> _M_header;
   _Node_allocator _node_alloc;
   _Alloc _alloc;
 
@@ -306,7 +294,11 @@ class RBtree {
   _Link_type RBinsert1(_Link_type N) {
     _Link_type P;
 
-    if (_M_header.parent == NIL) RBinsert2(N, &_M_header, LEFT);
+    if (_M_header.parent == NIL) 
+    {
+      RBinsert2(N, &_M_header, LEFT);
+      return (N);
+    }
     P = _M_header.parent;
     while (true) {
       if (N->getKey() > P->getKey()) {
@@ -369,7 +361,6 @@ class RBtree {
       P = N->parent;
     } while (P != &_M_header);
     // Case_D2 (P==NULL)
-    std::cout << "YES" << std::endl;
     return;
   Case_D3:                     // Case_D3 (S: RED, P+C+D: BLACK)
     RotateDirRoot(P, dir);  // P may be root
@@ -445,43 +436,6 @@ class RBtree {
     RBclear1(N->right);
     _M_drop_node(N);
   }
-  void printTree1(_Link_type N, int level) {
-    if (!N) return;
-    printTree1(N->left, level + 1);
-    N->print(level);
-    printTree1(N->right, level + 1);
-  }
-  void InvalidTree(_Link_type N) {
-    printTree1(N, 0);
-  }
-  int checkTree1(_Link_type N, int len) {
-    int ldep;
-    int rdep;
-
-    if (!N)
-      return (len + 1);
-    if (N->color == RED)
-    {
-      if ((N->left == NIL || N->left->color == BLACK)
-        && (N->right == NIL || N->right->color == BLACK))
-      {
-        ldep = checkTree1(N->left, len);
-        rdep = checkTree1(N->right, len);
-        if (ldep != -1 && rdep == ldep)
-          return (ldep);
-        std::cout << "CURRENT: " << N->getKey() << " LEFT: " << ldep << " RIGHT: " << rdep << std::endl;
-      }
-      printTree1(N, 0);
-      return (-1);
-    }
-    ldep = checkTree1(N->left, len + 1);
-    rdep = checkTree1(N->right, len + 1);
-    if (ldep != -1 && rdep == ldep)
-      return (ldep);
-    std::cout << "CURRENT: " << N->getKey() << " LEFT: " << ldep << " RIGHT: " << rdep << std::endl;
-    printTree1(N, 0);
-    return (-1);
-  }
 
  public:
   typedef _Rb_tree_iterator<_Val> iterator;
@@ -498,6 +452,7 @@ class RBtree {
   // _Const_Link_type _M_begin() const { return (_M_header.left); }
   _Link_type _M_end() { return (&_M_header); }
   // _Const_Link_type _M_end() const { return (_M_header); }
+  _Link_type _M_root() { return (_M_header.parent); }
   pair<iterator, bool> RBinsert(const _Val &v) {
     _Link_type N = _M_create_node(v);
 
@@ -530,21 +485,6 @@ class RBtree {
     }
     _M_header.right = TreeMaximum(_M_header.parent);
     _M_header.left = TreeMinimum(_M_header.parent);
-  }
-  void printTree() {
-    if (_M_header.parent == NIL) return;
-    printTree1(_M_header.parent->left, 1);
-    _M_header.parent->print(0);
-    printTree1(_M_header.parent->right, 1);
-  }
-  bool checkTree() {
-    int dep = checkTree1(_M_header.parent, 0);
-
-    if (dep == -1)
-      std::cout << "ERROR!" << std::endl;
-    else
-      std::cout << "SUCCESS: " << dep << std::endl;
-    return (dep != -1);
   }
 };
 

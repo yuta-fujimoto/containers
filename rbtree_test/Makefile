@@ -1,7 +1,7 @@
 NAME := a.out
 CXX := clang++
 CXXFLAGS := -Wall -Werror -Wextra -MMD -MP -g
-SRCS :=	RBtree.cpp
+SRCS :=	rb_tree.cpp
 BINDIR := bin
 OBJS := $(addprefix $(BINDIR)/, $(SRCS:.cpp=.o))
 DEPENDS := $(addprefix $(BINDIR)/, $(SRCS:.cpp=.d))
