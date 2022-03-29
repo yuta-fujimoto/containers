@@ -32,11 +32,24 @@ class _reverse_iterator {
     }
     return (*this);
   }
-  reference operator*() { return (*(v - 1)); }
-  const reference operator*() const { return (*(v - 1)); }
-  reference operator[](size_type p) { return (*(v - p - 1)); }
-  const reference operator[](size_type p) const { return (*(v - p - 1)); }
-  pointer operator->() const { return (&(*(v - 1))); }
+  reference operator*() {
+    Iterator _tmp = v;
+
+    return (*--_tmp);
+  }
+  const reference operator*() const {
+    Iterator _tmp = v;
+
+    return (*--_tmp);
+  }
+  reference operator[](size_type p) { return (*(*this + p)); }
+  const reference operator[](size_type p) const { return (*(*this + p)); }
+  pointer operator->() const {
+    Iterator _tmp = v;
+
+    --_tmp;
+    return (_S_to_pointer(_tmp));
+  }
   _reverse_iterator& operator++() {
     v--;
 
@@ -59,12 +72,20 @@ class _reverse_iterator {
     ++*this;
     return (copy);
   }
-  bool operator!=(_reverse_iterator const& right) const { return (v != right.v); }
-  bool operator==(_reverse_iterator const& right) const { return (v == right.v); }
+  bool operator!=(_reverse_iterator const& right) const {
+    return (v != right.v);
+  }
+  bool operator==(_reverse_iterator const& right) const {
+    return (v == right.v);
+  }
   bool operator>(_reverse_iterator const& right) const { return (v > right.v); }
   bool operator<(_reverse_iterator const& right) const { return (v < right.v); }
-  bool operator>=(_reverse_iterator const& right) const { return (v >= right.v); }
-  bool operator<=(_reverse_iterator const& right) const { return (v <= right.v); }
+  bool operator>=(_reverse_iterator const& right) const {
+    return (v >= right.v);
+  }
+  bool operator<=(_reverse_iterator const& right) const {
+    return (v <= right.v);
+  }
   _reverse_iterator operator+(size_type ri) {
     return (_reverse_iterator(v - ri));
   }
@@ -73,6 +94,16 @@ class _reverse_iterator {
   }
   size_type operator-(_reverse_iterator const& right) { return (right.v - v); }
   Iterator base(void) const { return (v); };
+
+ private:
+  template <typename _Tp>
+  static _Tp* _S_to_pointer(_Tp* __p) {
+    return (__p);
+  }
+  template <typename _Tp>
+  static pointer _S_to_pointer(_Tp __t) {
+    return __t.operator->();
+  }
 };
 }  // namespace ft
 

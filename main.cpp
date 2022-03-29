@@ -9,7 +9,7 @@
 #include "iterator_traits.hpp"
 #include "pair.hpp"
 #include "vector.hpp"
-
+#include "map.hpp"
 // 範囲の合計値を計算する
 template <class Iterator>
 typename ft::iterator_traits<Iterator>::value_type sum(Iterator first,
@@ -41,18 +41,30 @@ struct value {
 };
 
 int main() {
- std::map<int, int> a;
- auto b = std::pair<int, int>(1, 1);
-  a.insert(b);
-  a.insert(std::pair<int, int>(3, 6));
-  a.insert(std::pair<int, int>(2, 4));
-  a.insert(std::pair<int, int>(4, 8));
-  a.insert(std::pair<int, int>(5, 10));
-  a.insert(std::pair<int, int>(4, 12));
+ ft::map<int, int> a;
+//  auto b = ft::pair<int, int>(1, 1);
+//   a.insert(b);
+  a.insert(ft::pair<int, int>(1, 6));
+  a.insert(ft::pair<int, int>(3, 4));
+  a.insert(ft::pair<int, int>(5, 8));
+  a.insert(ft::pair<int, int>(7, 10));
+  a.insert(ft::pair<int, int>(9, 12));
+  a.insert(ft::pair<int, int>(11, 12));
+  // b = ft::pair<int, int>(-111, 12);
+  // auto it = a.find(4);
+  // a.insert(it, b);
 
-  for (std::map<int, int>::iterator it = a.begin(); it != a.end(); ++it)
+  ft::map<int, int>::reverse_iterator it;
+  for (it = a.rbegin(); it != a.rend(); ++it)
   {
-      std::cout << it->second << std::endl;
+      std::cout << it->first << std::endl;
       // std::cout << it._M_node->_M_color << std::endl;
   }
+  std::cout << "end" << std::endl;
+  std::cout << a.lower_bound(4)->first << std::endl;
+  std::cout << a.upper_bound(9)->first << std::endl;
+
+  auto c = a.equal_range(3);
+  std::cout << (c.first)->first << std::endl;
+  std::cout << (c.second)->first << std::endl;
 }

@@ -63,28 +63,27 @@ int main() {
   srand(time(NULL));
   std::ofstream ofs("Rb_tree.txt");
   // comment for debug
-  // std::vector<int> a = {};
-  // std::vector<int> b = {};
+  std::vector<int> a = {};
+  std::vector<int> b = {};
 
   // [RANDOM TEST]
-  std::vector<int> a;
-  std::vector<int> b;
-  int repeat = 100;
-  for (int i = 0; i < repeat; i++) a.push_back(rand() % repeat);
-  for (int i = 0; i < repeat; i++) b.push_back(rand() % repeat);
-  ft::RBtree<int, ft::pair<int, int> > T;
+  // std::vector<int> a;
+  // std::vector<int> b;
+  // int repeat = 100;
+  // for (int i = 0; i < repeat; i++) a.push_back(rand() % repeat);
+  // for (int i = 0; i < repeat; i++) b.push_back(rand() % repeat);
+  ft::_Rb_tree<int, ft::pair<int, int>, std::less<int> > T;
 
   for (auto i : a) {
     ofs << i << ", ";
-    T.RBinsert(ft::pair<int, int>(i, i));
+    T._Rb_insert(ft::pair<int, int>(i, i));
   }
   ofs << std::endl;
   if (!checkTree(T._M_root())) {
     return (0);
   }
   for (auto i : b) {
-    ofs << i << ", ";
-    T._Rb_delete(i);
+    T._Rb_erase(i);
   }
   ofs << std::endl;
   if (!checkTree(T._M_root())) {
@@ -94,34 +93,45 @@ int main() {
   printTree(T._M_root());  // noting would be printed
 
   // [EMPTY TEST]
-  T.RBinsert(ft::pair<int, int>(1, 2));
-  T.RBinsert(ft::pair<int, int>(2, 2));
-  T.RBinsert(ft::pair<int, int>(3, 2));
-  T.RBinsert(ft::pair<int, int>(4, 2));
-  T._Rb_delete(2);
-  T._Rb_delete(3);
-  T._Rb_delete(4);
-  T._Rb_delete(1);
+  T._Rb_insert(ft::pair<int, int>(1, 2));
+  T._Rb_insert(ft::pair<int, int>(2, 2));
+  T._Rb_insert(ft::pair<int, int>(3, 2));
+  T._Rb_insert(ft::pair<int, int>(4, 2));
+  T._Rb_erase(2);
+  T._Rb_erase(3);
+  T._Rb_erase(4);
+  T._Rb_erase(1);
   printTree(T._M_root());  // noting would be printed
 
   // in coverage test, Case_D2 doesn't be passed, but(TODO)
-  ft::RBtree<int, ft::pair<int, int> >::iterator it;
+  ft::_Rb_tree_iterator<ft::pair<int, int>> it;
   int i = 0;
-  for (i = 0; i < 10; ++i) {
-    T.RBinsert(ft::pair<int, int>(i, i));
+  int check_size = 10;
+  for (i = 0; i < check_size; ++i) {
+    T._Rb_insert(ft::pair<int, int>(i, i));
   }
   i = 0;
-  for (it = T._M_begin(); it != T._M_end(); ++it) {
+  for (it = T.begin(); it != T.end(); ++it) {
     if (it->first != i)
       std::cout << "[ERROR(++)] WANT: " << i << " GOT: " << it->first
                 << std::endl;
     i++;
   }
-  for (it = T._M_end(); it != T._M_begin();) {
+  if (check_size != i) {
+    std::cout << "ERROR(++): " << i << std::endl;
+    return (0);
+  }
+  for (it = T.end(); it != T.begin();) {
     --it;
     i--;
     if (it->first != i)
       std::cout << "[ERROR(--)] WANT: " << i << " GOT: " << it->first
                 << std::endl;
   }
+  if (i != 0) {
+    std::cout << "ERROR(--): " << i << std::endl;
+    return (0);
+  }
+  // ERROR
+  // it->first = 12;
 }
