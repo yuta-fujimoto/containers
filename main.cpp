@@ -64,7 +64,7 @@ int main() {
   std::cout << a.lower_bound(4)->first << std::endl;
   std::cout << a.upper_bound(9)->first << std::endl;
 
-  auto c = a.equal_range(3);
-  std::cout << (c.first)->first << std::endl;
-  std::cout << (c.second)->first << std::endl;
+  //  c = a.equal_range(3);
+  // std::cout << (c.first)->first << std::endl;
+  // std::cout << (c.second)->first << std::endl;
 }

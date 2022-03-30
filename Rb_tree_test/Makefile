@@ -19,6 +19,9 @@ $(BINDIR)/%.o: %.cpp
 $(BINDIR):
 	mkir -p $@
 
+leak: CXXFLAGS+= -fsanitize=address
+leak: re
+
 clean: FORCE
 	rm -f $(OBJS) $(DEPENDS)
 

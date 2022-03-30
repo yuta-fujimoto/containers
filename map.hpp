@@ -23,10 +23,6 @@ class map {
   // value_compare ??
   // node_type node_handle ??
   // insert_return_type
-  map() {}
-  ~map() { clear(); }
-  map(map const& rhs);
-  map& operator=(map const& rhs);
 
  private:
   typedef _Rb_tree<key_type, value_type, Compare> _Rep_type;
@@ -34,6 +30,36 @@ class map {
   _Rep_type Mt;
 
  public:
+  class value_compare
+      : public std::binary_function<value_type, value_type, bool> {
+    // FRIEND !!!
+    friend class map<Key, T, Compare, _Alloc>;
+
+   protected:
+    Compare comp;
+
+    value_compare(Compare __c) : comp(__c) {}
+
+   public:
+    bool operator()(const value_type& __x, const value_type& __y) const {
+      return comp(__x.first, __y.first);
+    }
+  };
+  explicit map(const Compare& comp = Compare(),
+               const allocator_type& alloc = allocator_type())
+      : Mt(comp, alloc) {}
+  template <class InputIterator>
+  map(InputIterator first, InputIterator last, const Compare& comp = Compare(),
+      const allocator_type& alloc = allocator_type())
+      : Mt(comp, alloc) {
+    for (InputIterator it = first; first != last; ++it) Mt._Rb_insert(*it);
+  }
+  ~map() { clear(); }
+  map(map const& rhs) : Mt(rhs.Mt) {}
+  map& operator=(map const& rhs) {
+    Mt = rhs.Mt;
+    return (*this);
+  }
   typedef typename _Rep_type::iterator iterator;
   typedef typename _Rep_type::const_iterator const_iterator;
   typedef typename _Rep_type::size_type size_type;
@@ -41,9 +67,8 @@ class map {
   typedef typename _Rep_type::reverse_iterator reverse_iterator;
   typedef typename _Rep_type::const_reverse_iterator const_reverse_iterator;
 
-  key_compare key_comp() const { return (Mt.key_comp()); }
-  T& operator[](const key_type& x) {}
-  T& operator[](key_type&& x);
+  // T& operator[](const key_type& x) {}
+  // T& operator[](key_type&& x);
   iterator begin() { return (Mt.begin()); }
   const_iterator begin() const { return (Mt.begin()); }
   reverse_iterator rbegin() { return (reverse_iterator(Mt.end())); }
@@ -66,7 +91,10 @@ class map {
     if (Mt._Rb_find(x) == NULL) return (0);
     return (1);
   }
+  void swap(map& _x) { Mt.swap(_x.Mt); }
   void clear() { Mt._Rb_clear(); }
+  key_compare key_comp() const { return (Mt.key_comp()); }
+  value_compare value_comp() const { return (value_compare(Mt.key_comp())); }
   size_type size(void) const { return (Mt.size()); }
   bool empty(void) const { return (Mt.size() == 0); }
   size_type erase(const key_type& x) {

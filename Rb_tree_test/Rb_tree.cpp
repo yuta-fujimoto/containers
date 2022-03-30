@@ -5,6 +5,9 @@
 #include <fstream>
 #include <vector>
 
+#define left child[0]
+#define right child[1]
+
 template <typename _Val>
 void printTree1(ft::_RB_tree_node<_Val> *N, int level) {
   if (!N) return;
@@ -20,8 +23,8 @@ int checkTree1(ft::_RB_tree_node<_Val> *N, int len) {
 
   if (!N) return (len + 1);
   if (N->color == ft::RED) {
-    if ((N->left == NIL || N->left->color == ft::BLACK) &&
-        (N->right == NIL || N->right->color == ft::BLACK)) {
+    if ((N->left == NULL || N->left->color == ft::BLACK) &&
+        (N->right == NULL || N->right->color == ft::BLACK)) {
       ldep = checkTree1(N->left, len);
       rdep = checkTree1(N->right, len);
       if (ldep != -1 && rdep == ldep) return (ldep);
@@ -42,7 +45,7 @@ int checkTree1(ft::_RB_tree_node<_Val> *N, int len) {
 
 template <typename _Val>
 void printTree(ft::_RB_tree_node<_Val> *T) {
-  if (T == NIL) return;
+  if (T == NULL) return;
   printTree1(T->left, 1);
   T->print(0);
   printTree1(T->right, 1);
@@ -63,15 +66,15 @@ int main() {
   srand(time(NULL));
   std::ofstream ofs("Rb_tree.txt");
   // comment for debug
-  std::vector<int> a = {};
-  std::vector<int> b = {};
+  // std::vector<int> a = {};
+  // std::vector<int> b = {};
 
   // [RANDOM TEST]
-  // std::vector<int> a;
-  // std::vector<int> b;
-  // int repeat = 100;
-  // for (int i = 0; i < repeat; i++) a.push_back(rand() % repeat);
-  // for (int i = 0; i < repeat; i++) b.push_back(rand() % repeat);
+  std::vector<int> a;
+  std::vector<int> b;
+  int repeat = 1000;
+  for (int i = 0; i < repeat; i++) a.push_back(rand() % repeat);
+  for (int i = 0; i < repeat; i++) b.push_back(rand() % repeat);
   ft::_Rb_tree<int, ft::pair<int, int>, std::less<int> > T;
 
   for (auto i : a) {
@@ -83,6 +86,7 @@ int main() {
     return (0);
   }
   for (auto i : b) {
+    ofs << i << ", ";
     T._Rb_erase(i);
   }
   ofs << std::endl;
@@ -132,6 +136,7 @@ int main() {
     std::cout << "ERROR(--): " << i << std::endl;
     return (0);
   }
+  T._Rb_clear();
   // ERROR
   // it->first = 12;
 }

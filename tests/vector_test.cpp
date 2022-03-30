@@ -1,4 +1,6 @@
 #include "test_common.hpp"
+#include "../vector.hpp"
+#include <vector>
 
 struct value {
   int x;
