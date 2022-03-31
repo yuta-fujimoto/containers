@@ -17,6 +17,14 @@ void printTree1(ft::_RB_tree_node<_Val> *N, int level) {
 }
 
 template <typename _Val>
+void printTree(ft::_RB_tree_node<_Val> *T) {
+  if (T == NULL) return;
+  printTree1(T->left, 1);
+  T->print(0);
+  printTree1(T->right, 1);
+}
+
+template <typename _Val>
 int checkTree1(ft::_RB_tree_node<_Val> *N, int len) {
   int ldep;
   int rdep;
@@ -41,14 +49,6 @@ int checkTree1(ft::_RB_tree_node<_Val> *N, int len) {
             << " RIGHT: " << rdep << std::endl;
   printTree1(N, 0);
   return (-1);
-}
-
-template <typename _Val>
-void printTree(ft::_RB_tree_node<_Val> *T) {
-  if (T == NULL) return;
-  printTree1(T->left, 1);
-  T->print(0);
-  printTree1(T->right, 1);
 }
 
 template <typename _Val>

@@ -13,6 +13,7 @@ struct pair {
   T2 second;
 
   // no default/copy constructor
+  pair() : first(), second() {}
   pair(const T1 &a, const T2 &b) : first(a), second(b) {}
   ~pair() {}
   pair &operator=(pair const &rhs) {
@@ -20,6 +21,12 @@ struct pair {
       first = rhs.first;
       second = rhs.second;
     }
+    return (*this);
+  }
+  template <class U, class V>
+  pair& operator=(const pair<U, V>& rhs) {
+      first = rhs.first;
+      second = rhs.second;
     return (*this);
   }
   // void swap(pair &p) {

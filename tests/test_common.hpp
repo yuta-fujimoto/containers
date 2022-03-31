@@ -8,6 +8,8 @@
 #include "../enable_if.hpp"
 #include "../pair.hpp"
 #include "../lexicographical_compare.hpp"
+#include "../vector.hpp"
+#include <vector>
 #include <cstddef>
 #include <iostream>
 #include <doctest.h>

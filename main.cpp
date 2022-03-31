@@ -10,28 +10,22 @@
 #include "pair.hpp"
 #include "vector.hpp"
 #include "map.hpp"
-// 範囲の合計値を計算する
-template <class Iterator>
-typename ft::iterator_traits<Iterator>::value_type sum(Iterator first,
-                                                       Iterator last) {
-  // イテレータの型から値型を取得する
-  typedef typename ft::iterator_traits<Iterator>::value_type value_type;
 
-  // 取得した値型の変数を定義し、合計値を計算する
-  value_type result = value_type();
-  for (; first != last; ++first) {
-    result += *first;
-  }
-  return result;
+
+template <typename _Val>
+void printTree1(ft::_RB_tree_node<_Val> *N, int level) {
+  if (!N) return;
+  printTree1(N->left, level + 1);
+  N->print(level);
+  printTree1(N->right, level + 1);
 }
 
-template <typename T>
-void iter(const T& array, std::size_t len) {
-  std::size_t i;
-
-  i = 0;
-  while (i < len) std::cout << array[i++] << std::endl;
-  ;
+template <typename _Val>
+void printTree(ft::_RB_tree_node<_Val> *T) {
+  if (T == NULL) return;
+  printTree1(T->left, 1);
+  T->print(0);
+  printTree1(T->right, 1);
 }
 
 struct value {
@@ -54,17 +48,18 @@ int main() {
   // auto it = a.find(4);
   // a.insert(it, b);
 
-  ft::map<int, int>::reverse_iterator it;
-  for (it = a.rbegin(); it != a.rend(); ++it)
-  {
+  ft::map<int, int>::iterator it;
+  for (it = a.begin(); it != a.end(); ++it) {
       std::cout << it->first << std::endl;
-      // std::cout << it._M_node->_M_color << std::endl;
   }
   std::cout << "end" << std::endl;
   std::cout << a.lower_bound(4)->first << std::endl;
   std::cout << a.upper_bound(9)->first << std::endl;
 
-  //  c = a.equal_range(3);
-  // std::cout << (c.first)->first << std::endl;
-  // std::cout << (c.second)->first << std::endl;
+  a.erase(a.find(5));
+  for (it = a.begin(); it != a.end(); ++it) {
+      std::cout << "[" << it->first << std::endl;
+  }
+  std::cout << "/* message */" << std::endl;
+  a.erase(a.find(7), a.end());
 }

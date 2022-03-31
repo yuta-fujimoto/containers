@@ -54,7 +54,7 @@ class map {
       : Mt(comp, alloc) {
     for (InputIterator it = first; first != last; ++it) Mt._Rb_insert(*it);
   }
-  ~map() { clear(); }
+  ~map() {};
   map(map const& rhs) : Mt(rhs.Mt) {}
   map& operator=(map const& rhs) {
     Mt = rhs.Mt;
@@ -88,13 +88,14 @@ class map {
   //   return (Mt._Rb_insert(x));
   // }
   size_type count(const key_type& x) const {
-    if (Mt._Rb_find(x) == NULL) return (0);
+    if (find(x) == end()) return (0);
     return (1);
   }
   void swap(map& _x) { Mt.swap(_x.Mt); }
   void clear() { Mt._Rb_clear(); }
   key_compare key_comp() const { return (Mt.key_comp()); }
   value_compare value_comp() const { return (value_compare(Mt.key_comp())); }
+  size_type max_size() const { return (Mt.max_size()); }
   size_type size(void) const { return (Mt.size()); }
   bool empty(void) const { return (Mt.size() == 0); }
   size_type erase(const key_type& x) {
@@ -103,11 +104,9 @@ class map {
     return (size() - old_size);
   }
   // auxiliary
-  void erase(iterator pos) { Mt._Rb_erase_aux(pos->_M_node); }
+  void erase(iterator pos) { Mt._Rb_erase_aux(pos._M_node); }
   void erase(iterator first, iterator last) {
-    for (iterator it = first; it != last; ++it) {
-      erase(it);
-    }
+    Mt._Rb_erase_aux(first, last);
   }
   iterator lower_bound(const key_type& x) { return (Mt.lower_bound(x)); }
   const_iterator lower_bound(const key_type& x) const {
