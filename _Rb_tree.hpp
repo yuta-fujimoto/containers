@@ -550,9 +550,10 @@ class _Rb_tree {
   _Const_Link_type _M_rightmost() const { return (_M_header.child[RIGHT]); }
   size_type size() const { return (_M_header._M_node_count); }
   size_type max_size() const {
-    const size_t alloc_max = _M_header._node_alloc.max_size();
-
-    return (alloc_max);
+    // thanks syamashi
+    size_t div = sizeof(_Link_type) * 4 + sizeof(value_type);
+    div = (div / 8) * 8;
+    return (std::numeric_limits<size_type>::max() / div);
   }
   _Link_type _M_begin() { return (_M_header.parent); }
   _Const_Link_type _M_begin() const { return (_M_header.parent); }

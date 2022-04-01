@@ -322,6 +322,7 @@ TEST_CASE("VECTOR") {
     std::vector<value> v2;
 
 //  (0) vs (0)
+// COMPARE
     ft_v1.push_back(value(0));
     ft_v2.push_back(value(0));
     v1.push_back(value(0));
