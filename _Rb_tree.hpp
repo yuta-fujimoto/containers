@@ -546,7 +546,6 @@ class _Rb_tree {
     // std::cout << "LINK: " << sizeof(_Link_type)
     //           << ", VALUE: " << sizeof(value_type)
     //           << ", KEY: " << sizeof(key_type) << std::endl;
-    div *= 2;
     return (std::numeric_limits<size_type>::max() / div);
   }
   _Link_type _M_begin() { return (_M_header.parent); }
