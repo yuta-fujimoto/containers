@@ -298,12 +298,12 @@ TEST_CASE("VECTOR") {
     std::vector<int> test(5, 3);
     std::vector<int> test1(3, 5);
 
-    ft_test.swap(ft_test1);
+    swap(ft_test1, ft_test);
     test.swap(test1);
     check_all_value(ft_test, test);
     check_all_value(ft_test1, test1);
 
-    ft_test.swap(ft_test);
+    swap(ft_test, ft_test);
     test.swap(test);
     check_all_value(ft_test, test);
   }

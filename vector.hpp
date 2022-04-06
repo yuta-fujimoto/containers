@@ -111,28 +111,6 @@ class vector {
   size_type size() const { return (last_ - first_); }
   bool empty() { return begin() == end(); }
   size_type capacity() const { return (reserved_last_ - first_); }
-  bool operator!=(vector const& right) const {
-    return (!(*this == right));
-    // return (ft::lexicographical_compare(begin(), end(), right.begin(), right.end(),
-    //                                 std::not_equal_to<value_type>()));
-  }
-  bool operator==(vector const& right) const {
-    return (size() == right.size() && std::equal(begin(), end(), right.begin()));
-  }
-  bool operator>(vector const& right) const {
-    return (right < *this);
-  }
-  // equal to lexicographical_compare
-  bool operator<(vector const& right) const {
-    return (ft::lexicographical_compare(begin(), end(), right.begin(), right.end()));
-  }
-  // not equal to lexicographical_compare
-  bool operator>=(vector const& right) const {
-    return (!(*this < right));
-  }
-  bool operator<=(vector const& right) const {
-    return (!(right < *this));
-  }
   const_reference operator[](size_type i) const { return (first_[i]); }
   reference operator[](size_type i) { return (first_[i]); }
   reference at(size_type n) {
@@ -292,31 +270,55 @@ class vector {
     return (first);
   }
   void swap(vector& x) {
-    iterator temp;
-    allocator_type allocTemp;
-
-    // alloc
-    allocTemp = x.alloc;
-    x.alloc = alloc;
-    alloc = allocTemp;
-
-    // first
-    temp = x.first_;
-    x.first_ = first_;
-    first_ = temp;
-
-    // last
-    temp = x.last_;
-    x.last_ = last_;
-    last_ = temp;
-
-    // reserved_last
-    temp = x.reserved_last_;
-    x.reserved_last_ = reserved_last_;
-    reserved_last_ = temp;
+    std::swap(alloc, x.alloc);
+    std::swap(first_, x.first_);
+    std::swap(last_, x.last_);
+    std::swap(reserved_last_, x.reserved_last_);
   }
   allocator_type get_allocator() const { return (alloc); }
 };
+
+template <typename T, typename U>
+bool operator!=(vector<T, U> const& left, vector<T, U> const& right) {
+  return (!(left == right));
+  // return (ft::lexicographical_compare(begin(), end(), right.begin(),
+  // right.end(),
+  //                                 std::not_equal_to<value_type>()));
+}
+
+template <typename _T, typename _Alloc>
+bool operator==(vector<_T, _Alloc> const& left, vector<_T, _Alloc> const& right) {
+  return (left.size() == right.size() &&
+          std::equal(left.begin(), left.end(), right.begin()));
+}
+
+template <typename _T, typename _Alloc>
+bool operator>(vector<_T, _Alloc> const& left, vector<_T, _Alloc> const& right) {
+  return (right < left);
+}
+
+template <typename _T, typename _Alloc>
+// equal to lexicographical_compare
+bool operator<(vector<_T, _Alloc> const& left, vector<_T, _Alloc> const& right) {
+  return (ft::lexicographical_compare(left.begin(), left.end(), right.begin(),
+                                      right.end()));
+}
+
+template <typename _T, typename _Alloc>
+// not equal to lexicographical_compare
+bool operator>=(vector<_T, _Alloc> const& left, vector<_T, _Alloc> const& right) {
+  return (!(left < right));
+}
+
+template <typename _T, typename _Alloc>
+bool operator<=(vector<_T, _Alloc> const& left, vector<_T, _Alloc> const& right) {
+  return (!(right < left));
+}
+
+template <typename _T, typename _Alloc>
+void swap(vector<_T, _Alloc>& x, vector<_T, _Alloc>& y) {
+  x.swap(y);
+}
 }  // namespace ft
 
 #endif

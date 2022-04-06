@@ -32,6 +32,7 @@ class map {
  public:
   class value_compare
       : public std::binary_function<value_type, value_type, bool> {
+    // get first/second value type with baluebinary funtion
     // FRIEND !!!
     friend class map<Key, T, Compare, _Alloc>;
 
@@ -42,7 +43,7 @@ class map {
 
    public:
     bool operator()(const value_type& __x, const value_type& __y) const {
-      return comp(__x.first, __y.first);
+      return (comp(__x.first, __y.first));
     }
   };
   explicit map(const Compare& comp = Compare(),
@@ -54,7 +55,7 @@ class map {
       : Mt(comp, alloc) {
     for (InputIterator it = first; first != last; ++it) Mt._Rb_insert(*it);
   }
-  ~map() {};
+  ~map(){};
   map(map const& rhs) : Mt(rhs.Mt) {}
   map& operator=(map const& rhs) {
     Mt = rhs.Mt;
@@ -82,11 +83,9 @@ class map {
   pair<iterator, bool> insert(const value_type& x) {
     return (Mt._Rb_insert(x));
   }
-  // [TODO]
-  // pair<iterator, bool> insert(iterator pos, const value_type& x)
-  // {
-  //   return (Mt._Rb_insert(x));
-  // }
+  iterator insert(iterator pos, const value_type& x) {
+    return (Mt._Rb_insert_hint(pos, x));
+  }
   size_type count(const key_type& x) const {
     if (find(x) == end()) return (0);
     return (1);
@@ -101,13 +100,11 @@ class map {
   size_type erase(const key_type& x) {
     size_type old_size = Mt.size();
     Mt._Rb_erase(x);
-    return (size() - old_size);
+    return (old_size - size());
   }
   // auxiliary
   void erase(iterator pos) { Mt._Rb_erase_aux(pos._M_node); }
-  void erase(iterator first, iterator last) {
-    Mt._Rb_erase_aux(first, last);
-  }
+  void erase(iterator first, iterator last) { Mt._Rb_erase_aux(first, last); }
   iterator lower_bound(const key_type& x) { return (Mt.lower_bound(x)); }
   const_iterator lower_bound(const key_type& x) const {
     return (Mt.lower_bound(x));
@@ -122,7 +119,50 @@ class map {
   pair<const_iterator, const_iterator> equal_range(const key_type& x) const {
     return (Mt.equal_range(x));
   }
+  template <typename _K1, typename _T1, typename _C1, typename _A1>
+  friend bool operator==(map<_K1, _T1, _C1, _A1> const&,
+                         map<_K1, _T1, _C1, _A1> const&);
+
+  template <typename _K1, typename _T1, typename _C1, typename _A1>
+  friend bool operator<(map<_K1, _T1, _C1, _A1> const&,
+                        map<_K1, _T1, _C1, _A1> const&);
 };
+
+template <typename T, typename U, typename C, typename A>
+bool operator==(map<T, U, C, A> const& left, map<T, U, C, A> const& right) {
+  return (left.Mt == right.Mt);
+}
+
+template <typename T, typename U, typename C, typename A>
+bool operator!=(map<T, U, C, A> const& left, map<T, U, C, A> const& right) {
+  return (!(left == right));
+}
+
+template <typename T, typename U, typename C, typename A>
+bool operator>(map<T, U, C, A> const& left, map<T, U, C, A> const& right) {
+  return (right < left);
+}
+
+template <typename T, typename U, typename C, typename A>
+bool operator<(map<T, U, C, A> const& left, map<T, U, C, A> const& right) {
+  return (left.Mt < right.Mt);
+}
+
+template <typename T, typename U, typename C, typename A>
+bool operator>=(map<T, U, C, A> const& left, map<T, U, C, A> const& right) {
+  return (!(left < right));
+}
+
+template <typename T, typename U, typename C, typename A>
+bool operator<=(map<T, U, C, A> const& left, map<T, U, C, A> const& right) {
+  return (!(right < left));
+}
+
+template <class Key, class T, class Compare, class Allocator>
+void swap(map<Key, T, Compare, Allocator>& x,
+          map<Key, T, Compare, Allocator>& y) {
+  x.swap(y);
+}
 }  // namespace ft
 
 #endif
