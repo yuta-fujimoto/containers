@@ -8,7 +8,15 @@ DEPENDS := $(addprefix $(BINDIR)/, $(SRCS:.cpp=.d))
 
 ## general rules ##
 
-all :$(NAME)
+all : config $(NAME)
+
+config:
+	@if [ -e bin ]; then\
+		mkdir -p bin;\
+	fi
+	@if [ -e .doctest ]; then\
+		git submodule update --init --recursive;\
+	fi
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
@@ -64,6 +72,7 @@ TESTOBJS	:= $(addprefix $(SRCDIR), $(TESTSRCS_CPP:%.cpp=%.o))
 	$(CXX) $(CXXFLAG) $(INCLUDE) -c $< -o $@
 
 test: CXX=clang++
+test: config
 test: $(TESTOBJS) $(OBJS)
 	$(CXX) $(CXXFLAG) $(TESTOBJS) -o tester && ./tester
 

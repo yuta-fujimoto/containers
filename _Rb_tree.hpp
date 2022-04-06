@@ -542,11 +542,10 @@ class _Rb_tree {
   _Const_Link_type _M_rightmost() const { return (_M_header.child[RIGHT]); }
   size_type size() const { return (_M_header._M_node_count); }
   size_type max_size() const {
-    // thanks syamashi
-    size_t div = sizeof(_Link_type) * 5 + (sizeof(value_type) / 16) * 8;
-    std::cout << "LINK: " << sizeof(_Link_type)
-              << ", VALUE: " << sizeof(value_type)
-              << ", KEY: " << sizeof(key_type) << std::endl;
+    size_t div = sizeof(_Link_type) * 4 + (sizeof(value_type) / 8) * 8;
+    // std::cout << "LINK: " << sizeof(_Link_type)
+    //           << ", VALUE: " << sizeof(value_type)
+    //           << ", KEY: " << sizeof(key_type) << std::endl;
     div *= 2;
     return (std::numeric_limits<size_type>::max() / div);
   }
