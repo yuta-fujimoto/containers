@@ -15,6 +15,7 @@ struct pair {
   // no default/copy constructor
   pair() : first(), second() {}
   pair(const T1 &a, const T2 &b) : first(a), second(b) {}
+  pair(const pair<T1, T2> &__p) : first(__p.first), second(__p.second) {}
   ~pair() {}
   pair &operator=(pair const &rhs) {
     if (this != &rhs) {

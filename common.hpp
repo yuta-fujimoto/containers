@@ -3,6 +3,5 @@
 
 #include <cstddef>
 #include <sstream>
-typedef std::size_t size_type;
 
 #endif

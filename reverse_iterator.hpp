@@ -19,6 +19,7 @@ class _reverse_iterator {
   typedef typename traits_type::difference_type difference_type;
   typedef typename traits_type::reference reference;
   typedef typename traits_type::pointer pointer;
+  typedef std::size_t size_type;
 
   _reverse_iterator(Iterator v = Iterator()) : v(v) {}
   ~_reverse_iterator() {}

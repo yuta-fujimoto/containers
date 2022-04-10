@@ -9,6 +9,7 @@
 #include <iostream>
 #include <limits>
 
+#include "enable_if.hpp"
 #include "iterator_traits.hpp"
 #include "lexicographical_compare.hpp"
 #include "pair.hpp"
@@ -31,8 +32,6 @@ class _RB_tree_node {
   _RB_tree_color color;
 
   _RB_tree_node() { this->color = RED; }
-  typename _Val::first_type getKey() const { return (val->first); }
-  typename _Val::second_type getValue() const { return (val->second); }
   void print(int level) {
     for (int i = 0; i < level; ++i) std::cout << '\t';
     if (color == RED)
@@ -116,7 +115,6 @@ struct _Rb_tree_iterator {
 
   typedef _Rb_tree_iterator<T> _Self;
   typedef typename _RB_tree_node<T>::_Link_type _Link_type;
-  // typedef typename _RB_tree_node<T> *_Base_ptr;
 
   _Link_type _M_node;
 
@@ -169,6 +167,9 @@ struct _Rb_tree_const_iterator {
 
   _Rb_tree_const_iterator(_Link_type N = NULL) : _M_node(N) {}
   _Rb_tree_const_iterator(const iterator &__it) : _M_node(__it._M_node) {}
+  iterator _M_const_cast() const {
+    return iterator(const_cast<typename iterator::_Link_type>(_M_node));
+  }
   reference operator*() const { return (*(_M_node->val)); }
   pointer operator->() const { return (_M_node->val); }
   _Self &operator++() {
@@ -221,22 +222,21 @@ struct _Rb_tree_header : public _RB_tree_node<_Val> {
     this->parent = _from.parent;
     this->child[LEFT] = _from.child[LEFT];
     this->child[RIGHT] = _from.child[RIGHT];
-    this->parent->parent = &_from;
+    // TODO
+    // this->parent->parent = &_from;
     _M_node_count = _from._M_node_count;
 
     _from._M_reset();
   }
   void _M_reset() {
-    this->parent = 0;
+    this->parent = NULL;
     this->child[LEFT] = this;
     this->child[RIGHT] = this;
     _M_node_count = 0;
   }
 };
 
-// template<typename _Key, typename _Val, typename _KeyOfValue,
-// 	typename _Compare, typename _Alloc = std::allocator<_Val> >
-template <typename _Key, typename _Val, typename _Compare,
+template <typename _Key, typename _Val, typename _KeyOfValue, typename _Compare,
           typename _Alloc = std::allocator<_Val> >
 class _Rb_tree {
  private:
@@ -362,10 +362,12 @@ class _Rb_tree {
     if (_M_header.parent == NULL) return (_Rb_insert2(N, &_M_header, LEFT));
     P = _M_header.parent;
     while (true) {
-      if (_M_header._M_key_compare(P->getKey(), N->getKey())) {
+      if (_M_header._M_key_compare(_KeyOfValue()(*P->val),
+                                   _KeyOfValue()(*N->val))) {
         if (P->child[RIGHT] == NULL) return (_Rb_insert2(N, P, RIGHT));
         P = P->child[RIGHT];
-      } else if (_M_header._M_key_compare(N->getKey(), P->getKey())) {
+      } else if (_M_header._M_key_compare(_KeyOfValue()(*N->val),
+                                          _KeyOfValue()(*P->val))) {
         if (P->child[LEFT] == NULL) return (_Rb_insert2(N, P, LEFT));
         P = P->child[LEFT];
       } else {
@@ -479,9 +481,9 @@ class _Rb_tree {
   }
   _Link_type _Rb_find1(_Link_type N, const _Key k) const {
     if (N == NULL) return (NULL);
-    if (_M_header._M_key_compare(k, N->getKey()))
+    if (_M_header._M_key_compare(k, _KeyOfValue()(*N->val)))
       return (_Rb_find1(N->child[LEFT], k));
-    if (_M_header._M_key_compare(N->getKey(), k))
+    if (_M_header._M_key_compare(_KeyOfValue()(*N->val), k))
       return (_Rb_find1(N->child[RIGHT], k));
     return (N);
   }
@@ -530,9 +532,11 @@ class _Rb_tree {
   ~_Rb_tree() { _M_erase(_M_begin()); }
   _Rb_tree(_Link_type const &rhs) { *this = rhs; }
   _Rb_tree &operator=(_Rb_tree const &rhs) {
-    if (this == &rhs) return (*this);
-    if (_M_header.parent != NULL) _Rb_clear1(_M_header.parent);
-    _M_header.parent = rhs._M_header.parent;  // should move
+    if (this != &rhs) {
+      _Rb_clear1(_M_header.parent);
+      _M_root() = _M_copy(rhs);
+    }
+    return (*this);
   }
   _Link_type &_M_root() { return (_M_header.parent); }
   _Const_Link_type _M_root() const { return (_M_header.parent); }
@@ -543,9 +547,7 @@ class _Rb_tree {
   size_type size() const { return (_M_header._M_node_count); }
   size_type max_size() const {
     size_t div = sizeof(_Link_type) * 4 + (sizeof(value_type) / 8) * 8;
-    // std::cout << "LINK: " << sizeof(_Link_type)
-    //           << ", VALUE: " << sizeof(value_type)
-    //           << ", KEY: " << sizeof(key_type) << std::endl;
+
     return (std::numeric_limits<size_type>::max() / div);
   }
   _Link_type _M_begin() { return (_M_header.parent); }
@@ -567,7 +569,7 @@ class _Rb_tree {
   template <typename _NodeGen>
   _Link_type _M_clone_node(_Const_Link_type __x, _NodeGen &__node_gen) {
     _Link_type __tmp = __node_gen(*__x->val);
-    __tmp->_M_color = __x->_M_color;
+    __tmp->color = __x->color;
     __tmp->child[LEFT] = 0;
     __tmp->child[RIGHT] = 0;
     return (__tmp);
@@ -576,11 +578,11 @@ class _Rb_tree {
   _Link_type _M_copy(_Const_Link_type _x, _Link_type _p, _NodeGen &_node_gen) {
     // Structural copy. _x and _p must be non-null.
     _Link_type _top = _M_clone_node(_x, _node_gen);
-    _top->_M_parent = _p;
+    _top->parent = _p;
 
     try {
-      if (_x->_M_right)
-        _top->_M_right = _M_copy(_x->child[RIGHT], _top, _node_gen);
+      if (_x->child[RIGHT])
+        _top->child[RIGHT] = _M_copy(_x->child[RIGHT], _top, _node_gen);
       _p = _top;
       _x = _x->child[LEFT];
 
@@ -588,8 +590,8 @@ class _Rb_tree {
         _Link_type _y = _M_clone_node(_x, _node_gen);
         _p->child[LEFT] = _y;
         _y->parent = _p;
-        if (_x->_M_right)
-          _y->_M_right = _M_copy(_x->child[RIGHT], _y, _node_gen);
+        if (_x->child[RIGHT])
+          _y->child[RIGHT] = _M_copy(_x->child[RIGHT], _y, _node_gen);
         _p = _y;
         _x = _x->child[LEFT];
       }
@@ -625,7 +627,7 @@ class _Rb_tree {
   iterator _M_lower_bound(_Link_type _x, _Link_type _y, const _Key &k) {
     while (_x != NULL) {
       // _x >= k
-      if (!_M_header._M_key_compare(_x->getKey(), k))
+      if (!_M_header._M_key_compare(_KeyOfValue()(*_x->val), k))
         _y = _x, _x = _x->child[LEFT];
       else
         _x = _x->child[RIGHT];
@@ -635,7 +637,7 @@ class _Rb_tree {
   const_iterator _M_lower_bound(_Link_type _x, _Link_type _y,
                                 const _Key &k) const {
     while (_x != NULL) {
-      if (!_M_header._M_key_compare(_x->getKey(), k))
+      if (!_M_header._M_key_compare(_KeyOfValue()(*_x->val), k))
         _y = _x, _x = _x->child[LEFT];
       else
         _x = _x->child[RIGHT];
@@ -646,7 +648,7 @@ class _Rb_tree {
   iterator _M_upper_bound(_Link_type _x, _Link_type _y, const _Key &k) {
     while (_x != NULL) {
       // k < _x
-      if (_M_header._M_key_compare(k, _x->getKey()))
+      if (_M_header._M_key_compare(k, _KeyOfValue()(*_x->val)))
         _y = _x, _x = _x->child[LEFT];
       else
         _x = _x->child[RIGHT];
@@ -656,26 +658,29 @@ class _Rb_tree {
   const_iterator _M_upper_bound(_Link_type _x, _Link_type _y,
                                 const _Key &k) const {
     while (_x != NULL) {
-      if (_M_header._M_key_compare(k, _x->getKey()))
+      if (_M_header._M_key_compare(k, _KeyOfValue()(*_x->val)))
         _y = _x, _x = _x->child[LEFT];
       else
         _x = _x->child[RIGHT];
     }
     return (iterator(_y));
   }
-
-  iterator _Rb_insert_hint(iterator &_pos, const value_type &v) {
+  // set's iterator == const_iterator,
+  iterator _Rb_insert_hint(const_iterator _p, const value_type &v) {
+    iterator _pos = _p._M_const_cast();
     _Link_type inserted;
 
     if (_pos == begin()) {
-      if (size() > 0 && _M_header._M_key_compare(v.first, _pos->first)) {
+      if (size() > 0 &&
+          _M_header._M_key_compare(_KeyOfValue()(v), _KeyOfValue()(*_pos))) {
         inserted = _Rb_insert2(_M_create_node(v), _M_header.child[LEFT], LEFT);
         _M_header.child[LEFT] = inserted;
       } else {
         return (_Rb_insert(v).first);
       }
     } else if (_pos == end()) {
-      if (_M_header._M_key_compare(_M_rightmost()->getKey(), v.first)) {
+      if (_M_header._M_key_compare(_KeyOfValue()(*_M_rightmost()->val),
+                                   _KeyOfValue()(v))) {
         inserted =
             _Rb_insert2(_M_create_node(v), _M_header.child[RIGHT], RIGHT);
         _M_header.child[RIGHT] = inserted;
@@ -686,8 +691,9 @@ class _Rb_tree {
       iterator before = _pos;
       // if after is upper, than before is mostright of after's left tree
       // else after is mostleft of before's right tree
-      if (_M_header._M_key_compare(v.first, _pos->first) &&
-          _M_header._M_key_compare((--before)->first, v.first)) {
+      if (_M_header._M_key_compare(_KeyOfValue()(v), _KeyOfValue()(*_pos)) &&
+          _M_header._M_key_compare(_KeyOfValue()(*(--before)),
+                                   _KeyOfValue()(v))) {
         if (before._M_node->child[RIGHT] == NULL)
           inserted = _Rb_insert2(_M_create_node(v), before._M_node, RIGHT);
         else
@@ -698,6 +704,10 @@ class _Rb_tree {
     }
     ++_M_header._M_node_count;
     return (iterator(inserted));
+  }
+  template <typename _InputIterator>
+  void _Rb_insert_range(_InputIterator _first, _InputIterator _last) {
+    for (; _first != _last; ++_first) _Rb_insert(*_first);
   }
   pair<iterator, bool> _Rb_insert(const value_type &v) {
     _Link_type N = _M_create_node(v);
@@ -730,34 +740,50 @@ class _Rb_tree {
     if (found == NULL) return (_M_end());
     return (found);
   }
-  // absolutely delete
+  // delete surely
   void _Rb_erase_aux(_Link_type N) {
     _Rb_erase1(N);
     _M_drop_node(N);
     --_M_header._M_node_count;
   }
+  // [TODO]: const ??
   void _Rb_erase_aux(const_iterator pos) {
     _Rb_erase_aux(const_cast<_Link_type>(pos._M_node));
   }
-  void _Rb_erase_aux(const_iterator _first, const_iterator _last) {
+  void _Rb_erase_range(const_iterator _first, const_iterator _last) {
     if (_first == begin() && _last == end())
       _Rb_clear();
     else {
-      while (_first != _last) _Rb_erase_aux(_first++);
+      const_iterator iter = _first;
+      while (iter != _last) {
+        ++iter;
+        _Rb_erase_aux(_first);
+        _first = iter;
+      }
+      // HACK...
+      if (_M_header.parent == NULL) {
+        _M_header.child[RIGHT] = &_M_header;
+        _M_header.child[LEFT] = &_M_header;
+        return;
+        _M_header.child[RIGHT] = _Tree_maximum(_M_header.parent);
+        _M_header.child[LEFT] = _Tree_minimum(_M_header.parent);
+      }
     }
   }
-  void _Rb_erase(_Key k) {
+  size_type _Rb_erase(_Key k) {
     _Link_type N = _Rb_find(k);
 
-    if (N == _M_end()) return;
+    if (N == _M_end()) return (0);
+    size_type old_size = size();
     _Rb_erase_aux(N);
     if (_M_header.parent == NULL) {
       _M_header.child[RIGHT] = &_M_header;
       _M_header.child[LEFT] = &_M_header;
-      return;
+    } else {
+      _M_header.child[RIGHT] = _Tree_maximum(_M_header.parent);
+      _M_header.child[LEFT] = _Tree_minimum(_M_header.parent);
     }
-    _M_header.child[RIGHT] = _Tree_maximum(_M_header.parent);
-    _M_header.child[LEFT] = _Tree_minimum(_M_header.parent);
+    return (old_size - size());
   }
   _Compare key_comp() const { return (_M_header._M_key_compare); }
   const_iterator begin() const { return (_M_header.child[LEFT]); }
@@ -792,9 +818,9 @@ class _Rb_tree {
     _Link_type _y = _M_end();
 
     while (_x != NULL) {
-      if (_M_header._M_key_compare(_x->getKey(), _k))
+      if (_M_header._M_key_compare(_KeyOfValue()(*_x->val), _k))
         _x = _x->child[RIGHT];
-      else if (_M_header._M_key_compare(_k, _x->getKey()))
+      else if (_M_header._M_key_compare(_k, _KeyOfValue()(*_x->val)))
         _y = _x, _x = _x->child[LEFT];
       else {
         _Link_type _xu(_x);
@@ -815,9 +841,9 @@ class _Rb_tree {
     _Const_Link_type _y = _M_end();
 
     while (_x != NULL) {
-      if (_M_header._M_key_compare(_x->getKey(), _k))
+      if (_M_header._M_key_compare(_KeyOfValue()(*_x->val), _k))
         _x = _x->child[RIGHT];
-      else if (_M_header._M_key_compare(_k, _x->getKey()))
+      else if (_M_header._M_key_compare(_k, _KeyOfValue()(*_x->val)))
         _y = _x, _x = _x->child[LEFT];
       else {
         _Const_Link_type _xu(_x);

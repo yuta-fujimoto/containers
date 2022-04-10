@@ -5,11 +5,14 @@
 
 #include "_Rb_tree.hpp"
 #include "common.hpp"
+#include "enable_if.hpp"
+#include "function.hpp"
 #include "normal_iterator.hpp"
 #include "pair.hpp"
 #include "reverse_iterator.hpp"
 
 namespace ft {
+
 template <class Key, class T, class Compare = std::less<Key>,
           typename _Alloc = std::allocator<ft::pair<const Key, T> > >
 class map {
@@ -25,7 +28,8 @@ class map {
   // insert_return_type
 
  private:
-  typedef _Rb_tree<key_type, value_type, Compare> _Rep_type;
+  typedef _Rb_tree<key_type, value_type, _Select1st<value_type>, Compare>
+      _Rep_type;
 
   _Rep_type Mt;
 
@@ -53,14 +57,18 @@ class map {
   map(InputIterator first, InputIterator last, const Compare& comp = Compare(),
       const allocator_type& alloc = allocator_type())
       : Mt(comp, alloc) {
-    for (InputIterator it = first; first != last; ++it) Mt._Rb_insert(*it);
+    Mt._Rb_insert_range(first, last);
   }
   ~map(){};
   map(map const& rhs) : Mt(rhs.Mt) {}
   map& operator=(map const& rhs) {
-    Mt = rhs.Mt;
+    if (this != &rhs) Mt = rhs.Mt;
     return (*this);
   }
+  typedef typename _Alloc::pointer pointer;
+  typedef typename _Alloc::const_pointer const_pointer;
+  typedef typename _Alloc::reference reference;
+  typedef typename _Alloc::const_reference const_reference;
   typedef typename _Rep_type::iterator iterator;
   typedef typename _Rep_type::const_iterator const_iterator;
   typedef typename _Rep_type::size_type size_type;
@@ -68,8 +76,26 @@ class map {
   typedef typename _Rep_type::reverse_iterator reverse_iterator;
   typedef typename _Rep_type::const_reverse_iterator const_reverse_iterator;
 
-  // T& operator[](const key_type& x) {}
-  // T& operator[](key_type&& x);
+  mapped_type& operator[](const key_type& _k) {
+    // i->first >= _k
+    iterator _i = lower_bound(_k);
+
+    if (_i == end() || key_comp()(_k, _i->first)) {
+      _i = insert(_i, value_type(_k, mapped_type()));
+    }
+    return (_i->second);
+  }
+  mapped_type& operator[](key_type& _k) {
+    // i->first >= _k
+    std::cout << _k << std::endl;
+    iterator _i = lower_bound(_k);
+
+    std::cout << "LOWER BOUND DONE" << std::endl;
+    if (_i == end() || key_comp()(_k, _i->first)) {
+      _i = insert(_i, value_type(_k, mapped_type()));
+    }
+    return (_i->second);
+  }
   iterator begin() { return (Mt.begin()); }
   const_iterator begin() const { return (Mt.begin()); }
   reverse_iterator rbegin() { return (reverse_iterator(Mt.end())); }
@@ -86,6 +112,10 @@ class map {
   iterator insert(iterator pos, const value_type& x) {
     return (Mt._Rb_insert_hint(pos, x));
   }
+  template <class InputIterator>
+  void insert(InputIterator first, InputIterator last) {
+    Mt._Rb_insert_range(first, last);
+  }
   size_type count(const key_type& x) const {
     if (find(x) == end()) return (0);
     return (1);
@@ -98,13 +128,11 @@ class map {
   size_type size(void) const { return (Mt.size()); }
   bool empty(void) const { return (Mt.size() == 0); }
   size_type erase(const key_type& x) {
-    size_type old_size = Mt.size();
-    Mt._Rb_erase(x);
-    return (old_size - size());
+    return (Mt._Rb_erase(x));
   }
   // auxiliary
   void erase(iterator pos) { Mt._Rb_erase_aux(pos._M_node); }
-  void erase(iterator first, iterator last) { Mt._Rb_erase_aux(first, last); }
+  void erase(iterator first, iterator last) { Mt._Rb_erase_range(first, last); }
   iterator lower_bound(const key_type& x) { return (Mt.lower_bound(x)); }
   const_iterator lower_bound(const key_type& x) const {
     return (Mt.lower_bound(x));
@@ -119,6 +147,8 @@ class map {
   pair<const_iterator, const_iterator> equal_range(const key_type& x) const {
     return (Mt.equal_range(x));
   }
+  allocator_type get_allocator() const { return (Mt.get_allocator()); }
+
   template <typename _K1, typename _T1, typename _C1, typename _A1>
   friend bool operator==(map<_K1, _T1, _C1, _A1> const&,
                          map<_K1, _T1, _C1, _A1> const&);

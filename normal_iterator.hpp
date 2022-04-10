@@ -21,6 +21,7 @@ class _normal_iterator {
   typedef typename traits_type::difference_type difference_type;
   typedef typename traits_type::reference reference;
   typedef typename traits_type::pointer pointer;
+  typedef std::size_t size_type;
 
  public:
   _normal_iterator(Iterator v = Iterator()) : v(v) {}

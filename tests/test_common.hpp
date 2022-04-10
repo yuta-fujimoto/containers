@@ -14,4 +14,7 @@
 #include <iostream>
 #include <doctest.h>
 
+void TITLE(const char *title);
+void SUBTITLE(const char *title);
+
 #endif

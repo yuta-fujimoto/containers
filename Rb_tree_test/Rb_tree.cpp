@@ -1,4 +1,5 @@
 #include "../_Rb_tree.hpp"
+#include "../function.hpp"
 // #include "rb_tree_test.hpp"
 #include <cstdlib>
 #include <ctime>
@@ -75,7 +76,7 @@ int main() {
   int repeat = 1000;
   for (int i = 0; i < repeat; i++) a.push_back(rand() % repeat);
   for (int i = 0; i < repeat; i++) b.push_back(rand() % repeat);
-  ft::_Rb_tree<int, ft::pair<int, int>, std::less<int> > T;
+  ft::_Rb_tree<int, ft::pair<int, int>, ft::_Select1st<ft::pair<int, int> >, std::less<int> > T;
 
   for (auto i : a) {
     ofs << i << ", ";

@@ -26,6 +26,8 @@ class vector {
   typedef _reverse_iterator<const_pointer> const_reverse_iterator;
   typedef _reverse_iterator<pointer> reverse_iterator;
   typedef Allocator allocator_type;
+  typedef size_t					size_type;
+  typedef ptrdiff_t					difference_type;
 
  private:
   allocator_type alloc;
@@ -109,7 +111,7 @@ class vector {
   const_iterator end() const { return (const_iterator(&*last_)); }
   reverse_iterator rend() { return (reverse_iterator(&*first_)); }
   size_type size() const { return (last_ - first_); }
-  bool empty() { return begin() == end(); }
+  bool empty() const { return begin() == end(); }
   size_type capacity() const { return (reserved_last_ - first_); }
   const_reference operator[](size_type i) const { return (first_[i]); }
   reference operator[](size_type i) { return (first_[i]); }
