@@ -1,16 +1,16 @@
 #include "timer.hpp"
-#include <vector>
+#include "../vector.hpp"
 
 #define REPEAT 500
 
 int main()
 {
 	int a;
-	std::vector<int> v;
-	std::vector<int>::iterator it;
-	std::vector<int>::reverse_iterator rit;
-	std::vector<int>::size_type s;
-	std::vector<int>::reference r = a;
+	ft::vector<int> v;
+	ft::vector<int>::iterator it;
+	ft::vector<int>::reverse_iterator rit;
+	ft::vector<int>::size_type s;
+	ft::vector<int>::reference r = a;
 	bool b;
 	timer t;
 
@@ -31,10 +31,7 @@ int main()
 		rit = v.rend();
 	}
 	t.record("REND");
-	for (int i = 0; i < REPEAT; ++i) {
-		rit = v.rend();
-	}
-	t.record("REND");
+
 	for (int i = 0; i < REPEAT; ++i) {
 		s = v.size();
 	}
@@ -79,14 +76,14 @@ int main()
 	for (int i = 0; i < REPEAT; ++i) {
 		r = v.front();
 	}
-	t.record("front");
+	t.record("FRONT");
 
 	for (int i = 0; i < REPEAT; ++i) {
 		r = v.back();
 	}
-	t.record("back");
+	t.record("BACK");
 
-	std::vector<int> temp;
+	ft::vector<int> temp;
 	temp.push_back(1);
 	temp.push_back(2);
 
@@ -112,25 +109,25 @@ int main()
 	t.record("POP_BACK");
 
 	for (int i = 0; i< REPEAT; ++i) {
-		v.insert(v.begin(), i);
+		v.insert(v.end(), i);
 	}
 	t.record("INSERT-1");
 
 	for (int i = 0; i< REPEAT; ++i) {
-		v.insert(v.begin(), 5, i);
+		v.insert(v.end(), 5, i);
 	}
 	t.record("INSERT-2");
 	for (int i = 0; i< REPEAT; ++i) {
-		v.insert(v.begin(), temp.begin(), temp.end());
+		v.insert(v.end(), temp.begin(), temp.end());
 	}
 	t.record("INSERT-3");
 
 	for (int i = 0; i< REPEAT; ++i) {
-		v.erase(v.begin());
+		v.erase(v.end() - 1);
 	}
 	t.record("ERASE-1");
 	for (int i = 0; i< REPEAT; ++i) {
-		v.erase(v.begin(), v.begin() + 1);
+		v.erase(v.end() - 1, v.end());
 	}
 	t.record("ERASE-2");
 

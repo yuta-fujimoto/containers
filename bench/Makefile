@@ -16,13 +16,13 @@ DEPENDS := $(addprefix $(BINDIR)/, $(SRCS:.cpp=.d))
 all :$(FT_NAME) $(STD_NAME)
 
 $(FT_NAME): $(FT_OBJS)
-	$(CXX) $(CXXFLAGS) -o $(FT_NAME) $(FT_OBJS)
+	@$(CXX) $(CXXFLAGS) -o $(FT_NAME) $(FT_OBJS)
 
 $(STD_NAME): $(STD_OBJS)
-	$(CXX) $(CXXFLAGS) -o $(STD_NAME) $(STD_OBJS)
+	@$(CXX) $(CXXFLAGS) -o $(STD_NAME) $(STD_OBJS)
 	
 $(BINDIR)/%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -o $@ -c $<
+	@$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 $(BINDIR):
 	mkir -p $@
@@ -31,10 +31,10 @@ leak: CXXFLAGS+= -fsanitize=address
 leak: re
 
 clean: FORCE
-	rm -f $(OBJS) $(DEPENDS)
+	@rm -f $(FT_OBJS) $(STD_OBJS) $(DEPENDS)
 
 fclean: clean
-	rm -f $(NAME)
+	@rm -f $(FT_NAME) $(STD_NAME)
 
 re: fclean all
 

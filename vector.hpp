@@ -52,6 +52,7 @@ class vector {
     }
     last_ = last_ - (rend - rbegin);
   }
+  void _M_erase_at_end(iterator pos) { last_ = pos; }
 
  public:
   vector(const allocator_type& a = Allocator())
@@ -137,7 +138,10 @@ class vector {
   const_reference front() const { return (*begin()); }
   reference back() { return (*(end() - 1)); }
   const_reference back() const { return (*(end() - 1)); }
-  void clear() { destroy_until(rbegin(), rend()); }
+  void clear() {
+    _M_erase_at_end(first_);
+    // destroy_until(rbegin(), rend());
+  }
   // may need to reallocate memory, so change all member var
   void reserve(size_type sz) {
     if (max_size() < sz) throw std::length_error("vector::reserve");
@@ -189,16 +193,34 @@ class vector {
     last_--;
   }
   // reassign containers
-  // is it okay to template??
   template <class InputIterator>
   void assign(
-      InputIterator first, InputIterator last,
+      InputIterator __first, InputIterator __last,
       typename enable_if<!is_integral<InputIterator>::value>::type* = 0) {
-    // it may be awfully slow....
-    // if (capacity() < l - f)
-    *this = vector(first, last);
+    iterator __cur(first_);
+
+    for (; __first != __last && __cur != last_; ++__cur, ++__first)
+      *__cur = *__first;
+    if (__first == __last)
+      _M_erase_at_end(__cur);
+    else
+      insert(end(), __first, __last);
   }
-  void assign(size_type n, const value_type& u) { *this = vector(n, u); }
+  void assign(size_type __n, const value_type& __val) {
+    if (__n > capacity()) {
+      vector __tmp(__n, __val, get_allocator());
+      swap(__tmp);
+    } else if (__n > size()) {
+      std::fill(begin(), begin() + __n, __val);
+      last_ = begin() + __n;
+      // ???
+      // const size_type  __add = __n - size();
+      // std::uninitialized_fill_n();
+    } else {
+      _M_erase_at_end(std::fill_n(first_, __n, __val));
+    }
+    // *this = vector(n, u);
+  }
   // return max_size vector can store
   size_type max_size() const {
     const size_t alloc_max = alloc.max_size();
@@ -243,11 +265,6 @@ class vector {
     }
     if (position != last_) {
       std::copy_backward(position, position + size(), position + n + size());
-      // for (size_type i = size(); i > diff;) {
-      //   --i;
-      //   // only copy
-      //   *(position + n + i) = *(position + i);
-      // }
     }
     // std::fill(position, position + difference_type(n), x);
     for (size_type i = 0; i != n; ++i, ++last_) {
@@ -256,16 +273,15 @@ class vector {
     }
   }
   iterator erase(iterator position) { return (erase(position, position + 1)); }
-  iterator erase(iterator first, iterator last) {
-    const size_type diff = last - first;
+  iterator erase(iterator __first, iterator __last) {
     iterator old_last = last_;
 
-    destroy_until(&*(last - 1), &*(first - 1));
-    for (iterator it = first; it != (old_last - diff); ++it) {
-      // only copy
-      *it = *(it + diff);
+    if (__first != __last) {
+      if (__last != end()) std::copy(__last, end(), __first);
+      last_ = __first.base() + (end() - __last);
+      // destroy_until(end().base(), );
     }
-    return (first);
+    return (__first);
   }
   void swap(vector& x) {
     std::swap(alloc, x.alloc);

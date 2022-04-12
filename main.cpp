@@ -61,8 +61,11 @@ void std_vector_insert()
 // }
 
 int main() {
-  ft_vector_insert();
-  std_vector_insert();
-  // hello_sleep();
+  ft::vector<int> a;
+
+  a.push_back(42);
+  a.push_back(42);
+
+  a.erase(a.end(), a.end() - 1);
   return (0);
 }
