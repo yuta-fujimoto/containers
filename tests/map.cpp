@@ -87,7 +87,7 @@ TEST_CASE("MAP") {
   test.insert(range.begin(), range.end());
   ft_test.insert(ft_range.begin(), ft_range.end());
 
-  // compile error 
+  // compile error
   // ft_test.insert(100, 200);
   // test.insert(100, 200);
 
@@ -154,6 +154,24 @@ TEST_CASE("MAP") {
   CHECK_EQ(ft_value, value);
 
   map_check_all_value(ft_test, test);
+
+  SUBTITLE("AT");
+
+  ft::map<Key, Value>::mapped_type ft_at = ft_test.at(0.1);
+  std::map<Key, Value>::mapped_type at = test.at(0.1);
+
+  CHECK_EQ(ft_at, at);
+
+  try {
+    ft_test.at(0.111);
+  } catch (const std::exception& e) {
+    std::cerr << e.what() << '\n';
+  }
+  try {
+    test.at(0.111);
+  } catch (const std::exception& e) {
+    std::cerr << e.what() << '\n';
+  }
 
   SUBTITLE("FIND");
   ft_it = ft_test.find(1.0);

@@ -26,8 +26,8 @@ class vector {
   typedef _reverse_iterator<const_pointer> const_reverse_iterator;
   typedef _reverse_iterator<pointer> reverse_iterator;
   typedef Allocator allocator_type;
-  typedef size_t					size_type;
-  typedef ptrdiff_t					difference_type;
+  typedef size_t size_type;
+  typedef ptrdiff_t difference_type;
 
  private:
   allocator_type alloc;
@@ -37,18 +37,20 @@ class vector {
   // end iterator of allocated memory
   iterator reserved_last_;
 
-  pointer allocate(size_type n) { return (alloc.allocate(n)); }
+  pointer allocate(const size_type& n) { return (alloc.allocate(n)); }
   void deallocate() { alloc.deallocate(&*first_, capacity()); }
-  void construct(iterator iter) { alloc.construct(&*iter); }
-  void construct(iterator iter, const_reference value) {
+  void construct(const iterator& iter) { alloc.construct(&*iter); }
+  void construct(const iterator& iter, const_reference& value) {
     alloc.construct(&*iter, value);
   }
   void destroy(pointer ptr) { alloc.destroy(ptr); }
   // destroy_until backs last
-  void destroy_until(reverse_iterator rbegin, reverse_iterator rend) {
-    for (; rbegin != rend; ++rbegin, --last_) {
+  void destroy_until(const reverse_iterator& rbegin,
+                     const reverse_iterator& rend) {
+    for (reverse_iterator ri = rbegin; ri != rend; ++ri) {
       destroy(&*rbegin);
     }
+    last_ = last_ - (rend - rbegin);
   }
 
  public:
@@ -138,6 +140,7 @@ class vector {
   void clear() { destroy_until(rbegin(), rend()); }
   // may need to reallocate memory, so change all member var
   void reserve(size_type sz) {
+    if (max_size() < sz) throw std::length_error("vector::reserve");
     if (sz <= capacity()) return;
     iterator ptr = allocate(sz);
 
@@ -161,15 +164,10 @@ class vector {
     alloc.deallocate(&*old_first, old_capacity);
   }
   void resize(size_type sz, value_type c = value_type()) {
-    if (sz < size()) {
-      size_type diff = size() - sz;
-      destroy_until(rbegin(), rbegin() + diff);
-    } else if (sz > size()) {
-      reserve(sz);
-      for (; last_ != reserved_last_; ++last_) {
-        construct(last_, c);
-      }
-    }
+    if (sz > size())
+      insert(end(), sz - size(), c);
+    else if (sz < size())
+      erase(begin() + sz, end());
   }
   void push_back(const_reference value) {
     if (size() + 1 > capacity()) {
@@ -225,14 +223,10 @@ class vector {
       position = first_ + diff;
     }
     if (position != last_) {
-      for (size_type i = size(); i > 0;) {
-        --i;
-        *(position + n + i) = *(position + i);
-      }
+      std::copy_backward(position, position + size(), position + n + size());
     }
-    for (size_type i = 0; i != n; ++i, ++last_) {
-      construct(position + i, x);
-    }
+    std::fill(position, position + difference_type(n), x);
+    last_ = last_ + n;
   }
   template <typename InputIterator>
   void insert(
@@ -248,12 +242,14 @@ class vector {
       position = first_ + diff;
     }
     if (position != last_) {
-      for (size_type i = size(); i > diff;) {
-        --i;
-        // only copy
-        *(position + n + i) = *(position + i);
-      }
+      std::copy_backward(position, position + size(), position + n + size());
+      // for (size_type i = size(); i > diff;) {
+      //   --i;
+      //   // only copy
+      //   *(position + n + i) = *(position + i);
+      // }
     }
+    // std::fill(position, position + difference_type(n), x);
     for (size_type i = 0; i != n; ++i, ++last_) {
       // need to construct
       construct(position + i, *(first + i));
@@ -289,31 +285,36 @@ bool operator!=(vector<T, U> const& left, vector<T, U> const& right) {
 }
 
 template <typename _T, typename _Alloc>
-bool operator==(vector<_T, _Alloc> const& left, vector<_T, _Alloc> const& right) {
+bool operator==(vector<_T, _Alloc> const& left,
+                vector<_T, _Alloc> const& right) {
   return (left.size() == right.size() &&
           std::equal(left.begin(), left.end(), right.begin()));
 }
 
 template <typename _T, typename _Alloc>
-bool operator>(vector<_T, _Alloc> const& left, vector<_T, _Alloc> const& right) {
+bool operator>(vector<_T, _Alloc> const& left,
+               vector<_T, _Alloc> const& right) {
   return (right < left);
 }
 
 template <typename _T, typename _Alloc>
 // equal to lexicographical_compare
-bool operator<(vector<_T, _Alloc> const& left, vector<_T, _Alloc> const& right) {
+bool operator<(vector<_T, _Alloc> const& left,
+               vector<_T, _Alloc> const& right) {
   return (ft::lexicographical_compare(left.begin(), left.end(), right.begin(),
                                       right.end()));
 }
 
 template <typename _T, typename _Alloc>
 // not equal to lexicographical_compare
-bool operator>=(vector<_T, _Alloc> const& left, vector<_T, _Alloc> const& right) {
+bool operator>=(vector<_T, _Alloc> const& left,
+                vector<_T, _Alloc> const& right) {
   return (!(left < right));
 }
 
 template <typename _T, typename _Alloc>
-bool operator<=(vector<_T, _Alloc> const& left, vector<_T, _Alloc> const& right) {
+bool operator<=(vector<_T, _Alloc> const& left,
+                vector<_T, _Alloc> const& right) {
   return (!(right < left));
 }
 

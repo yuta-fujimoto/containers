@@ -60,7 +60,7 @@ cover:
 #  Google test #
 # -fsanitize=integer
 
-CXXFLAG		:= -std=c++98 -DDEBUG -g -fsanitize=address
+CXXFLAG		:= -std=c++98 -DDEBUG -g -fsanitize=address -MMD -MP 
 INCLUDE		:= -I./.doctest/doctest/
 
 TESTDIR		:= ./tests/

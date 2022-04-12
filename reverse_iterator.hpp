@@ -87,13 +87,13 @@ class _reverse_iterator {
   bool operator<=(_reverse_iterator const& right) const {
     return (v <= right.v);
   }
-  _reverse_iterator operator+(size_type ri) {
+  _reverse_iterator operator+(size_type ri) const {
     return (_reverse_iterator(v - ri));
   }
-  _reverse_iterator operator-(size_type ri) {
+  _reverse_iterator operator-(size_type ri) const {
     return (_reverse_iterator(v + ri));
   }
-  size_type operator-(_reverse_iterator const& right) { return (right.v - v); }
+  size_type operator-(_reverse_iterator const& right) const { return (right.v - v); }
   Iterator base(void) const { return (v); };
 
  private:
@@ -103,7 +103,7 @@ class _reverse_iterator {
   }
   template <typename _Tp>
   static pointer _S_to_pointer(_Tp __t) {
-    return __t.operator->();
+    return (__t.operator->());
   }
 };
 }  // namespace ft

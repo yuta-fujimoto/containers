@@ -87,13 +87,27 @@ class map {
   }
   mapped_type& operator[](key_type& _k) {
     // i->first >= _k
-    std::cout << _k << std::endl;
     iterator _i = lower_bound(_k);
 
-    std::cout << "LOWER BOUND DONE" << std::endl;
     if (_i == end() || key_comp()(_k, _i->first)) {
       _i = insert(_i, value_type(_k, mapped_type()));
     }
+    return (_i->second);
+  }
+  mapped_type& at(const key_type& __k) {
+    // _i >= __k
+    iterator _i = lower_bound(__k);
+    if (_i == end() || key_comp()(__k, _i->first)) {
+      throw std::out_of_range("map::at");
+    }
+    return (_i->second);
+  }
+  const mapped_type& at(const key_type& __k) const {
+    // _i >= __k
+    const_iterator _i = lower_bound(__k);
+    if (_i == end() || key_comp()(__k, _i->first)) {
+      throw std::out_of_range("map::at");
+    };
     return (_i->second);
   }
   iterator begin() { return (Mt.begin()); }
@@ -127,9 +141,7 @@ class map {
   size_type max_size() const { return (Mt.max_size()); }
   size_type size(void) const { return (Mt.size()); }
   bool empty(void) const { return (Mt.size() == 0); }
-  size_type erase(const key_type& x) {
-    return (Mt._Rb_erase(x));
-  }
+  size_type erase(const key_type& x) { return (Mt._Rb_erase(x)); }
   // auxiliary
   void erase(iterator pos) { Mt._Rb_erase_aux(pos._M_node); }
   void erase(iterator first, iterator last) { Mt._Rb_erase_range(first, last); }
