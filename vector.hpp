@@ -121,19 +121,11 @@ class vector {
   const_reference operator[](size_type i) const { return (first_[i]); }
   reference operator[](size_type i) { return (first_[i]); }
   reference at(size_type n) {
-    std::ostringstream os;
-
-    os << "ft_vector::range_check: n (which is " << n
-       << ") >= this->size() (which is " << size() << ")";
-    if (n >= size()) throw std::out_of_range(os.str());
+    if (n >= size()) throw std::out_of_range("vector");
     return (first_[n]);
   }
   const_reference at(size_type n) const {
-    std::ostringstream os;
-
-    os << "ft_vector::range_check: n (which is " << n
-       << ") >= this->size() (which is " << size() << ")";
-    if (n >= size()) throw std::out_of_range(os.str());
+    if (n >= size()) throw std::out_of_range("vector");
     return (first_[n]);
   }
   reference front() { return (*begin()); }
@@ -224,7 +216,7 @@ class vector {
   size_type max_size() const {
     const size_t alloc_max = alloc.max_size();
     const size_t diffmax =
-        std::numeric_limits<ptrdiff_t>::max() / sizeof(value_type);
+        std::numeric_limits<ptrdiff_t>::max() * 2 / sizeof(value_type);
     return (std::min(alloc_max, diffmax));
   }
   iterator insert(iterator position, const value_type& x) {
