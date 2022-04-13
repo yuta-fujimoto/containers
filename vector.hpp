@@ -88,17 +88,19 @@ class vector {
 
       first_ = ptr;
       reserved_last_ = first_ + len;
-      last_ = first_;
+      last_ = reserved_last_;
 
-      for (size_type i = 0; i < len; ++i, ++last_) {
-        construct(&ptr[i], x[i]);
-      }
+      // for (size_type i = 0; i < len; ++i, ++last_) {
+      //   construct(&ptr[i], x[i]);
+      // }
+
+      std::copy(x.begin(), x.end(), first_);
       for (reverse_iterator riter = reverse_iterator(&*old_last),
                             rend = reverse_iterator(&*old_first);
            riter != rend; ++riter) {
         destroy(&*riter);
       }
-      alloc.deallocate(&*old_first, old_capacity);
+      alloc.deallocate(old_first.base(), old_capacity);
     } else {
       destroy_until(&*(last_ - 1), &*(first_ - 1));
       for (size_type i = 0; i < len; ++i, ++last_)
@@ -153,13 +155,10 @@ class vector {
     size_type old_capacity = capacity();
 
     first_ = ptr;
-    last_ = first_;
     reserved_last_ = first_ + sz;
+    last_ = first_ + (old_last - old_first);
 
-    for (iterator old_iter = old_first; old_iter != old_last;
-         ++old_iter, ++last_) {
-      construct(last_, *old_iter);
-    }
+    std::copy(old_first, old_last, first_);
     for (reverse_iterator riter = reverse_iterator(&*old_last),
                           rend = reverse_iterator(&*old_first);
          riter != rend; ++riter) {
@@ -189,10 +188,10 @@ class vector {
   // occurs when reserve(example).
   void pop_back(void) {
     if (empty()) return;
-    destroy(&*last_);
+    destroy(last_.base());
     last_--;
   }
-  // reassign containers
+  // reassign container
   template <class InputIterator>
   void assign(
       InputIterator __first, InputIterator __last,

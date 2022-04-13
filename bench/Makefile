@@ -1,7 +1,6 @@
-FT_NAME := ft
-STD_NAME := std
+NAME := ft_vector ft_stack std_stack std_vector 
 CXX := clang++
-CXXFLAGS := -Wall -Werror -Wextra -MMD -MP -std=c++98
+CXXFLAGS := -Wall -Werror -Wextra -std=c++98
 FT_SRCS :=	timer.cpp \
 		ft_vector.cpp
 STD_SRCS :=	timer.cpp \
@@ -13,14 +12,14 @@ DEPENDS := $(addprefix $(BINDIR)/, $(SRCS:.cpp=.d))
 
 ## general rules ##
 
-all :$(FT_NAME) $(STD_NAME)
+all : $(NAME)
 
-$(FT_NAME): $(FT_OBJS)
-	@$(CXX) $(CXXFLAGS) -o $(FT_NAME) $(FT_OBJS)
+ft_%: $(BINDIR)/ft_%.o $(BINDIR)/timer.o
+	$(CXX) $(CXXFLAGS) $^ -o  $@
 
-$(STD_NAME): $(STD_OBJS)
-	@$(CXX) $(CXXFLAGS) -o $(STD_NAME) $(STD_OBJS)
-	
+std_%: $(BINDIR)/std_%.o $(BINDIR)/timer.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
 $(BINDIR)/%.o: %.cpp
 	@$(CXX) $(CXXFLAGS) -o $@ -c $<
 
@@ -31,10 +30,10 @@ leak: CXXFLAGS+= -fsanitize=address
 leak: re
 
 clean: FORCE
-	@rm -f $(FT_OBJS) $(STD_OBJS) $(DEPENDS)
+	@rm -f bin/*.o
 
 fclean: clean
-	@rm -f $(FT_NAME) $(STD_NAME)
+	@rm -f $(NAME)
 
 re: fclean all
 

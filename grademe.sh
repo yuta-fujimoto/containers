@@ -1,12 +1,26 @@
 make -C bench
 
-title=`./bench/ft | awk '{printf "%10s\n", $1}'`
-ft=`./bench/ft | awk '{print $2}'`
-std=`./bench/std | awk '{print $2}'`
-ratio=`paste <(echo  "title") <(echo  "$ft") <(echo "$std") | awk '{print ($1/$2)}'`
+function compare() {
+	echo -e "\n[                     $1                     ]\n"
+	title=`./bench/ft_$1 | awk '{printf "%10s\n", $1}'`
+	ft=`./bench/ft_$1 | awk '{print $2}'`
+	std=`./bench/std_$1 | awk '{print $2}'`
+	ratio=`paste  <(echo  "$ft") <(echo "$std") | awk '{print ($1/$2)}'`
+	
+	paste <(echo -e "$title") <(echo -e "$ft") <(echo -e "$std") <(echo -e "$ratio")
+}
+
+## TITLE
 
 echo "      NAME      ft       std     ft/std"
-echo "--------------------------------------"
-paste <(echo -e "$title") <(echo -e "$ft") <(echo -e "$std") <(echo -e "$ratio")
+echo "--------------------------------------------------"
+
+## VECTOR
+
+compare vector
+
+## STACK
+
+compare stack
 
 make fclean -C bench

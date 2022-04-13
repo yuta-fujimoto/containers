@@ -2,6 +2,8 @@
 #define TIME_HPP
 
 #include <ctime>
+#define REPEAT 500
+
 class timer
 {
 private:
