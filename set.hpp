@@ -105,10 +105,6 @@ class set {
   const_iterator upper_bound(const key_type& __x) const {
     return _M_t.upper_bound(__x);
   }
-  // equivalent to
-  // ft::make_pair(c.lower_bound(__x),
-  //     *                   c.upper_bound(__x))
-  // [TODO] directry return _M_t.equal_range??
   pair<iterator, iterator> equal_range(const key_type& __x) {
     pair<typename _Rep_type::iterator, typename _Rep_type::iterator>
     _p = _M_t.equal_range(__x);

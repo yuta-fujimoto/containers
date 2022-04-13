@@ -1,4 +1,4 @@
-NAME := ft_vector ft_stack ft_map std_stack std_vector std_map 
+NAME := ft_vector ft_stack ft_map ft_set std_stack std_vector std_map std_set 
 CXX := clang++
 CXXFLAGS := -Wall -Werror -Wextra -std=c++98
 FT_SRCS :=	timer.cpp \

@@ -143,7 +143,7 @@ class map {
   bool empty(void) const { return (Mt.size() == 0); }
   size_type erase(const key_type& x) { return (Mt._Rb_erase(x)); }
   // auxiliary
-  void erase(iterator pos) { Mt._Rb_erase_iter(pos._M_node); }
+  void erase(iterator pos) { Mt._Rb_erase_iter(pos); }
   void erase(iterator first, iterator last) { Mt._Rb_erase_range(first, last); }
   iterator lower_bound(const key_type& x) { return (Mt.lower_bound(x)); }
   const_iterator lower_bound(const key_type& x) const {

@@ -581,6 +581,7 @@ class _Rb_tree {
     _top->parent = _p;
 
     try {
+      // copy right side
       if (_x->child[RIGHT])
         _top->child[RIGHT] = _M_copy(_x->child[RIGHT], _top, _node_gen);
       _p = _top;
@@ -665,6 +666,20 @@ class _Rb_tree {
     }
     return (iterator(_y));
   }
+  pair<iterator, bool> _Rb_insert(const value_type &v) {
+    _Link_type N = _M_create_node(v);
+
+
+    _Link_type treeNode = _Rb_insert1(N);
+    if (treeNode != N) {
+      _M_drop_node(N);
+      return (pair<iterator, bool>(treeNode, false));
+    }
+    ++_M_header._M_node_count;
+    _M_header.child[RIGHT] = _Tree_maximum(_M_header.parent);
+    _M_header.child[LEFT] = _Tree_minimum(_M_header.parent);
+    return (pair<iterator, bool>(iterator(treeNode), true));
+  }
   // set's iterator == const_iterator,
   iterator _Rb_insert_hint(const_iterator _p, const value_type &v) {
     iterator _pos = _p._M_const_cast();
@@ -709,19 +724,6 @@ class _Rb_tree {
   void _Rb_insert_range(_InputIterator _first, _InputIterator _last) {
     for (; _first != _last; ++_first) _Rb_insert(*_first);
   }
-  pair<iterator, bool> _Rb_insert(const value_type &v) {
-    _Link_type N = _M_create_node(v);
-
-    _Link_type treeNode = _Rb_insert1(N);
-    if (treeNode != N) {
-      _M_drop_node(N);
-      return (pair<iterator, bool>(treeNode, false));
-    }
-    ++_M_header._M_node_count;
-    _M_header.child[RIGHT] = _Tree_maximum(_M_header.parent);
-    _M_header.child[LEFT] = _Tree_minimum(_M_header.parent);
-    return (pair<iterator, bool>(iterator(treeNode), true));
-  }
   void _Rb_clear(void) {
     if (_M_header.parent == NULL) return;
     _Rb_clear1(_M_header.parent);
@@ -746,11 +748,10 @@ class _Rb_tree {
     _M_drop_node(N);
     --_M_header._M_node_count;
   }
-  // [TODO]: const ??
   void _Rb_erase_aux(const_iterator pos) {
     _Rb_erase_aux(const_cast<_Link_type>(pos._M_node));
   }
-  void _Rb_erase_iter(iterator pos) {
+  void _Rb_erase_iter(const_iterator pos) {
     bool leftmost = (pos._M_node == _M_leftmost());
     bool rightmost = (pos._M_node == _M_rightmost());
 
@@ -769,6 +770,7 @@ class _Rb_tree {
       _Rb_clear();
     else {
       const_iterator iter = _first;
+
       while (iter != _last) {
         ++iter;
         _Rb_erase_aux(_first);
@@ -786,6 +788,8 @@ class _Rb_tree {
   }
   size_type _Rb_erase(_Key k) {
     _Link_type N = _Rb_find(k);
+    bool leftmost = (N == _M_leftmost());
+    bool rightmost = (N == _M_rightmost());
 
     if (N == _M_end()) return (0);
     size_type old_size = size();
@@ -793,20 +797,18 @@ class _Rb_tree {
     if (_M_header.parent == NULL) {
       _M_header.child[RIGHT] = &_M_header;
       _M_header.child[LEFT] = &_M_header;
-    } else {
-      _M_header.child[RIGHT] = _Tree_maximum(_M_header.parent);
+    } else if (leftmost) {
       _M_header.child[LEFT] = _Tree_minimum(_M_header.parent);
+    } else if (rightmost) {
+      _M_header.child[RIGHT] = _Tree_maximum(_M_header.parent);
     }
     return (old_size - size());
   }
   _Compare key_comp() const { return (_M_header._M_key_compare); }
   const_iterator begin() const { return (_M_header.child[LEFT]); }
   iterator begin() { return (_M_header.child[LEFT]); }
-  // const_iterator begin() const { return
-  // (const_iterator(_M_header.child[LEFT])); }
   const_iterator end() const { return (&_M_header); }
   iterator end() { return (&_M_header); }
-  // const_iterator end() const { return (const_iterator(&_M_header)); }
   reverse_iterator rbegin() { return (reverse_iterator(end())); }
   const_reverse_iterator rbegin() const {
     return (const_reverse_iterator(end()));
@@ -827,6 +829,9 @@ class _Rb_tree {
   const_iterator upper_bound(const key_type &_k) const {
     return (_M_upper_bound(_M_begin(), _M_end(), _k));
   }
+  // equivalent to
+  // make_pair(c.lower_bound(__x),
+  //     *                   c.upper_bound(__x))
   pair<iterator, iterator> equal_range(const key_type &_k) {
     _Link_type _x = _M_begin();
     _Link_type _y = _M_end();

@@ -16,15 +16,15 @@ echo "      NAME      ft       std     ft/std"
 echo "--------------------------------------------------"
 
 ## VECTOR
-
 compare vector
 
 ## STACK
-
 compare stack
 
 ## MAP
-
 compare map
+
+## SET
+compare set
 
 make fclean -C bench
