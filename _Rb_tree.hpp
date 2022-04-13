@@ -157,7 +157,7 @@ struct _Rb_tree_const_iterator {
 
   typedef _Rb_tree_iterator<T> iterator;
 
-  typedef bidirectional_iterator_tag iterator_category;
+  typedef std::bidirectional_iterator_tag iterator_category;
   typedef ptrdiff_t difference_type;
 
   typedef _Rb_tree_const_iterator<T> _Self;

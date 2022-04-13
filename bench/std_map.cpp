@@ -15,12 +15,9 @@ int main() {
   timer t;
 
   std::map<int, int> temp;
-  temp.insert(std::make_pair(1, 1));
-  temp.insert(std::make_pair(2, 2));
+  temp.insert(std::make_pair(-1, 1));
+  temp.insert(std::make_pair(-2, 2));
 
-  //   std::vector<int> temp_v;
-  //   temp_v.push_back(1);
-  //   temp_v.push_back(2);
 
   t.start();
 
@@ -79,7 +76,7 @@ int main() {
     m.insert(m.end(), std::make_pair(i + REPEAT, i));
   }
   t.record("INSERT-2");
-  for (int i = 0; i < REPEAT; ++i) {
+  for (int i = 0; i < 1; ++i) {
     m.insert(temp.begin(), temp.end());
   }
   t.record("INSERT-3");
