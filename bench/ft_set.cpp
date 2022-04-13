@@ -14,8 +14,8 @@ int main() {
   timer t;
 
   ft::set<int> temp;
-  temp.insert(1);
-  temp.insert(2);
+  temp.insert(-1);
+  temp.insert(-2);
 
   t.start();
 

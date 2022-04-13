@@ -271,13 +271,13 @@ TEST_CASE("VECTOR") {
     // ft_test.erase(ft_test.end());
     // check_all_value(ft_test, test);
 
-    ft_it = ft_test.erase(ft_test.end() - 1);
-    it = test.erase(test.end() - 1);
+    ft_it = ft_test.erase(ft_test.end() - 2);
+    it = test.erase(test.end() - 2);
     check_all_value(ft_test, test);
     CHECK_EQ(*ft_it, *it);
 
-    ft_it = ft_test.erase(ft_test.begin(), ft_test.end() - 1);
-    it = test.erase(test.begin(), test.end() - 1);
+    ft_it = ft_test.erase(ft_test.begin(), ft_test.end() - 2);
+    it = test.erase(test.begin(), test.end() - 2);
     check_all_value(ft_test, test);
     CHECK_EQ(*ft_it, *it);
   }
