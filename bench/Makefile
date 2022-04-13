@@ -1,4 +1,4 @@
-NAME := ft_vector ft_stack std_stack std_vector 
+NAME := ft_vector ft_stack ft_map std_stack std_vector std_map 
 CXX := clang++
 CXXFLAGS := -Wall -Werror -Wextra -std=c++98
 FT_SRCS :=	timer.cpp \
@@ -12,7 +12,7 @@ DEPENDS := $(addprefix $(BINDIR)/, $(SRCS:.cpp=.d))
 
 ## general rules ##
 
-all : $(NAME)
+all : $(BINDIR) $(NAME)
 
 ft_%: $(BINDIR)/ft_%.o $(BINDIR)/timer.o
 	$(CXX) $(CXXFLAGS) $^ -o  $@

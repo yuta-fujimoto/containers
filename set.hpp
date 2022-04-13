@@ -83,7 +83,7 @@ class set {
   void insert(_InputIterator __first, _InputIterator __last) {
     _M_t._Rb_insert_range(__first, __last);
   }
-  void erase(iterator __position) { _M_t._Rb_erase_aux(__position); }
+  void erase(iterator __position) { _M_t._Rb_erase_iter(__position); }
   size_type erase(const key_type& __x) { return (_M_t._Rb_erase(__x)); }
   template <typename _InputIterator>
   void erase(_InputIterator __first, _InputIterator __last) {

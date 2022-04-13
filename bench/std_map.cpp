@@ -1,36 +1,36 @@
-#include "../map.hpp"
+#include <map>
 #include "timer.hpp"
 
 int main() {
   int a;
-  ft::map<int, int> m;
-  ft::map<int, int>::size_type size;
-  ft::map<int, int>::iterator it;
-  ft::map<int, int>::reverse_iterator rit;
-  ft::map<int, int>::allocator_type alloc;
-  ft::pair<ft::map<int, int>::iterator, ft::map<int, int>::iterator> equal;
-  ft::map<int, int>::key_compare key_c;
-  ft::map<int, int>::value_compare value_c = m.value_comp();
+  std::map<int, int> m;
+  std::map<int, int>::size_type size;
+  std::map<int, int>::iterator it;
+  std::map<int, int>::reverse_iterator rit;
+  std::map<int, int>::allocator_type alloc;
+  std::pair<std::map<int, int>::iterator, std::map<int, int>::iterator> equal;
+  std::map<int, int>::key_compare key_c;
+  std::map<int, int>::value_compare value_c = m.value_comp();
   bool b;
   timer t;
 
-  ft::map<int, int> temp;
-  temp.insert(ft::make_pair(1, 1));
-  temp.insert(ft::make_pair(2, 2));
+  std::map<int, int> temp;
+  temp.insert(std::make_pair(1, 1));
+  temp.insert(std::make_pair(2, 2));
 
-  //   ft::vector<int> temp_v;
+  //   std::vector<int> temp_v;
   //   temp_v.push_back(1);
   //   temp_v.push_back(2);
 
   t.start();
 
   for (int i = 0; i < REPEAT; ++i) {
-    ft::map<int, int> new_s(temp.begin(), temp.end());
+    std::map<int, int> new_s(temp.begin(), temp.end());
   }
   t.record("CONST-1");
 
   for (int i = 0; i < REPEAT; ++i) {
-    ft::map<int, int> new_s(temp);
+    std::map<int, int> new_s(temp);
   }
   t.record("CONST-2");
 
@@ -72,11 +72,11 @@ int main() {
   }
   t.record("MAX_SIZE");
   for (int i = 0; i < REPEAT; ++i) {
-    m.insert(ft::make_pair(i, i));
+    m.insert(std::make_pair(i, i));
   }
   t.record("INSERT-1");
   for (int i = 0; i < REPEAT; ++i) {
-    m.insert(m.end(), ft::make_pair(i + REPEAT, i));
+    m.insert(m.end(), std::make_pair(i + REPEAT, i));
   }
   t.record("INSERT-2");
   for (int i = 0; i < REPEAT; ++i) {
@@ -101,7 +101,7 @@ int main() {
 
   // reinsert for test
   for (int i = 0; i < REPEAT; ++i) {
-    m.insert(ft::make_pair(i, i));
+    m.insert(std::make_pair(i, i));
   }
   t.start();
 

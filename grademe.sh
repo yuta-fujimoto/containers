@@ -23,4 +23,8 @@ compare vector
 
 compare stack
 
+## MAP
+
+compare map
+
 make fclean -C bench

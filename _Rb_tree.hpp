@@ -750,6 +750,20 @@ class _Rb_tree {
   void _Rb_erase_aux(const_iterator pos) {
     _Rb_erase_aux(const_cast<_Link_type>(pos._M_node));
   }
+  void _Rb_erase_iter(iterator pos) {
+    bool leftmost = (pos._M_node == _M_leftmost());
+    bool rightmost = (pos._M_node == _M_rightmost());
+
+    _Rb_erase_aux(pos._M_node);
+    if (_M_header.parent == NULL) {
+      _M_header.child[RIGHT] = &_M_header;
+      _M_header.child[LEFT] = &_M_header;
+    } else if (leftmost) {
+      _M_leftmost() = _Tree_minimum(_M_header.parent);
+    } else if (rightmost) {
+      _M_rightmost() = _Tree_minimum(_M_header.parent);
+    }
+  }
   void _Rb_erase_range(const_iterator _first, const_iterator _last) {
     if (_first == begin() && _last == end())
       _Rb_clear();
@@ -764,7 +778,7 @@ class _Rb_tree {
       if (_M_header.parent == NULL) {
         _M_header.child[RIGHT] = &_M_header;
         _M_header.child[LEFT] = &_M_header;
-        return;
+      } else {
         _M_header.child[RIGHT] = _Tree_maximum(_M_header.parent);
         _M_header.child[LEFT] = _Tree_minimum(_M_header.parent);
       }
