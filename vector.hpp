@@ -112,9 +112,11 @@ class vector {
   iterator begin() { return (first_); }
   const_iterator begin() const { return (const_iterator(&*first_)); }
   reverse_iterator rbegin() { return (reverse_iterator(&*last_)); }
+  const_reverse_iterator rbegin() const { return (const_reverse_iterator(&*last_)); }
   iterator end() { return (last_); }
   const_iterator end() const { return (const_iterator(&*last_)); }
   reverse_iterator rend() { return (reverse_iterator(&*first_)); }
+  const_reverse_iterator rend() const { return (const_reverse_iterator(&*first_)); }
   size_type size() const { return (last_ - first_); }
   bool empty() const { return begin() == end(); }
   size_type capacity() const { return (reserved_last_ - first_); }
