@@ -4,15 +4,15 @@
 
 #include "test_common.hpp"
 
-template <typename T>
-void set_check_all_value(ft::set<T>& ft_s, std::set<T>& s) {
+template <typename _Tp>
+void set_check_all_value(ft::set<_Tp>& ft_s, std::set<_Tp>& s) {
   CHECK_EQ(ft_s.size(), s.size());
   CHECK_EQ(ft_s.empty(), s.empty());
 
   std::size_t size = ft_s.size();
 
-  typename std::set<T>::iterator s_it = s.begin();
-  typename ft::set<T>::iterator ft_s_it = ft_s.begin();
+  typename std::set<_Tp>::iterator s_it = s.begin();
+  typename ft::set<_Tp>::iterator ft_s_it = ft_s.begin();
   for (std::size_t i = 0; i < size; i++, ++ft_s_it, ++s_it) {
     CHECK_EQ(*s_it, *ft_s_it);
     CHECK_EQ(*s_it, *ft_s_it);

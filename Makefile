@@ -11,8 +11,8 @@ DEPENDS := $(addprefix $(BINDIR)/, $(SRCS:.cpp=.d))
 all : config $(NAME)
 
 config:
-	@if [ -e bin ]; then\
-		mkdir -p bin;\
+	@if [ -e $(BINDIR) ]; then\
+		mkdir -p $(BINDIR);\
 	fi
 	@if [ -e .doctest ]; then\
 		git submodule update --init --recursive;\
@@ -60,7 +60,7 @@ cover:
 #  Google test #
 # -fsanitize=integer
 
-CXXFLAG		:= -std=c++98 -DDEBUG -g -fsanitize=address -MMD -MP 
+CXXFLAG		:= -std=c++98 -DDEBUG -g -fsanitize=address
 INCLUDE		:= -I./.doctest/doctest/
 
 TESTDIR		:= ./tests/

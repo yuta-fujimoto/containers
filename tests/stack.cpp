@@ -4,8 +4,8 @@
 
 #include "test_common.hpp"
 
-template <typename T>
-void stack_check_all_value(ft::stack<T> ft_st, std::stack<T> st) {
+template <typename _Tp>
+void stack_check_all_value(ft::stack<_Tp> ft_st, std::stack<_Tp> st) {
   CHECK_EQ(ft_st.size(), st.size());
   for (; !ft_st.empty(); ft_st.pop(), st.pop()) {
     CHECK_EQ(ft_st.top(), st.top());

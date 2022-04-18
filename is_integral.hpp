@@ -28,8 +28,8 @@ template <>
 struct is_integral_helper<long> : true_type {};
 
 // is_integral
-template <class T>
-struct is_integral : is_integral_helper<typename remove_cv<T>::type> {};
+template <class _Tp>
+struct is_integral : is_integral_helper<typename remove_cv<_Tp>::type> {};
 }  // namespace ft
 
 #endif

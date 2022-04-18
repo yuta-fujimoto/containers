@@ -4,26 +4,26 @@
 
 #include "test_common.hpp"
 
-template <typename T, typename U>
-void map_check_all_value(ft::map<T, U>& ft_m, std::map<T, U>& m) {
+template <typename _Tp, typename U>
+void map_check_all_value(ft::map<_Tp, U>& ft_m, std::map<_Tp, U>& m) {
   CHECK_EQ(ft_m.size(), m.size());
   CHECK_EQ(ft_m.empty(), m.empty());
 
   std::size_t s = ft_m.size();
 
-  typename std::map<T, U>::iterator m_it = m.begin();
-  typename ft::map<T, U>::iterator ft_m_it = ft_m.begin();
+  typename std::map<_Tp, U>::iterator m_it = m.begin();
+  typename ft::map<_Tp, U>::iterator ft_m_it = ft_m.begin();
   for (std::size_t i = 0; i < s; i++, ++ft_m_it, ++m_it) {
     CHECK_EQ(m_it->first, ft_m_it->first);
     CHECK_EQ(m_it->second, ft_m_it->second);
   }
 }
 
-template <typename T, typename U>
-void print_all_value(ft::map<T, U>& ft_m) {
+template <typename _Tp, typename U>
+void print_all_value(ft::map<_Tp, U>& ft_m) {
   std::size_t s = ft_m.size();
 
-  typename ft::map<T, U>::iterator ft_m_it = ft_m.begin();
+  typename ft::map<_Tp, U>::iterator ft_m_it = ft_m.begin();
   for (std::size_t i = 0; i < s; i++, ++ft_m_it) {
     std::cout << ft_m_it->first << ": " << ft_m_it->second << std::endl;
   }
@@ -189,8 +189,8 @@ TEST_CASE("MAP") {
   CHECK_EQ(ft_test.count(0.0), test.count(0.0));
 
   SUBTITLE("EQUAL RANGE");
-  ft_p = ft_test.equal_range(1.0);
-  p = test.equal_range(1.0);
+  ft_p = ft_test.equal_range(-10.0);
+  p = test.equal_range(-10.0);
   CHECK_EQ(ft_p.first->first, p.first->first);
   CHECK_EQ(ft_p.first->second, p.first->second);
   CHECK_EQ(ft_p.second->first, p.second->first);
@@ -253,10 +253,10 @@ TEST_CASE("MAP") {
   map_check_all_value(ft_swaped, swaped);
   map_check_all_value(ft_test, test);
 
-  test.swap(swaped);
-  ft_test.swap(ft_swaped);
-  // std::swap(swaped. test);
-  // ft::swap(ft_swaped. ft_test);
+  // test.swap(swaped);
+  // ft_test.swap(ft_swaped);
+  std::swap(swaped, test);
+  ft::swap(ft_swaped, ft_test);
 
   SUBTITLE("ERASE");
   std::size_t ft_erase_cnt;

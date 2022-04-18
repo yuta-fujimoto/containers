@@ -10,23 +10,23 @@ struct integral_constant {
 };
 
 // remove_cv
-template <class T>
+template <class _Tp>
 struct remove_cv {
-  typedef T type;
+  typedef _Tp type;
 };
 
 // remove_cv partial specializations
-template <class T>
-struct remove_cv<const T> {
-  typedef T type;
+template <class _Tp>
+struct remove_cv<const _Tp> {
+  typedef _Tp type;
 };
-template <class T>
-struct remove_cv<volatile T> {
-  typedef T type;
+template <class _Tp>
+struct remove_cv<volatile _Tp> {
+  typedef _Tp type;
 };
-template <class T>
-struct remove_cv<const volatile T> {
-  typedef T type;
+template <class _Tp>
+struct remove_cv<const volatile _Tp> {
+  typedef _Tp type;
 };
 
 /// The type used as a compile-time boolean with true value.

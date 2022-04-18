@@ -16,8 +16,8 @@ struct value {
   bool operator<=(value const& right) const { return (x <= right.x); }
 };
 
-template <typename T>
-void assign_random_value(ft::vector<T>& ft_v, std::vector<T>& v,
+template <typename _Tp>
+void assign_random_value(ft::vector<_Tp>& ft_v, std::vector<_Tp>& v,
                          std::size_t size) {
   int val;
 
@@ -27,8 +27,8 @@ void assign_random_value(ft::vector<T>& ft_v, std::vector<T>& v,
   }
 }
 
-template <typename T>
-void check_all_value(ft::vector<T>& ft_v, std::vector<T>& v) {
+template <typename _Tp>
+void check_all_value(ft::vector<_Tp>& ft_v, std::vector<_Tp>& v) {
   CHECK_EQ(ft_v.size(), v.size());
   CHECK_EQ(ft_v.capacity(), v.capacity());
 
@@ -222,6 +222,19 @@ TEST_CASE("VECTOR") {
     it = test.insert(test.begin(), 1);
     check_all_value(ft_test, test);
     CHECK_EQ(*ft_it, *it);
+
+    try {
+      ft_test.insert(ft_test.begin(), ft_test.max_size() + 1, 3);
+    } catch(const std::exception& e) {
+      std::cout << "FT" << std::endl;
+      std::cout << e.what() << std::endl;
+    }
+    try {
+      test.insert(test.begin(), test.max_size() + 1, 3);
+    } catch(const std::exception& e) {
+      std::cout << "STD" << std::endl;
+      std::cout << e.what() << std::endl;
+    }
   }
   SUBTITLE("INSERT-ITERATOR");
   {
@@ -288,12 +301,12 @@ TEST_CASE("VECTOR") {
     std::vector<int> test(5, 3);
     std::vector<int> test1(3, 5);
 
-    swap(ft_test1, ft_test);
-    test.swap(test1);
+    ft::swap(ft_test1, ft_test);
+    std::swap(test, test1);
     check_all_value(ft_test, test);
     check_all_value(ft_test1, test1);
 
-    swap(ft_test, ft_test);
+    ft_test.swap(ft_test);
     test.swap(test);
     check_all_value(ft_test, test);
   }

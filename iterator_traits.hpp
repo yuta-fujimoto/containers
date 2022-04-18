@@ -27,22 +27,22 @@ struct iterator_traits {
 };
 
 // specialization for pointer
-template <class T>
-struct iterator_traits<T*> {
+template <class _Tp>
+struct iterator_traits<_Tp*> {
     typedef ptrdiff_t difference_type;
-    typedef T value_type;
-    typedef T* pointer;
-    typedef T& reference;
+    typedef _Tp value_type;
+    typedef _Tp* pointer;
+    typedef _Tp& reference;
     typedef std::random_access_iterator_tag iterator_category;
 };
 
 // specialization for const pointer
-template <class T>
-struct iterator_traits<const T*> {
+template <class _Tp>
+struct iterator_traits<const _Tp*> {
     typedef ptrdiff_t difference_type;
-    typedef T value_type;
-    typedef const T* pointer;
-    typedef const T& reference;
+    typedef _Tp value_type;
+    typedef const _Tp* pointer;
+    typedef const _Tp& reference;
     typedef std::random_access_iterator_tag iterator_category;
 };
 }
