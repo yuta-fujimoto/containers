@@ -24,7 +24,7 @@ $(BINDIR)/%.o: %.cpp
 	@$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 $(BINDIR):
-	mkir -p $@
+	mkdir -p $@
 
 leak: CXXFLAGS+= -fsanitize=address
 leak: re

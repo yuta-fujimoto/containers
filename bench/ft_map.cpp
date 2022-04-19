@@ -90,6 +90,10 @@ int main() {
   }
   t.record("ERASE-2");
 
+  // reinsert for test
+  for (int i = 0; i < REPEAT; ++i) {
+    m.insert(ft::make_pair(i, i));
+  }
   for (int i = 0; i < 1; ++i) {
     m.erase(m.begin(), m.end());
   }
