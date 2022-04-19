@@ -24,8 +24,9 @@ class vector {
   typedef const _Tp* const_pointer;
   typedef _normal_iterator<pointer, vector> iterator;
   typedef _normal_iterator<const_pointer, vector> const_iterator;
-  typedef _reverse_iterator<const_pointer> const_reverse_iterator;
-  typedef _reverse_iterator<pointer> reverse_iterator;
+  // _reverse_iterator can accept iterator
+  typedef _reverse_iterator<const_iterator> const_reverse_iterator;
+  typedef _reverse_iterator<iterator> reverse_iterator;
   typedef Allocator allocator_type;
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
@@ -41,7 +42,7 @@ class vector {
   pointer allocate(const size_type& __n) { return (alloc.allocate(__n)); }
   void deallocate() { alloc.deallocate(&*first_, capacity()); }
   void construct(const iterator& __iter) { alloc.construct(__iter.base()); }
-  void construct(const iterator& __iter, const_reference& __value) {
+  void construct(const iterator& __iter, const_reference __value) {
     alloc.construct(__iter.base(), __value);
   }
   void destroy(pointer __ptr) { alloc.destroy(__ptr); }
@@ -49,7 +50,7 @@ class vector {
   void destroy_until(const reverse_iterator& __rbegin,
                      const reverse_iterator& __rend) {
     for (reverse_iterator ri = __rbegin; ri != __rend; ++ri) {
-      destroy(__rbegin.base());
+      destroy(ri.base().base());
     }
     last_ = last_ - (__rend - __rbegin);
   }
@@ -100,11 +101,11 @@ class vector {
       std::copy(__x.begin(), __x.end(), first_);
       for (reverse_iterator riter(old_last.base()), rend(old_first.base());
            riter != rend; ++riter) {
-        destroy(riter.base());
+        destroy(riter.base().base());
       }
       alloc.deallocate(old_first.base(), old_capacity);
     } else {
-      destroy_until(&*(last_ - 1), &*(first_ - 1));
+      destroy_until((last_ - 1), (first_ - 1));
       std::copy(__x.begin(), __x.end(), first_);
       last_ = first_ + __x.size();
     }
@@ -161,7 +162,7 @@ class vector {
     std::copy(old_first, old_last, first_);
     for (reverse_iterator riter(old_last.base()), rend(old_first.base());
          riter != rend; ++riter) {
-      destroy(riter.base());
+      destroy(riter.base().base());
     }
     alloc.deallocate(old_first.base(), old_capacity);
   }
@@ -241,7 +242,7 @@ class vector {
       new_last = std::copy(first_, __position, new_first);
       new_last = std::copy(__position, last_, new_last + __n);
 
-      destroy_until(last_.base(), first_.base());
+      destroy_until(last_, first_);
       alloc.deallocate(first_.base(), capacity());
 
       first_ = new_first;
@@ -272,7 +273,7 @@ class vector {
       new_last = std::copy(first_, __position, new_first);
       new_last = std::copy(__position, last_, new_last + n);
 
-      destroy_until(last_.base(), first_.base());
+      destroy_until(last_, first_);
       alloc.deallocate(first_.base(), capacity());
 
       first_ = new_first;

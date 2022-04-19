@@ -72,14 +72,14 @@ class _normal_iterator {
     --*this;
     return (copy);
   }
-  _normal_iterator operator+(difference_type __n) {
+  _normal_iterator operator+(difference_type __n) const {
     return (_normal_iterator(v + __n));
   }
   _normal_iterator& operator+=(difference_type __n) {
     v += __n;
     return (*this);
   }
-  _normal_iterator operator-(difference_type __n) {
+  _normal_iterator operator-(difference_type __n) const {
     return (_normal_iterator(v - __n));
   }
   _normal_iterator& operator-=(difference_type __n) {
@@ -91,6 +91,7 @@ class _normal_iterator {
   const _Iterator& base(void) const { return (v); }
 };
 
+// Forward iterator requirements
 template <typename _IteratorL, typename _IteratorR, typename _Container>
 inline bool operator==(const _normal_iterator<_IteratorL, _Container>& __lhs,
                        const _normal_iterator<_IteratorR, _Container>& __rhs) {
