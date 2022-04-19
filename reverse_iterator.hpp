@@ -6,14 +6,14 @@
 
 namespace ft {
 
-template <typename Iterator>
+template <typename _Iterator>
 class _reverse_iterator {
  protected:
-  Iterator v;
-  typedef iterator_traits<Iterator> traits_type;
+  _Iterator v;
+  typedef iterator_traits<_Iterator> traits_type;
 
  public:
-  typedef Iterator iterator_type;
+  typedef _Iterator iterator_type;
   typedef typename traits_type::iterator_category iterator_category;
   typedef typename traits_type::value_type value_type;
   typedef typename traits_type::difference_type difference_type;
@@ -21,7 +21,7 @@ class _reverse_iterator {
   typedef typename traits_type::pointer pointer;
   typedef std::size_t size_type;
 
-  _reverse_iterator(Iterator v = Iterator()) : v(v) {}
+  _reverse_iterator(_Iterator v = _Iterator()) : v(v) {}
   ~_reverse_iterator() {}
   _reverse_iterator(_reverse_iterator const& rhs) : v(rhs.v) {}
   // Allow iterator to const_iterator conversion
@@ -34,19 +34,19 @@ class _reverse_iterator {
     return (*this);
   }
   reference operator*() {
-    Iterator _tmp = v;
+    _Iterator _tmp = v;
 
     return (*--_tmp);
   }
   const reference operator*() const {
-    Iterator _tmp = v;
+    _Iterator _tmp = v;
 
     return (*--_tmp);
   }
   reference operator[](size_type p) { return (*(*this + p)); }
   const reference operator[](size_type p) const { return (*(*this + p)); }
   pointer operator->() const {
-    Iterator _tmp = v;
+    _Iterator _tmp = v;
 
     --_tmp;
     return (_S_to_pointer(_tmp));
@@ -94,7 +94,7 @@ class _reverse_iterator {
     return (_reverse_iterator(v + ri));
   }
   size_type operator-(_reverse_iterator const& right) const { return (right.v - v); }
-  Iterator base(void) const { return (v); };
+  _Iterator base(void) const { return (v); };
 
  private:
   template <typename _Tp>

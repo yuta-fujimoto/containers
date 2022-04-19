@@ -41,7 +41,6 @@ struct is_same : public false_type {};
 
 template <typename _Tp>
 struct is_same<_Tp, _Tp> : public true_type {};
-
 }  // namespace ft
 
 #endif

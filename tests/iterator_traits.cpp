@@ -1,11 +1,11 @@
 #include "test_common.hpp"
 
 
-template <class Iterator>
-typename ft::iterator_traits<Iterator>::value_type
-sum(Iterator first, Iterator last)
+template <class _Iterator>
+typename ft::iterator_traits<_Iterator>::value_type
+sum(_Iterator first, _Iterator last)
 {
-    typedef typename ft::iterator_traits<Iterator>::value_type value_type;
+    typedef typename ft::iterator_traits<_Iterator>::value_type value_type;
 
     value_type result = value_type();
     for (; first != last; ++first) {

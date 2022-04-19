@@ -4,6 +4,7 @@
 #include <exception>
 #include <iostream>
 #include <limits>
+#include <memory>
 
 #include "common.hpp"
 #include "enable_if.hpp"
@@ -21,8 +22,8 @@ class vector {
   typedef const _Tp& const_reference;
   typedef _Tp* pointer;
   typedef const _Tp* const_pointer;
-  typedef _normal_iterator<pointer> iterator;
-  typedef _normal_iterator<const_pointer> const_iterator;
+  typedef _normal_iterator<pointer, vector> iterator;
+  typedef _normal_iterator<const_pointer, vector> const_iterator;
   typedef _reverse_iterator<const_pointer> const_reverse_iterator;
   typedef _reverse_iterator<pointer> reverse_iterator;
   typedef Allocator allocator_type;
@@ -57,7 +58,7 @@ class vector {
     if (__n > max_size() - size()) throw std::length_error(__s);
 
     if (size() + __n > capacity() * 2) return (size() + __n);
-    return (capacity() * 2);
+    return (capacity() * 2 + (__n == 0));
   }
 
  public:
@@ -65,7 +66,7 @@ class vector {
       : alloc(__a), last_(first_), reserved_last_(first_) {}
   vector(std::size_t __size, const value_type& __v = value_type(),
          Allocator __a = Allocator())
-      : alloc(__a) {
+      : alloc(__a), last_(first_), reserved_last_(first_) {
     resize(__size, __v);
   }
   template <typename InputIterator>
@@ -235,7 +236,8 @@ class vector {
       iterator new_first = allocate(len);
       iterator new_last;
 
-      std::fill_n(new_first + elems_before, __n, __x);
+      // ex: std::string
+      std::uninitialized_fill_n(new_first + elems_before, __n, __x);
       new_last = std::copy(first_, __position, new_first);
       new_last = std::copy(__position, last_, new_last + __n);
 
@@ -258,7 +260,7 @@ class vector {
   void insert(
       iterator __position, InputIterator __first, InputIterator __last,
       typename enable_if<!is_integral<InputIterator>::value>::type* = 0) {
-    const size_type n = std::distance(__last , __first);
+    const size_type n = std::distance(__first, __last);
     if (size() + n > capacity()) {
       const size_type len = _M_check_len(n, "vector");
       const size_type elems_before = std::distance(first_, __position);
@@ -278,13 +280,16 @@ class vector {
       reserved_last_ = first_ + len;
     } else {
       if (__position != last_) {
-        std::copy_backward(__position, __position + size(), __position + n + size());
+        std::copy_backward(__position, __position + size(),
+                           __position + n + size());
       }
       std::copy(__first, __last, __position);
       last_ = last_ + n;
     }
   }
-  iterator erase(iterator __position) { return (erase(__position, __position + 1)); }
+  iterator erase(iterator __position) {
+    return (erase(__position, __position + 1));
+  }
   iterator erase(iterator __first, iterator __last) {
     iterator old_last = last_;
 
@@ -326,8 +331,8 @@ template <typename _T, typename _Alloc>
 // equal to lexicographical_compare
 bool operator<(vector<_T, _Alloc> const& __left,
                vector<_T, _Alloc> const& __right) {
-  return (ft::lexicographical_compare(__left.begin(), __left.end(), __right.begin(),
-                                      __right.end()));
+  return (ft::lexicographical_compare(__left.begin(), __left.end(),
+                                      __right.begin(), __right.end()));
 }
 
 template <typename _T, typename _Alloc>

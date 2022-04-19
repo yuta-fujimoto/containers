@@ -17,13 +17,13 @@ struct bidirectional_iterator_tag : public forward_iterator_tag {
 struct random_access_iterator_tag : public bidirectional_iterator_tag {
 };
 
-template <class Iterator>
+template <class _Iterator>
 struct iterator_traits {
-    typedef typename Iterator::difference_type difference_type;
-    typedef typename Iterator::value_type value_type;
-    typedef typename Iterator::pointer pointer;
-    typedef typename Iterator::reference reference;
-    typedef typename Iterator::iterator_category iterator_category;
+    typedef typename _Iterator::difference_type difference_type;
+    typedef typename _Iterator::value_type value_type;
+    typedef typename _Iterator::pointer pointer;
+    typedef typename _Iterator::reference reference;
+    typedef typename _Iterator::iterator_category iterator_category;
 };
 
 // specialization for pointer

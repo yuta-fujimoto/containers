@@ -31,13 +31,21 @@ TEST_CASE("ITERATOR")
 		// overwrite, - operation
 		it = v.begin();
 		ft_it = ft_v.begin();
-		*(it + 3) = 12;
-		*(ft_it + 3) = 12;
+		*(3 + it) = 12;
+		*(3 + ft_it) = 12;
 		it[2] = 18;
 		ft_it[2] = 18;
 		CHECK_EQ(it[2], ft_it[2]);
-		CHECK_EQ(*(it + 3), *(ft_it + 3));
-		CHECK_EQ(*(ite - 1), *(ft_ite - 1));
+		it += 3;
+		ft_it += 3;
+		CHECK_EQ(*it, *ft_it);
+		ite -= 1;
+		ft_ite -= 1;
+		CHECK_EQ(*ite, *ft_ite);
+		// distance
+		CHECK_EQ(ite - it, ft_ite - ft_it);
+		it -= 3;
+		ft_it -= 3;
 
 		// check substraction
 		CHECK_EQ(v.end() - v.begin(), ft_v.end() - ft_v.begin());
@@ -78,7 +86,7 @@ TEST_CASE("ITERATOR")
 			++cit;
 			++ft_cit;
 		}
-
+		CHECK_EQ(cit - cite, ft_cit - ft_cite);
 		// error case
 		// *ft_cit = 21;
 		// *cit = 21;
@@ -87,6 +95,7 @@ TEST_CASE("ITERATOR")
 		ft::vector<value>::const_iterator ft_cit2 = ft_v2.begin();
 		std::vector<value>::const_iterator cit2 = v2.begin();
 		CHECK_EQ(cit2[2].x, ft_cit2[2].x);
+		CHECK_EQ((2 + cit2)->x, (2 + ft_cit2)->x);
 		int x = ft_cit2->x;
 		int x_get = ft_cit2->get();
 		CHECK_EQ(cit2->x, x);
