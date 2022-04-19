@@ -19,7 +19,7 @@ class map {
  public:
   typedef Key key_type;
   typedef _Tp mapped_type;
-  typedef ft::pair<key_type, mapped_type> value_type;
+  typedef ft::pair<const key_type, mapped_type> value_type;
   typedef Compare key_compare;
   typedef _Alloc allocator_type;
 
@@ -170,33 +170,33 @@ class map {
 };
 
 template <typename T, typename U, typename C, typename A>
-bool operator==(map<T, U, C, A> const& left, map<T, U, C, A> const& right) {
-  return (left._M_t == right._M_t);
+bool operator==(map<T, U, C, A> const& __left, map<T, U, C, A> const& __right) {
+  return (__left._M_t == __right._M_t);
 }
 
 template <typename T, typename U, typename C, typename A>
-bool operator!=(map<T, U, C, A> const& left, map<T, U, C, A> const& right) {
-  return (!(left == right));
+bool operator!=(map<T, U, C, A> const& __left, map<T, U, C, A> const& __right) {
+  return (!(__left == __right));
 }
 
 template <typename T, typename U, typename C, typename A>
-bool operator>(map<T, U, C, A> const& left, map<T, U, C, A> const& right) {
-  return (right < left);
+bool operator>(map<T, U, C, A> const& __left, map<T, U, C, A> const& __right) {
+  return (__right < __left);
 }
 
 template <typename T, typename U, typename C, typename A>
-bool operator<(map<T, U, C, A> const& left, map<T, U, C, A> const& right) {
-  return (left._M_t < right._M_t);
+bool operator<(map<T, U, C, A> const& __left, map<T, U, C, A> const& __right) {
+  return (__left._M_t < __right._M_t);
 }
 
 template <typename T, typename U, typename C, typename A>
-bool operator>=(map<T, U, C, A> const& left, map<T, U, C, A> const& right) {
-  return (!(left < right));
+bool operator>=(map<T, U, C, A> const& __left, map<T, U, C, A> const& __right) {
+  return (!(__left < __right));
 }
 
 template <typename T, typename U, typename C, typename A>
-bool operator<=(map<T, U, C, A> const& left, map<T, U, C, A> const& right) {
-  return (!(right < left));
+bool operator<=(map<T, U, C, A> const& __left, map<T, U, C, A> const& __right) {
+  return (!(__right < __left));
 }
 
 template <class Key, class T, class Compare, class Allocator>

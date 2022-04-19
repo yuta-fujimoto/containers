@@ -636,7 +636,7 @@ class _Rb_tree {
     }
     return (iterator(__y));
   }
-  const_iterator _M_lower_bound(_Link_type __x, _Link_type __y,
+  const_iterator _M_lower_bound(_Const_Link_type __x, _Const_Link_type __y,
                                 const _Key &k) const {
     while (__x != NULL) {
       if (!_M_header._M_key_compare(_KeyOfValue()(*__x->val), k))
@@ -655,9 +655,9 @@ class _Rb_tree {
       else
         __x = __x->child[RIGHT];
     }
-    return (iterator(__y));
+    return (__y);
   }
-  const_iterator _M_upper_bound(_Link_type __x, _Link_type __y,
+  const_iterator _M_upper_bound(_Const_Link_type __x, _Const_Link_type __y,
                                 const _Key &__k) const {
     while (__x != NULL) {
       if (_M_header._M_key_compare(__k, _KeyOfValue()(*__x->val)))
@@ -665,7 +665,7 @@ class _Rb_tree {
       else
         __x = __x->child[RIGHT];
     }
-    return (iterator(__y));
+    return (__y);
   }
   // equivalent to
   // make_pair(c.lower_bound(__x),
@@ -691,7 +691,7 @@ class _Rb_tree {
       }
     }
     // _y > _k
-    return (pair<iterator, iterator>(iterator(_y), iterator(_y)));
+    return (pair<iterator, iterator>(_y, _y));
   }
   pair<const_iterator, const_iterator> equal_range(const key_type &_k) const {
     _Const_Link_type _x = _M_begin();
@@ -714,7 +714,7 @@ class _Rb_tree {
       }
     }
     // _y > _k
-    return (pair<const_iterator, const_iterator>(iterator(_y), iterator(_y)));
+    return (pair<const_iterator, const_iterator>(_y, _y));
   }
   pair<iterator, bool> _Rb_insert(const value_type &v) {
     _Link_type N = _M_create_node(v);
@@ -730,66 +730,66 @@ class _Rb_tree {
     return (pair<iterator, bool>(iterator(treeNode), true));
   }
   // set's iterator == const_iterator,
-  iterator _Rb_insert_hint(const_iterator _p, const value_type &v) {
-    iterator _pos = _p._M_const_cast();
+  iterator _Rb_insert_hint(const_iterator __p, const value_type &__v) {
+    iterator _pos = __p._M_const_cast();
     _Link_type inserted;
 
     if (_pos == begin()) {
       if (size() > 0 &&
-          _M_header._M_key_compare(_KeyOfValue()(v), _KeyOfValue()(*_pos))) {
-        inserted = _Rb_insert2(_M_create_node(v), _M_header.child[LEFT], LEFT);
+          _M_header._M_key_compare(_KeyOfValue()(__v), _KeyOfValue()(*_pos))) {
+        inserted = _Rb_insert2(_M_create_node(__v), _M_header.child[LEFT], LEFT);
         _M_header.child[LEFT] = inserted;
       } else {
-        return (_Rb_insert(v).first);
+        return (_Rb_insert(__v).first);
       }
     } else if (_pos == end()) {
       if (_M_header._M_key_compare(_KeyOfValue()(*_M_rightmost()->val),
-                                   _KeyOfValue()(v))) {
+                                   _KeyOfValue()(__v))) {
         inserted =
-            _Rb_insert2(_M_create_node(v), _M_header.child[RIGHT], RIGHT);
+            _Rb_insert2(_M_create_node(__v), _M_header.child[RIGHT], RIGHT);
         _M_header.child[RIGHT] = inserted;
       } else {
-        return (_Rb_insert(v).first);
+        return (_Rb_insert(__v).first);
       }
     } else {
       iterator before = _pos;
       // if after is upper, than before is mostright of after's left tree
       // else after is mostleft of before's right tree
-      if (_M_header._M_key_compare(_KeyOfValue()(v), _KeyOfValue()(*_pos)) &&
+      if (_M_header._M_key_compare(_KeyOfValue()(__v), _KeyOfValue()(*_pos)) &&
           _M_header._M_key_compare(_KeyOfValue()(*(--before)),
-                                   _KeyOfValue()(v))) {
+                                   _KeyOfValue()(__v))) {
         if (before._M_node->child[RIGHT] == NULL)
-          inserted = _Rb_insert2(_M_create_node(v), before._M_node, RIGHT);
+          inserted = _Rb_insert2(_M_create_node(__v), before._M_node, RIGHT);
         else
-          inserted = _Rb_insert2(_M_create_node(v), _pos._M_node, LEFT);
+          inserted = _Rb_insert2(_M_create_node(__v), _pos._M_node, LEFT);
       } else {
-        return (_Rb_insert(v).first);
+        return (_Rb_insert(__v).first);
       }
     }
     ++_M_header._M_node_count;
     return (iterator(inserted));
   }
   template <typename _InputIterator>
-  void _Rb_insert_range(_InputIterator _first, _InputIterator _last) {
-    for (; _first != _last; ++_first) _Rb_insert(*_first);
+  void _Rb_insert_range(_InputIterator __first, _InputIterator __last) {
+    for (; __first != __last; ++__first) _Rb_insert(*__first);
   }
-  void _Rb_clear(void) {
+  void _Rb_clear() {
     if (_M_header.parent == NULL) return;
     _Rb_clear1(_M_header.parent);
     _M_header._M_reset();
   }
   // if k was not found, return end()
-  _Link_type _Rb_find(const _Key k) {
-    _Link_type found = _Rb_find1(_M_header.parent, k);
+  _Link_type _Rb_find(const _Key __k) {
+    _Link_type _found = _Rb_find1(_M_header.parent, __k);
 
-    if (found == NULL) return (_M_end());
-    return (found);
+    if (_found == NULL) return (_M_end());
+    return (_found);
   }
-  _Const_Link_type _Rb_find(const _Key k) const {
-    _Const_Link_type found = _Rb_find1(_M_header.parent, k);
+  _Const_Link_type _Rb_find(const _Key __k) const {
+    _Const_Link_type _found = _Rb_find1(_M_header.parent, __k);
 
-    if (found == NULL) return (_M_end());
-    return (found);
+    if (_found == NULL) return (_M_end());
+    return (_found);
   }
   // delete surely
   void _Rb_erase_aux(_Link_type N) {
@@ -797,33 +797,33 @@ class _Rb_tree {
     _M_drop_node(N);
     --_M_header._M_node_count;
   }
-  void _Rb_erase_aux(const_iterator pos) {
-    _Rb_erase_aux(const_cast<_Link_type>(pos._M_node));
+  void _Rb_erase_aux(const_iterator __pos) {
+    _Rb_erase_aux(const_cast<_Link_type>(__pos._M_node));
   }
-  void _Rb_erase_iter(const_iterator pos) {
-    bool leftmost = (pos._M_node == _M_leftmost());
-    bool rightmost = (pos._M_node == _M_rightmost());
+  void _Rb_erase_iter(const_iterator __pos) {
+    bool _leftmost = (__pos._M_node == _M_leftmost());
+    bool _rightmost = (__pos._M_node == _M_rightmost());
 
-    _Rb_erase_aux(pos._M_node);
+    _Rb_erase_aux(__pos._M_node);
     if (_M_header.parent == NULL) {
       _M_header.child[RIGHT] = &_M_header;
       _M_header.child[LEFT] = &_M_header;
-    } else if (leftmost) {
+    } else if (_leftmost) {
       _M_leftmost() = _Tree_minimum(_M_header.parent);
-    } else if (rightmost) {
+    } else if (_rightmost) {
       _M_rightmost() = _Tree_minimum(_M_header.parent);
     }
   }
-  void _Rb_erase_range(const_iterator _first, const_iterator _last) {
-    if (_first == begin() && _last == end())
+  void _Rb_erase_range(const_iterator __first, const_iterator __last) {
+    if (__first == begin() && __last == end())
       _Rb_clear();
     else {
-      const_iterator iter = _first;
+      const_iterator _iter = __first;
 
-      while (iter != _last) {
-        ++iter;
-        _Rb_erase_aux(_first);
-        _first = iter;
+      while (_iter != __last) {
+        ++_iter;
+        _Rb_erase_aux(__first);
+        __first = _iter;
       }
       if (_M_header.parent == NULL) {
         _M_header.child[RIGHT] = &_M_header;
@@ -834,10 +834,10 @@ class _Rb_tree {
       }
     }
   }
-  size_type _Rb_erase(_Key k) {
-    _Link_type N = _Rb_find(k);
-    bool leftmost = (N == _M_leftmost());
-    bool rightmost = (N == _M_rightmost());
+  size_type _Rb_erase(_Key _k) {
+    _Link_type N = _Rb_find(_k);
+    bool _leftmost = (N == _M_leftmost());
+    bool _rightmost = (N == _M_rightmost());
 
     if (N == _M_end()) return (0);
     size_type old_size = size();
@@ -845,9 +845,9 @@ class _Rb_tree {
     if (_M_header.parent == NULL) {
       _M_header.child[RIGHT] = &_M_header;
       _M_header.child[LEFT] = &_M_header;
-    } else if (leftmost) {
+    } else if (_leftmost) {
       _M_header.child[LEFT] = _Tree_minimum(_M_header.parent);
-    } else if (rightmost) {
+    } else if (_rightmost) {
       _M_header.child[RIGHT] = _Tree_maximum(_M_header.parent);
     }
     return (old_size - size());
@@ -865,69 +865,69 @@ class _Rb_tree {
   const_reverse_iterator rend() const {
     return (const_reverse_iterator(begin()));
   }
-  iterator lower_bound(const key_type &_k) {
-    return (_M_lower_bound(_M_begin(), _M_end(), _k));
+  iterator lower_bound(const key_type &__k) {
+    return (_M_lower_bound(_M_begin(), _M_end(), __k));
   }
-  const_iterator lower_bound(const key_type &_k) const {
-    return (_M_lower_bound(_M_begin(), _M_end(), _k));
+  const_iterator lower_bound(const key_type &__k) const {
+    return (_M_lower_bound(_M_begin(), _M_end(), __k));
   }
-  iterator upper_bound(const key_type &_k) {
-    return (_M_upper_bound(_M_begin(), _M_end(), _k));
+  iterator upper_bound(const key_type &__k) {
+    return (_M_upper_bound(_M_begin(), _M_end(), __k));
   }
-  const_iterator upper_bound(const key_type &_k) const {
-    return (_M_upper_bound(_M_begin(), _M_end(), _k));
+  const_iterator upper_bound(const key_type &__k) const {
+    return (_M_upper_bound(_M_begin(), _M_end(), __k));
   }
-  void swap(_Rb_tree &_t) {
+  void swap(_Rb_tree &__t) {
     if (_M_root() == NULL) {
-      if (_t._M_root() != NULL) _M_header._M_move_data(_t._M_header);
-    } else if (_t._M_root() == NULL) {
-      _t._M_header._M_move_data(_M_header);
+      if (__t._M_root() != NULL) _M_header._M_move_data(__t._M_header);
+    } else if (__t._M_root() == NULL) {
+      __t._M_header._M_move_data(_M_header);
     } else {
-      std::swap(_M_root(), _t._M_root());
-      std::swap(_M_leftmost(), _t._M_leftmost());
-      std::swap(_M_rightmost(), _t._M_rightmost());
+      std::swap(_M_root(), __t._M_root());
+      std::swap(_M_leftmost(), __t._M_leftmost());
+      std::swap(_M_rightmost(), __t._M_rightmost());
 
       _M_root()->parent = _M_end();
-      _t._M_root()->parent = _t._M_end();
-      std::swap(_M_header._M_node_count, _t._M_header._M_node_count);
+      __t._M_root()->parent = __t._M_end();
+      std::swap(_M_header._M_node_count, __t._M_header._M_node_count);
     }
-    std::swap(_M_header._alloc, _t._M_header._alloc);
+    std::swap(_M_header._alloc, __t._M_header._alloc);
   }
   allocator_type get_allocator() const { return (_M_header._alloc); }
 };
 
 template <typename _Tp, typename U, typename C, typename A>
-bool operator==(const _Rb_tree<_Tp, U, C, A> &left,
-                const _Rb_tree<_Tp, U, C, A> &right) {
-  return (left.size() == right.size() &&
-          std::equal(left.begin(), left.end(), right.begin()));
+bool operator==(const _Rb_tree<_Tp, U, C, A> &__left,
+                const _Rb_tree<_Tp, U, C, A> &__right) {
+  return (__left.size() == __right.size() &&
+          std::equal(__left.begin(), __left.end(), __right.begin()));
 }
 
 template <typename _Tp, typename U, typename C, typename A>
-bool operator>(const _Rb_tree<_Tp, U, C, A> &left,
-               const _Rb_tree<_Tp, U, C, A> &right) {
-  return (right < left);
+bool operator>(const _Rb_tree<_Tp, U, C, A> &__left,
+               const _Rb_tree<_Tp, U, C, A> &__right) {
+  return (__right < __left);
 }
 
 // equal to lexicographical_compare
 template <typename _Tp, typename U, typename C, typename A>
-bool operator<(const _Rb_tree<_Tp, U, C, A> &left,
-               const _Rb_tree<_Tp, U, C, A> &right) {
-  return (ft::lexicographical_compare(left.begin(), left.end(), right.begin(),
-                                      right.end()));
+bool operator<(const _Rb_tree<_Tp, U, C, A> &__left,
+               const _Rb_tree<_Tp, U, C, A> &__right) {
+  return (ft::lexicographical_compare(__left.begin(), __left.end(), __right.begin(),
+                                      __right.end()));
 }
 
 template <typename _Tp, typename U, typename C, typename A>
 // not equal to lexicographical_compare
-bool operator>=(const _Rb_tree<_Tp, U, C, A> &left,
-                const _Rb_tree<_Tp, U, C, A> &right) {
-  return (!(left < right));
+bool operator>=(const _Rb_tree<_Tp, U, C, A> &__left,
+                const _Rb_tree<_Tp, U, C, A> &__right) {
+  return (!(__left < __right));
 }
 
 template <typename _Tp, typename U, typename C, typename A>
-bool operator<=(const _Rb_tree<_Tp, U, C, A> &left,
-                const _Rb_tree<_Tp, U, C, A> &right) {
-  return (!(right < left));
+bool operator<=(const _Rb_tree<_Tp, U, C, A> &__left,
+                const _Rb_tree<_Tp, U, C, A> &__right) {
+  return (!(__right < __left));
 }
 }  // namespace ft
 

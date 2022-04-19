@@ -14,26 +14,28 @@ struct pair {
 
   // no default/copy constructor
   pair() : first(), second() {}
-  pair(const T1 &a, const T2 &b) : first(a), second(b) {}
-  pair(const pair<T1, T2> &__p) : first(__p.first), second(__p.second) {}
+  pair(const T1 &__a, const T2 &__b) : first(__a), second(__b) {}
+  template<typename U1, typename U2>
+  pair(const pair<U1, U2> &__p) : first(__p.first), second(__p.second) {}
   ~pair() {}
-  pair &operator=(pair const &rhs) {
-    if (this != &rhs) {
-      first = rhs.first;
-      second = rhs.second;
+  pair &operator=(pair const &__rhs) {
+    if (this != &__rhs) {
+      first = __rhs.first;
+      second = __rhs.second;
     }
     return (*this);
   }
   template <class U, class V>
-  pair &operator=(const pair<U, V> &rhs) {
-    first = rhs.first;
-    second = rhs.second;
+  pair &operator=(const pair<U, V> &__rhs) {
+    first = __rhs.first;
+    second = __rhs.second;
     return (*this);
   }
-  void swap(pair &p) {
-    std::swap(first, p.first);
-    std::swap(first, p.second);
-  }
+  // no swap
+  // void swap(pair &p) {
+  //   std::swap(first, p.first);
+  //   std::swap(first, p.second);
+  // }
 };
 
 template <typename _T1, typename _T2>

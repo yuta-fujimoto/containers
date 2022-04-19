@@ -73,7 +73,7 @@ TESTOBJS	:= $(addprefix $(SRCDIR), $(TESTSRCS_CPP:%.cpp=%.o))
 
 test: CXX=clang++
 test: config
-test: $(TESTOBJS) $(OBJS)
+test: $(TESTOBJS) $(OBJS) config
 	$(CXX) $(CXXFLAG) $(TESTOBJS) -o tester && ./tester
 
 tclean: FORCE

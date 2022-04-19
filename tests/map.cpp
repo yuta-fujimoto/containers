@@ -99,8 +99,8 @@ TEST_CASE("MAP") {
   ft::map<double, int> ft_ins_test;
   ft::map<double, int>::iterator ft_ins_it;
 
-  ins_it = ins_test.insert(ins_test.begin(), std::make_pair(1.0, 1));
-  ft_ins_it = ft_ins_test.insert(ft_ins_test.begin(), ft::make_pair(1.0, 1));
+  ins_it = ins_test.insert(ins_test.begin(), std::make_pair((const double)1.0, 1));
+  ft_ins_it = ft_ins_test.insert(ft_ins_test.begin(), ft::make_pair((const double)1.0, 1));
   CHECK_EQ(ins_it->first, ft_ins_it->first);
   CHECK_EQ(ins_it->second, ft_ins_it->second);
 
