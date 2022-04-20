@@ -63,11 +63,13 @@ class vector {
   }
 
  public:
-  vector(const allocator_type& __a = Allocator())
+  explicit vector(const allocator_type& __a = Allocator())
       : alloc(__a), last_(first_), reserved_last_(first_) {}
-  vector(std::size_t __size, const value_type& __v = value_type(),
-         Allocator __a = Allocator())
+  explicit vector(std::size_t __size, const value_type& __v = value_type(),
+                  Allocator __a = Allocator())
       : alloc(__a), last_(first_), reserved_last_(first_) {
+    if (__size > max_size())
+      throw std::length_error("vector");
     resize(__size, __v);
   }
   template <typename InputIterator>
@@ -98,7 +100,7 @@ class vector {
       reserved_last_ = first_ + len;
       last_ = reserved_last_;
 
-      std::copy(__x.begin(), __x.end(), first_);
+      std::uninitialized_copy(__x.begin(), __x.end(), first_);
       for (reverse_iterator riter(old_last.base()), rend(old_first.base());
            riter != rend; ++riter) {
         destroy(riter.base().base());
@@ -106,7 +108,7 @@ class vector {
       alloc.deallocate(old_first.base(), old_capacity);
     } else {
       destroy_until((last_ - 1), (first_ - 1));
-      std::copy(__x.begin(), __x.end(), first_);
+      std::uninitialized_copy(__x.begin(), __x.end(), first_);
       last_ = first_ + __x.size();
     }
     return (*this);
@@ -159,8 +161,9 @@ class vector {
     reserved_last_ = first_ + __sz;
     last_ = first_ + (old_last - old_first);
 
-    std::copy(old_first, old_last, first_);
-    for (reverse_iterator riter(old_last.base()), rend(old_first.base());
+    std::uninitialized_copy(old_first, old_last, first_);
+    for (reverse_iterator riter(old_last.base() - 1),
+         rend(old_first.base() - 1);
          riter != rend; ++riter) {
       destroy(riter.base().base());
     }
@@ -239,10 +242,10 @@ class vector {
 
       // ex: std::string
       std::uninitialized_fill_n(new_first + elems_before, __n, __x);
-      new_last = std::copy(first_, __position, new_first);
-      new_last = std::copy(__position, last_, new_last + __n);
+      new_last = std::uninitialized_copy(first_, __position, new_first);
+      new_last = std::uninitialized_copy(__position, last_, new_last + __n);
 
-      destroy_until(last_, first_);
+      destroy_until(last_ - 1, first_ - 1);
       alloc.deallocate(first_.base(), capacity());
 
       first_ = new_first;
@@ -250,10 +253,12 @@ class vector {
       reserved_last_ = first_ + len;
     } else {
       if (__position != last_) {
-        std::copy_backward(__position, __position + size(),
-                           __position + __n + size());
+        iterator it = last_ - 1;
+        for (; it != __position; --it)
+          construct(it.base() + __n, *it);
+        construct(it.base() + __n, *it);
       }
-      std::fill(__position, __position + __n, __x);
+      std::uninitialized_fill(__position, __position + __n, __x);
       last_ = last_ + __n;
     }
   }
@@ -269,22 +274,26 @@ class vector {
       iterator new_first = allocate(len);
       iterator new_last;
 
-      std::copy(__first, __last, new_first + elems_before);
-      new_last = std::copy(first_, __position, new_first);
-      new_last = std::copy(__position, last_, new_last + n);
+      std::uninitialized_copy(__first, __last, new_first + elems_before);
+      new_last = std::uninitialized_copy(first_, __position, new_first);
+      new_last = std::uninitialized_copy(__position, last_, new_last + n);
 
-      destroy_until(last_, first_);
-      alloc.deallocate(first_.base(), capacity());
+      if (last_ != first_) {
+        destroy_until(last_ - 1, first_ - 1);
+        alloc.deallocate(first_.base(), capacity());
+      }
 
       first_ = new_first;
       last_ = new_last;
       reserved_last_ = first_ + len;
     } else {
       if (__position != last_) {
-        std::copy_backward(__position, __position + size(),
-                           __position + n + size());
+        iterator it = last_ - 1;
+        for (; it != __position; --it)
+          construct(it.base() + n, *it);
+        construct(it.base() + n, *it);
       }
-      std::copy(__first, __last, __position);
+      std::uninitialized_copy(__first, __last, __position);
       last_ = last_ + n;
     }
   }

@@ -37,7 +37,6 @@ class map {
   class value_compare
       : public std::binary_function<value_type, value_type, bool> {
     // get first/second value type with baluebinary funtion
-    // FRIEND !!!
     friend class map<Key, _Tp, Compare, _Alloc>;
 
    protected:
@@ -50,11 +49,12 @@ class map {
       return (comp_(__x.first, __y.first));
     }
   };
-  map(const Compare& __comp = Compare(),
+  explicit map(const Compare& __comp = Compare(),
                const allocator_type& __alloc = allocator_type())
       : _M_t(__comp, __alloc) {}
   template <class InputIterator>
-  map(InputIterator __first, InputIterator __last, const Compare& __comp = Compare(),
+  map(InputIterator __first, InputIterator __last,
+      const Compare& __comp = Compare(),
       const allocator_type& __alloc = allocator_type())
       : _M_t(__comp, __alloc) {
     _M_t._Rb_insert_range(__first, __last);
@@ -143,7 +143,9 @@ class map {
   bool empty() const { return (_M_t.size() == 0); }
   size_type erase(const key_type& __x) { return (_M_t._Rb_erase(__x)); }
   void erase(iterator __pos) { _M_t._Rb_erase_iter(__pos); }
-  void erase(iterator __first, iterator __last) { _M_t._Rb_erase_range(__first, __last); }
+  void erase(iterator __first, iterator __last) {
+    _M_t._Rb_erase_range(__first, __last);
+  }
   iterator lower_bound(const key_type& __x) { return (_M_t.lower_bound(__x)); }
   const_iterator lower_bound(const key_type& __x) const {
     return (_M_t.lower_bound(__x));
@@ -161,12 +163,10 @@ class map {
   allocator_type get_allocator() const { return (_M_t.get_allocator()); }
 
   template <typename T, typename U, typename C, typename A>
-  friend bool operator==(map<T, U, C, A> const&,
-                         map<T, U, C, A> const&);
+  friend bool operator==(map<T, U, C, A> const&, map<T, U, C, A> const&);
 
   template <typename T, typename U, typename C, typename A>
-  friend bool operator<(map<T, U, C, A> const&,
-                        map<T, U, C, A> const&);
+  friend bool operator<(map<T, U, C, A> const&, map<T, U, C, A> const&);
 };
 
 template <typename T, typename U, typename C, typename A>

@@ -144,12 +144,6 @@ TEST_CASE("VECTOR") {
     test.assign(v2.begin(), v2.end());
     check_all_value(ft_test, test);
 
-    // it works properly...
-    ft_test.assign('f', 'g');
-    test.assign('f', 'g');
-
-    // ft_test.assign(1.23, 3.22);
-    // test.assign(1.23, 3.22);
     check_all_value(ft_test, test);
   }
   SUBTITLE("ASSIGN-RANGE");
@@ -181,13 +175,6 @@ TEST_CASE("VECTOR") {
     ft::vector<int> ft_test;
     std::vector<int> test;
 
-    // to avoid segv this will return error(ex: pop_back => reserve),
-    // thus these tests don't carry out.
-    // ft_test.pop_back();
-    // test.pop_back();
-    // CHECK_EQ(test.empty(), ft_test.empty());
-    // CHECK_EQ(test.capacity(), ft_test.capacity());
-    // CHECK_EQ(test.size(), ft_test.size());
     assign_random_value(ft_test, test, 2);
     ft_test.pop_back();
     test.pop_back();
@@ -204,7 +191,6 @@ TEST_CASE("VECTOR") {
     std::vector<int> v2;
     std::vector<int>::iterator it;
 
-    // assign_random_value(ft_v1, v1, 10);
     ft_test.insert(ft_test.begin(), 10, 10);
     test.insert(test.begin(), 10, 10);
     check_all_value(ft_test, test);
@@ -225,13 +211,13 @@ TEST_CASE("VECTOR") {
 
     try {
       ft_test.insert(ft_test.begin(), ft_test.max_size() + 1, 3);
-    } catch(const std::exception& e) {
+    } catch (const std::exception& e) {
       std::cout << "FT" << std::endl;
       std::cout << e.what() << std::endl;
     }
     try {
       test.insert(test.begin(), test.max_size() + 1, 3);
-    } catch(const std::exception& e) {
+    } catch (const std::exception& e) {
       std::cout << "STD" << std::endl;
       std::cout << e.what() << std::endl;
     }
@@ -327,11 +313,11 @@ TEST_CASE("VECTOR") {
 
     //  (0) vs (0)
     // COMPARE
-    ft_v1.push_back(value(0));
-    ft_v2.push_back(value(0));
     v1.push_back(value(0));
     v2.push_back(value(0));
-    CHECK_EQ((ft_v1 == ft_v2), (v1 == v2));
+    ft_v1.push_back(value(0));
+    ft_v2.push_back(value(0));
+    CHECK_EQ((v1 == v2), (ft_v1 == ft_v2));
     CHECK_EQ((ft_v1 != ft_v2), (v1 != v2));
     CHECK_EQ((ft_v1 > ft_v2), (v1 > v2));
     CHECK_EQ((ft_v1 < ft_v2), (v1 < v2));
@@ -339,8 +325,8 @@ TEST_CASE("VECTOR") {
     CHECK_EQ((ft_v1 <= ft_v2), (v1 <= v2));
 
     // (0, 1) vs (0)
-    ft_v1.push_back(value(1));
     v1.push_back(value(1));
+    ft_v1.push_back(value(1));
     CHECK_EQ((ft_v1 == ft_v2), (v1 == v2));
     CHECK_EQ((ft_v1 != ft_v2), (v1 != v2));
     CHECK_EQ((ft_v1 > ft_v2), (v1 > v2));
@@ -390,5 +376,37 @@ TEST_CASE("VECTOR") {
     CHECK_EQ(v.size(), ft_v.size());
     CHECK_EQ(v[0], ft_v[0]);
     CHECK_EQ(v.max_size(), ft_v.max_size());
+  }
+  SUBTITLE("STRING");
+  {
+    ft::vector<std::string> ft_str_v;
+    ft::vector<std::string> ft_str_v_copy;
+    std::vector<std::string> str_v;
+    std::vector<std::string> str_v_copy;
+
+    ft_str_v.reserve(100);
+    str_v.reserve(100);
+
+    str_v_copy.push_back("HELLO");
+    str_v_copy.push_back("HELLO");
+    ft_str_v_copy.push_back("HELLO");
+    ft_str_v_copy.push_back("HELLO");
+
+    ft_str_v = ft_str_v_copy;
+    str_v = str_v_copy;
+
+    ft_str_v.insert(ft_str_v.begin(), ft_str_v_copy.begin(),
+                    ft_str_v_copy.end());
+    str_v.insert(str_v.begin(), str_v_copy.begin(), str_v_copy.end());
+
+    ft_str_v.insert(ft_str_v.begin(), "HELLO");
+    str_v.insert(str_v.begin(), "HELLO");
+
+    size_t size = ft_str_v.size();
+    for (size_t i = 0; i < size; ++i) {
+      ft_str_v.erase(ft_str_v.begin());
+      str_v.erase(str_v.begin());
+    }
+    check_all_value(ft_str_v, str_v);
   }
 }

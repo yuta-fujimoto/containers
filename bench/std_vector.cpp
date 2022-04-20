@@ -115,7 +115,7 @@ int main() {
   t.record("POP_BACK");
 
   for (int i = 0; i < REPEAT; ++i) {
-    v.insert(v.end(), i);
+    v.insert(v.begin(), i);
   }
   t.record("INSERT-1");
 

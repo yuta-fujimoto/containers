@@ -1,8 +1,8 @@
 #include "test_common.hpp"
 
-struct value {
+struct value_it {
   int x;
-  value(int x = 0) : x(x) {}
+  value_it(int x = 0) : x(x) {}
   int get() const { return x; }
 };
 
@@ -13,8 +13,8 @@ TEST_CASE("ITERATOR")
 		std::vector<int> v(4, 5);
 		ft::vector<int> ft_v(4, 5);
 
-		std::vector<value> v2(3, 4);
-		ft::vector<value> ft_v2(3, 4);
+		std::vector<value_it> v2(3, 4);
+		ft::vector<value_it> ft_v2(3, 4);
 
 		// check all value
 		std::vector<int>::iterator it = v.begin();
@@ -51,8 +51,8 @@ TEST_CASE("ITERATOR")
 		CHECK_EQ(v.end() - v.begin(), ft_v.end() - ft_v.begin());
 
 		// operator ->
-		ft::vector<value>::iterator ft_it2 = ft_v2.begin();
-		std::vector<value>::iterator it2 = v2.begin();
+		ft::vector<value_it>::iterator ft_it2 = ft_v2.begin();
+		std::vector<value_it>::iterator it2 = v2.begin();
 		int x = ft_it2->x;
 		int x_get = ft_it2->get();
 		CHECK_EQ(it2->x, x);
@@ -73,8 +73,8 @@ TEST_CASE("ITERATOR")
 		std::vector<int> v(4, 5);
 		ft::vector<int> ft_v(4, 5);
 
-		std::vector<value> v2(3, 4);
-		ft::vector<value> ft_v2(3, 4);
+		std::vector<value_it> v2(3, 4);
+		ft::vector<value_it> ft_v2(3, 4);
 	
 		std::vector<int>::const_iterator cit = v.begin();
 		std::vector<int>::const_iterator cite = v.end();
@@ -92,8 +92,8 @@ TEST_CASE("ITERATOR")
 		// *cit = 21;
 
 		// operator ->, []
-		ft::vector<value>::const_iterator ft_cit2 = ft_v2.begin();
-		std::vector<value>::const_iterator cit2 = v2.begin();
+		ft::vector<value_it>::const_iterator ft_cit2 = ft_v2.begin();
+		std::vector<value_it>::const_iterator cit2 = v2.begin();
 		CHECK_EQ(cit2[2].x, ft_cit2[2].x);
 		CHECK_EQ((2 + cit2)->x, (2 + ft_cit2)->x);
 		int x = ft_cit2->x;
@@ -108,8 +108,8 @@ TEST_CASE("ITERATOR")
 		std::vector<int> v(3, 4);
 		ft::vector<int> ft_v(3, 4);
 
-		std::vector<value> v2(3, 4);
-		ft::vector<value> ft_v2(3, 4);
+		std::vector<value_it> v2(3, 4);
+		ft::vector<value_it> ft_v2(3, 4);
 
 		// check all values
 		std::vector<int>::reverse_iterator rib = v.rbegin();
@@ -128,8 +128,8 @@ TEST_CASE("ITERATOR")
 		ft_rib = ft_v.rbegin();
 		CHECK_EQ(rie - rib, ft_rie - ft_rib);
 
-		ft::vector<value>::reverse_iterator ft_it2 = ft_v2.rbegin();
-		std::vector<value>::reverse_iterator it2 = v2.rbegin();
+		ft::vector<value_it>::reverse_iterator ft_it2 = ft_v2.rbegin();
+		std::vector<value_it>::reverse_iterator it2 = v2.rbegin();
 		CHECK_EQ((*(it2 + 2)).x, (*(ft_it2 + 2)).x);
 		CHECK_EQ(it2[2].x, ft_it2[2].x);
 		int x = ft_it2->x;
@@ -151,8 +151,8 @@ TEST_CASE("ITERATOR")
 		std::vector<int> v(4, 5);
 		ft::vector<int> ft_v(4, 5);
 
-		std::vector<value> v2(3, 4);
-		ft::vector<value> ft_v2(3, 4);
+		std::vector<value_it> v2(3, 4);
+		ft::vector<value_it> ft_v2(3, 4);
 	
 		std::vector<int>::const_reverse_iterator cit = v.rbegin();
 		std::vector<int>::const_reverse_iterator cite = v.rend();
@@ -170,8 +170,8 @@ TEST_CASE("ITERATOR")
 		// *cit = 21;
 
 		// operator ->, []
-		ft::vector<value>::const_reverse_iterator ft_cit2 = ft_v2.rbegin();
-		std::vector<value>::const_reverse_iterator cit2 = v2.rbegin();
+		ft::vector<value_it>::const_reverse_iterator ft_cit2 = ft_v2.rbegin();
+		std::vector<value_it>::const_reverse_iterator cit2 = v2.rbegin();
 		CHECK_EQ(cit2[2].x, ft_cit2[2].x);
 		int x = ft_cit2->x;
 		int x_get = ft_cit2->get();

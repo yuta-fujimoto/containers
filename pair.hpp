@@ -69,9 +69,9 @@ pair<_T1, _T2> make_pair(_T1 first, _T2 second) {
   return (pair<_T1, _T2>(first, second));
 }
 
-template <class _T1, class _T2>
-void swap(pair<_T1, _T2> &_x, pair<_T1, _T2> &_y) {
-  _x.swap(_y);
-}
+// template <class _T1, class _T2>
+// void swap(pair<_T1, _T2> &_x, pair<_T1, _T2> &_y) {
+//   _x.swap(_y);
+// }
 }  // namespace ft
 #endif
