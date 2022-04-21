@@ -1,6 +1,5 @@
 #include <set>
-
-#include "../set.hpp"
+#include "set.hpp"
 #include "test_common.hpp"
 
 #define SET_SIZE 5

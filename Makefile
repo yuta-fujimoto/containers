@@ -11,9 +11,6 @@ DEPENDS := $(addprefix $(BINDIR)/, $(SRCS:.cpp=.d))
 all : config $(NAME)
 
 config:
-	@if [ -e $(BINDIR) ]; then\
-		mkdir -p $(BINDIR);\
-	fi
 	@if [ -e .doctest ]; then\
 		git submodule update --init --recursive;\
 	fi
@@ -56,32 +53,5 @@ cover:
 	genhtml cov_test.info -o cov_test
 	rm *.png
 	rm -rf cov_test.info *.png tester *.gcda *.gcno *.info
-
-#  Google test #
-# -fsanitize=integer
-
-CXXFLAG		:= -std=c++98 -DDEBUG -g -fsanitize=address
-INCLUDE		:= -I./.doctest/doctest/
-
-TESTDIR		:= ./tests/
-# TESTSRCS_C	:= $(filter-out main.c,$(SRCS))
-TESTSRCS_CPP:= $(wildcard $(TESTDIR)*.cpp)
-TESTOBJS	:= $(addprefix $(SRCDIR), $(TESTSRCS_CPP:%.cpp=%.o))
-
-%.o: %.cpp
-	$(CXX) $(CXXFLAG) $(INCLUDE) -c $< -o $@
-
-test: CXX=clang++
-test: config
-test: $(TESTOBJS) $(OBJS) config
-	$(CXX) $(CXXFLAG) $(TESTOBJS) -o tester && ./tester
-
-tclean: FORCE
-	$(RM) $(TESTOBJS)
-
-tfclean: tclean
-	$(RM) -r tester tester.dSYM
-
-tre: tfclean test
 
 -include $(BINDIR)/*.d

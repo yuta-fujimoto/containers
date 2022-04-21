@@ -1,4 +1,4 @@
-#include "../set.hpp"
+#include "set.hpp"
 
 #include <set>
 
@@ -233,8 +233,7 @@ TEST_CASE("SET") {
   ft::set<int> ft_s_int;
 
   int* pointer = s_int.get_allocator().allocate(2);
-  int* ft_pointer =
-      ft_s_int.get_allocator().allocate(2);
+  int* ft_pointer = ft_s_int.get_allocator().allocate(2);
 
   pointer[0] = 100;
   pointer[1] = 200;
@@ -295,5 +294,3 @@ TEST_CASE("SET") {
   CHECK_EQ(*ft_assign.begin(), *assign.begin());
   CHECK_EQ(*(++ft_assign.begin()), *(++assign.begin()));
 }
-
-

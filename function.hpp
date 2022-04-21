@@ -1,7 +1,12 @@
 #ifndef FUNCTION_H_
 #define FUNCTION_H_
 
+/*
+ funcs for set/map 
+*/
 namespace ft {
+
+
 template <typename _Arg, typename _Result>
 struct unary_function {
   typedef _Arg argument_type;

@@ -5,6 +5,7 @@ FT_SRCS :=	timer.cpp \
 		ft_vector.cpp
 STD_SRCS :=	timer.cpp \
 		std_vector.cpp
+INCLUDE := -I ../../
 BINDIR := bin
 FT_OBJS := $(addprefix $(BINDIR)/, $(FT_SRCS:.cpp=.o))
 STD_OBJS := $(addprefix $(BINDIR)/, $(STD_SRCS:.cpp=.o))
@@ -15,13 +16,13 @@ DEPENDS := $(addprefix $(BINDIR)/, $(SRCS:.cpp=.d))
 all : $(BINDIR) $(NAME)
 
 ft_%: $(BINDIR)/ft_%.o $(BINDIR)/timer.o
-	$(CXX) $(CXXFLAGS) $^ -o  $@
+	$(CXX) $(CXXFLAGS) $(INCLUDE) $^ -o  $@
 
 std_%: $(BINDIR)/std_%.o $(BINDIR)/timer.o
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDE) $^ -o $@
 
 $(BINDIR)/%.o: %.cpp
-	@$(CXX) $(CXXFLAGS) -o $@ -c $<
+	@$(CXX) $(CXXFLAGS) $(INCLUDE) -o $@ -c $<
 
 $(BINDIR):
 	mkdir -p $@

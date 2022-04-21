@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "common.hpp"
-#include "enable_if.hpp"
-#include "is_integral.hpp"
 #include "lexicographical_compare.hpp"
 #include "normal_iterator.hpp"
 #include "reverse_iterator.hpp"
@@ -92,20 +90,14 @@ class vector {
     const size_type len = __x.size();
     if (len > capacity()) {
       iterator ptr = allocate(len);
-      iterator old_first = first_;
-      iterator old_last = last_;
-      size_type old_capacity = capacity();
+
+      std::uninitialized_copy(__x.begin(), __x.end(), ptr);
+      destroy_until((last_ - 1), (first_ - 1));
+      alloc.deallocate(first_.base(), capacity());
 
       first_ = ptr;
       reserved_last_ = first_ + len;
       last_ = reserved_last_;
-
-      std::uninitialized_copy(__x.begin(), __x.end(), first_);
-      for (reverse_iterator riter(old_last.base()), rend(old_first.base());
-           riter != rend; ++riter) {
-        destroy(riter.base().base());
-      }
-      alloc.deallocate(old_first.base(), old_capacity);
     } else {
       destroy_until((last_ - 1), (first_ - 1));
       std::uninitialized_copy(__x.begin(), __x.end(), first_);
@@ -145,29 +137,21 @@ class vector {
   const_reference back() const { return (*(end() - 1)); }
   void clear() {
     _M_erase_at_end(first_);
-    // destroy_until(rbegin(), rend());
   }
   // may need to reallocate memory, so change all member var
   void reserve(size_type __sz) {
     if (max_size() < __sz) throw std::length_error("vector::reserve");
     if (__sz <= capacity()) return;
     iterator ptr = allocate(__sz);
+    size_type old_size = size();
 
-    iterator old_first = first_;
-    iterator old_last = last_;
-    size_type old_capacity = capacity();
+    std::uninitialized_copy(first_, last_, ptr);
+    destroy_until(last_ - 1, first_ - 1);
+    alloc.deallocate(first_.base(), capacity());
 
     first_ = ptr;
     reserved_last_ = first_ + __sz;
-    last_ = first_ + (old_last - old_first);
-
-    std::uninitialized_copy(old_first, old_last, first_);
-    for (reverse_iterator riter(old_last.base() - 1),
-         rend(old_first.base() - 1);
-         riter != rend; ++riter) {
-      destroy(riter.base().base());
-    }
-    alloc.deallocate(old_first.base(), old_capacity);
+    last_ = first_ + old_size;
   }
   void resize(size_type __sz, value_type __c = value_type()) {
     if (__sz > size()) {
@@ -212,7 +196,7 @@ class vector {
       vector __tmp(__n, __val, get_allocator());
       swap(__tmp);
     } else if (__n > size()) {
-      std::fill(begin(), begin() + __n, __val);
+      std::uninitialized_fill(begin(), begin() + __n, __val);
       last_ = begin() + __n;
     } else {
       _M_erase_at_end(std::fill_n(first_, __n, __val));
@@ -306,7 +290,7 @@ class vector {
     if (__first != __last) {
       if (__last != end()) std::copy(__last, end(), __first);
       last_ = __first.base() + (end() - __last);
-      // destroy_until(end().base(), );
+      // std has no destroy
     }
     return (__first);
   }
@@ -324,42 +308,42 @@ bool operator!=(vector<_Tp, U> const& __left, vector<_Tp, U> const& __right) {
   return (!(__left == __right));
 }
 
-template <typename _T, typename _Alloc>
-bool operator==(vector<_T, _Alloc> const& __left,
-                vector<_T, _Alloc> const& __right) {
+template <typename _Tp, typename _Alloc>
+bool operator==(vector<_Tp, _Alloc> const& __left,
+                vector<_Tp, _Alloc> const& __right) {
   return (__left.size() == __right.size() &&
           std::equal(__left.begin(), __left.end(), __right.begin()));
 }
 
-template <typename _T, typename _Alloc>
-bool operator>(vector<_T, _Alloc> const& __left,
-               vector<_T, _Alloc> const& __right) {
+template <typename _Tp, typename _Alloc>
+bool operator>(vector<_Tp, _Alloc> const& __left,
+               vector<_Tp, _Alloc> const& __right) {
   return (__right < __left);
 }
 
-template <typename _T, typename _Alloc>
+template <typename _Tp, typename _Alloc>
 // equal to lexicographical_compare
-bool operator<(vector<_T, _Alloc> const& __left,
-               vector<_T, _Alloc> const& __right) {
+bool operator<(vector<_Tp, _Alloc> const& __left,
+               vector<_Tp, _Alloc> const& __right) {
   return (ft::lexicographical_compare(__left.begin(), __left.end(),
                                       __right.begin(), __right.end()));
 }
 
-template <typename _T, typename _Alloc>
+template <typename _Tp, typename _Alloc>
 // not equal to lexicographical_compare
-bool operator>=(vector<_T, _Alloc> const& __left,
-                vector<_T, _Alloc> const& __right) {
+bool operator>=(vector<_Tp, _Alloc> const& __left,
+                vector<_Tp, _Alloc> const& __right) {
   return (!(__left < __right));
 }
 
-template <typename _T, typename _Alloc>
-bool operator<=(vector<_T, _Alloc> const& left,
-                vector<_T, _Alloc> const& __right) {
+template <typename _Tp, typename _Alloc>
+bool operator<=(vector<_Tp, _Alloc> const& left,
+                vector<_Tp, _Alloc> const& __right) {
   return (!(__right < left));
 }
 
-template <typename _T, typename _Alloc>
-void swap(vector<_T, _Alloc>& __x, vector<_T, _Alloc>& __y) {
+template <typename _Tp, typename _Alloc>
+void swap(vector<_Tp, _Alloc>& __x, vector<_Tp, _Alloc>& __y) {
   __x.swap(__y);
 }
 }  // namespace ft

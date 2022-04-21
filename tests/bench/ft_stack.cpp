@@ -1,5 +1,4 @@
-#include "../stack.hpp"
-// #include "../vector.hpp"
+#include "stack.hpp"
 #include "timer.hpp"
 
 int main() { 

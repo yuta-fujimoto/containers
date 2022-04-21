@@ -1,32 +1,31 @@
-#include "../map.hpp"
+#include "set.hpp"
 #include "timer.hpp"
 
 int main() {
-  int a;
-  ft::map<int, int> m;
-  ft::map<int, int>::size_type size;
-  ft::map<int, int>::iterator it;
-  ft::map<int, int>::reverse_iterator rit;
-  ft::map<int, int>::allocator_type alloc;
-  ft::pair<ft::map<int, int>::iterator, ft::map<int, int>::iterator> equal;
-  ft::map<int, int>::key_compare key_c;
-  ft::map<int, int>::value_compare value_c = m.value_comp();
+  ft::set<int> m;
+  ft::set<int>::size_type size;
+  ft::set<int>::iterator it;
+  ft::set<int>::reverse_iterator rit;
+  ft::set<int>::allocator_type alloc;
+  ft::pair<ft::set<int>::iterator, ft::set<int>::iterator> equal;
+  ft::set<int>::key_compare key_c;
+  ft::set<int>::value_compare value_c = m.value_comp();
   bool b;
   timer t;
 
-  ft::map<int, int> temp;
-  temp.insert(ft::make_pair(-1, 1));
-  temp.insert(ft::make_pair(-2, 2));
+  ft::set<int> temp;
+  temp.insert(-1);
+  temp.insert(-2);
 
   t.start();
 
   for (int i = 0; i < REPEAT; ++i) {
-    ft::map<int, int> new_s(temp.begin(), temp.end());
+    ft::set<int> new_s(temp.begin(), temp.end());
   }
   t.record("CONST-1");
 
   for (int i = 0; i < REPEAT; ++i) {
-    ft::map<int, int> new_s(temp);
+    ft::set<int> new_s(temp);
   }
   t.record("CONST-2");
 
@@ -68,14 +67,14 @@ int main() {
   }
   t.record("MAX_SIZE");
   for (int i = 0; i < REPEAT; ++i) {
-    m.insert(ft::make_pair(i, i));
+    m.insert(i);
   }
   t.record("INSERT-1");
   for (int i = 0; i < REPEAT; ++i) {
-    m.insert(m.end(), ft::make_pair(i + REPEAT, i));
+    m.insert(m.end(), i + REPEAT);
   }
   t.record("INSERT-2");
-  for (int i = 0; i < 1; ++i) {
+  for (int i = 0; i < REPEAT; ++i) {
     m.insert(temp.begin(), temp.end());
   }
   t.record("INSERT-3");
@@ -92,8 +91,10 @@ int main() {
 
   // reinsert for test
   for (int i = 0; i < REPEAT; ++i) {
-    m.insert(ft::make_pair(i, i));
+    m.insert(i);
   }
+  
+  t.start();
   for (int i = 0; i < 1; ++i) {
     m.erase(m.begin(), m.end());
   }
@@ -101,7 +102,7 @@ int main() {
 
   // reinsert for test
   for (int i = 0; i < REPEAT; ++i) {
-    m.insert(ft::make_pair(i, i));
+    m.insert(i);
   }
   t.start();
 
@@ -109,16 +110,6 @@ int main() {
     m.swap(temp);
   }
   t.record("SWAP");
-
-  for (int i = 0; i < REPEAT; ++i) {
-    a = m[i];
-  }
-  t.record("[]");
-
-  for (int i = 0; i < REPEAT; ++i) {
-    a = m.at(i);
-  }
-  t.record("AT");
 
   for (int i = 0; i < REPEAT; ++i) {
     it = m.find(i);

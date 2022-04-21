@@ -1,23 +1,23 @@
-#include <vector>
+#include "vector.hpp"
 #include "timer.hpp"
 
 int main() {
   int a;
-  std::vector<int> v;
-  std::vector<int>::iterator it;
-  std::vector<int>::reverse_iterator rit;
-  std::vector<int>::size_type s;
-  std::vector<int>::reference r = a;
+  ft::vector<int> v;
+  ft::vector<int>::iterator it;
+  ft::vector<int>::reverse_iterator rit;
+  ft::vector<int>::size_type s;
+  ft::vector<int>::reference r = a;
   bool b;
   timer t;
 
-  std::vector<int> temp;
+  ft::vector<int> temp;
   temp.push_back(1);
   temp.push_back(2);
 
   t.start();
   for (int i = 0; i < REPEAT; ++i) {
-    std::vector<int> new_v(temp.begin(), temp.end());
+    ft::vector<int> new_v(temp.begin(), temp.end());
   }
   t.record("CONSTRUCT");
 
@@ -87,12 +87,12 @@ int main() {
   for (int i = 0; i < REPEAT; ++i) {
     r = v.front();
   }
-  t.record("front");
+  t.record("FRONT");
 
   for (int i = 0; i < REPEAT; ++i) {
     r = v.back();
   }
-  t.record("back");
+  t.record("BACK");
 
   for (int i = 0; i < REPEAT; ++i) {
     v.assign(temp.begin(), temp.end());
@@ -115,7 +115,7 @@ int main() {
   t.record("POP_BACK");
 
   for (int i = 0; i < REPEAT; ++i) {
-    v.insert(v.begin(), i);
+    v.insert(v.end(), i);
   }
   t.record("INSERT-1");
 

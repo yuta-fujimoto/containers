@@ -1,4 +1,4 @@
-#include "../vector.hpp"
+#include "vector.hpp"
 
 #include <vector>
 
@@ -19,8 +19,6 @@ struct value {
 template <typename _Tp>
 void assign_random_value(ft::vector<_Tp>& ft_v, std::vector<_Tp>& v,
                          std::size_t size) {
-  int val;
-
   for (std::size_t i = 0; i < size; i++) {
     ft_v.push_back(i);
     v.push_back(i);
@@ -407,6 +405,10 @@ TEST_CASE("VECTOR") {
       ft_str_v.erase(ft_str_v.begin());
       str_v.erase(str_v.begin());
     }
+    check_all_value(ft_str_v, str_v);
+
+    ft_str_v.assign(10, "HEE");
+    str_v.assign(10, "HEE");
     check_all_value(ft_str_v, str_v);
   }
 }

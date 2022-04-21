@@ -2,6 +2,7 @@
 
 template <typename _Tp>
 bool ft_enable_if_test(_Tp t, typename ft::enable_if<ft::is_integral<_Tp>::value>::type* = 0) {
+  (void) t;
   return (true);
 }
 

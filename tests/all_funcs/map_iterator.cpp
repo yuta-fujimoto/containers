@@ -1,6 +1,6 @@
 #include <map>
 
-#include "../map.hpp"
+#include "map.hpp"
 #include "test_common.hpp"
 
 #define MAP_SIZE 5

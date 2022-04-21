@@ -1,6 +1,5 @@
 #include "test_common.hpp"
 
-
 template <class _Iterator>
 typename ft::iterator_traits<_Iterator>::value_type
 sum(_Iterator first, _Iterator last)

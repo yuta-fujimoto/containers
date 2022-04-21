@@ -3,6 +3,7 @@
 
 #include "common.hpp"
 #include "iterator_traits.hpp"
+#include "type_traits.hpp"
 
 namespace ft {
 

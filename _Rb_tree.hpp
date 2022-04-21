@@ -9,15 +9,15 @@
 #include <iostream>
 #include <limits>
 
-#include "enable_if.hpp"
+#include "type_traits.hpp"
 #include "iterator_traits.hpp"
 #include "lexicographical_compare.hpp"
 #include "pair.hpp"
 #include "reverse_iterator.hpp"
 
 namespace ft {
-enum _RB_tree_color { BLACK = 0, RED = 1, HEAD = 2 };
-enum _Dir { LEFT = false, RIGHT = true };
+enum _RB_tree_color { _S_black = 0, _S_red = 1, _S_head = 2 };
+enum _Dir { _D_left = false, _D_right = true };
 
 // RBnode :
 template <typename _Val>
@@ -31,42 +31,42 @@ class _RB_tree_node {
   _Link_type child[2];
   _RB_tree_color color;
 
-  _RB_tree_node() { this->color = RED; }
-  // void print(int level) {
-  //   for (int i = 0; i < level; ++i) std::cout << '\t';
-  //   if (color == RED)
-  //     std::cout << "\033[31m"
-  //               << "[" << val->first << ", " << val->second << "]"
-  //               << "\033[0m" << std::endl;
-  //   else
-  //     std::cout << "[" << val->first << ", " << val->second << "]" <<
-  //     std::endl;
-  // }
+  _RB_tree_node() { this->color = _S_red; }
+  void print(int level) {
+    for (int i = 0; i < level; ++i) std::cout << '\t';
+    if (color == _S_red)
+      std::cout << "\033[31m"
+                << "[" << val->first << ", " << val->second << "]"
+                << "\033[0m" << std::endl;
+    else
+      std::cout << "[" << val->first << ", " << val->second << "]" <<
+      std::endl;
+  }
 };
 
 template <typename _Val>
 _RB_tree_node<_Val> *_Tree_minimum(_RB_tree_node<_Val> *N) {
   if (N == NULL) return (NULL);
-  while (N->child[LEFT] != NULL) N = N->child[LEFT];
+  while (N->child[_D_left] != NULL) N = N->child[_D_left];
   return (N);
 }
 template <typename _Val>
 _RB_tree_node<_Val> *_Tree_maximum(_RB_tree_node<_Val> *N) {
   if (N == NULL) return (NULL);
-  while (N->child[RIGHT] != NULL) N = N->child[RIGHT];
+  while (N->child[_D_right] != NULL) N = N->child[_D_right];
   return (N);
 }
 // the node with the smallest key greater than n's key
 template <typename _Val>
 _RB_tree_node<_Val> *_Tree_successor(_RB_tree_node<_Val> *_X) {
-  if (_X->child[RIGHT] != NULL) return (_Tree_minimum(_X->child[RIGHT]));
+  if (_X->child[_D_right] != NULL) return (_Tree_minimum(_X->child[_D_right]));
   _RB_tree_node<_Val> *_Y = _X->parent;
-  while (_Y != NULL && _X == _Y->child[RIGHT]) {
+  while (_Y != NULL && _X == _Y->child[_D_right]) {
     _X = _Y;
     _Y = _Y->parent;
   }
   // size(tree) != 1
-  if (_X->child[RIGHT] != _Y) {
+  if (_X->child[_D_right] != _Y) {
     _X = _Y;
   }
   return (_X);
@@ -75,10 +75,10 @@ _RB_tree_node<_Val> *_Tree_successor(_RB_tree_node<_Val> *_X) {
 template <typename _Val>
 _RB_tree_node<_Val> *_Tree_predecessor(_RB_tree_node<_Val> *_X) {
   // _X is _M_header (not root)
-  if (_X->color == HEAD) return (_X->child[RIGHT]);
-  if (_X->child[LEFT] != NULL) return (_Tree_maximum(_X->child[LEFT]));
+  if (_X->color == _S_head) return (_X->child[_D_right]);
+  if (_X->child[_D_left] != NULL) return (_Tree_maximum(_X->child[_D_left]));
   _RB_tree_node<_Val> *_Y = _X->parent;
-  while (_Y != NULL && _X == _Y->child[LEFT]) {
+  while (_Y != NULL && _X == _Y->child[_D_left]) {
     _X = _Y;
     _Y = _Y->parent;
   }
@@ -215,14 +215,14 @@ struct _Rb_tree_header : public _RB_tree_node<_Val> {
   size_t _M_node_count;
 
   _Rb_tree_header() {
-    this->color = HEAD;
+    this->color = _S_head;
     _M_reset();
   }
   void _M_move_data(_Rb_tree_header &_from) {
     this->color = _from.color;
     this->parent = _from.parent;
-    this->child[LEFT] = _from.child[LEFT];
-    this->child[RIGHT] = _from.child[RIGHT];
+    this->child[_D_left] = _from.child[_D_left];
+    this->child[_D_right] = _from.child[_D_right];
     // TODO
     // this->parent->parent = &_from;
     _M_node_count = _from._M_node_count;
@@ -231,8 +231,8 @@ struct _Rb_tree_header : public _RB_tree_node<_Val> {
   }
   void _M_reset() {
     this->parent = NULL;
-    this->child[LEFT] = this;
-    this->child[RIGHT] = this;
+    this->child[_D_left] = this;
+    this->child[_D_right] = this;
     _M_node_count = 0;
   }
 };
@@ -267,9 +267,9 @@ class _Rb_tree {
 
   _Link_type _M_get_node(void) { return (_M_header._node_alloc.allocate(1)); }
   void _M_construct_node(_Link_type &__node, const _Val &__x) {
-    __node->color = RED;
-    __node->child[LEFT] = NULL;
-    __node->child[RIGHT] = NULL;
+    __node->color = _S_red;
+    __node->child[_D_left] = NULL;
+    __node->child[_D_right] = NULL;
     __node->parent = NULL;
     __node->val = _M_header._alloc.allocate(1);
     _M_header._alloc.construct(__node->val, __x);
@@ -286,7 +286,7 @@ class _Rb_tree {
     _M_header._node_alloc.deallocate(__p, 1);
   }
   bool childDir(_Link_type &N) {
-    return (N == (N->parent)->child[RIGHT] ? RIGHT : LEFT);
+    return (N == (N->parent)->child[_D_right] ? _D_right : _D_left);
   }
   _Link_type _Rotate_dir_root(_Link_type P, const bool &__dir) {
     _Link_type G = P->parent;         // GrandParent
@@ -302,7 +302,7 @@ class _Rb_tree {
     S->parent = G;
 
     if (G != &_M_header)
-      G->child[P == G->child[RIGHT] ? RIGHT : LEFT] = S;
+      G->child[P == G->child[_D_right] ? _D_right : _D_left] = S;
     else {
       _M_header.parent = S;
       // S->parent = &_M_header;     S->parent = G;
@@ -323,25 +323,25 @@ class _Rb_tree {
     }
     P->child[__dir] = N;
     do {
-      if (P->color == BLACK)  // Case_I1 (P: BLACK)
+      if (P->color == _S_black)  // Case_I1 (P: BLACK)
         return (Inserted);
       G = P->parent;
       if (G == &_M_header) goto Case_I4;  // Case_I4 (P: RED and ROOT)
       __dir = childDir(P);
       U = G->child[!__dir];
-      if (U == NULL || U->color == BLACK)  // Case_I56 (U: BLACK)
+      if (U == NULL || U->color == _S_black)  // Case_I56 (U: BLACK)
         goto Case_I56;
       // Case_I2 (P+U: RED)
-      P->color = BLACK;
-      U->color = BLACK;
-      G->color = RED;
+      P->color = _S_black;
+      U->color = _S_black;
+      G->color = _S_red;
       N = G;
       P = N->parent;
     } while (P != &_M_header);
     // Case_I3 (N: ROOT)
     return (Inserted);
   Case_I4:
-    P->color = BLACK;
+    P->color = _S_black;
     return (Inserted);
   Case_I56:
     if (N == P->child[!__dir]) {
@@ -352,25 +352,25 @@ class _Rb_tree {
     }
     // Case_I6 (P: RED, U: BLACK, N: outer grandchild of G)
     _Rotate_dir_root(G, !__dir);
-    P->color = BLACK;
-    G->color = RED;
+    P->color = _S_black;
+    G->color = _S_red;
     return (Inserted);
   }
   // search where to insert
   _Link_type _Rb_insert1(_Link_type N) {
     _Link_type P;
 
-    if (_M_header.parent == NULL) return (_Rb_insert2(N, &_M_header, LEFT));
+    if (_M_header.parent == NULL) return (_Rb_insert2(N, &_M_header, _D_left));
     P = _M_header.parent;
     while (true) {
       if (_M_header._M_key_compare(_KeyOfValue()(*P->val),
                                    _KeyOfValue()(*N->val))) {
-        if (P->child[RIGHT] == NULL) return (_Rb_insert2(N, P, RIGHT));
-        P = P->child[RIGHT];
+        if (P->child[_D_right] == NULL) return (_Rb_insert2(N, P, _D_right));
+        P = P->child[_D_right];
       } else if (_M_header._M_key_compare(_KeyOfValue()(*N->val),
                                           _KeyOfValue()(*P->val))) {
-        if (P->child[LEFT] == NULL) return (_Rb_insert2(N, P, LEFT));
-        P = P->child[LEFT];
+        if (P->child[_D_left] == NULL) return (_Rb_insert2(N, P, _D_left));
+        P = P->child[_D_left];
       } else {
         return (P);
       }
@@ -404,16 +404,16 @@ class _Rb_tree {
       S = P->child[!dir];
       D = S->child[!dir];
       C = S->child[dir];
-      if (S->color == RED)  // Case_D3 (S: RED)
+      if (S->color == _S_red)  // Case_D3 (S: RED)
         goto Case_D3;
-      if (D != NULL && D->color == RED)  // Case_D6 (D: RED, S: BLACK)
+      if (D != NULL && D->color == _S_red)  // Case_D6 (D: RED, S: BLACK)
         goto Case_D6;
-      if (C != NULL && C->color == RED)  // Case_D6 (C: RED, S+D: BLACK)
+      if (C != NULL && C->color == _S_red)  // Case_D6 (C: RED, S+D: BLACK)
         goto Case_D5;
-      if (P->color == RED)  // Case_D4 (P: RED, C+S+D: BLACK)
+      if (P->color == _S_red)  // Case_D4 (P: RED, C+S+D: BLACK)
         goto Case_D4;
       // Case_D1 (P+C+S+D: BLACK)
-      S->color = RED;
+      S->color = _S_red;
       N = P;
       P = N->parent;
     } while (P != &_M_header);
@@ -422,22 +422,22 @@ class _Rb_tree {
   Case_D3:                     // Case_D3 (S: RED, P+C+D: BLACK)
     _Rotate_dir_root(P, dir);  // P may be root
 
-    P->color = RED;
-    S->color = BLACK;
+    P->color = _S_red;
+    S->color = _S_black;
     S = C;
 
     D = S->child[!dir];
-    if (D != NULL && D->color == RED) goto Case_D6;
+    if (D != NULL && D->color == _S_red) goto Case_D6;
     C = S->child[dir];
-    if (C != NULL && C->color == RED) goto Case_D5;
+    if (C != NULL && C->color == _S_red) goto Case_D5;
   Case_D4:
-    S->color = RED;
-    P->color = BLACK;
+    S->color = _S_red;
+    P->color = _S_black;
     return;
   Case_D5:
     _Rotate_dir_root(S, !dir);
-    S->color = RED;
-    C->color = BLACK;
+    S->color = _S_red;
+    C->color = _S_black;
     D = S;
     S = C;
     // now: D red && S black
@@ -445,35 +445,35 @@ class _Rb_tree {
   Case_D6:
     _Rotate_dir_root(P, dir);
     S->color = P->color;
-    P->color = BLACK;
-    D->color = BLACK;
+    P->color = _S_black;
+    D->color = _S_black;
     return;
   }
   void _Rb_erase1(_Link_type N) {
-    if (N == _M_header.parent && N->child[LEFT] == NULL &&
-        N->child[RIGHT] == NULL) {
+    if (N == _M_header.parent && N->child[_D_left] == NULL &&
+        N->child[_D_right] == NULL) {
       _M_header.parent = NULL;
-    } else if (N->child[LEFT] && N->child[RIGHT]) {
+    } else if (N->child[_D_left] && N->child[_D_right]) {
       _Link_type R = _Tree_successor(N);
 
-      if (R->color == BLACK) _Rb_erase2(R);
+      if (R->color == _S_black) _Rb_erase2(R);
       R->color = N->color;
       if (R->parent != N) {
-        _Subtree_shift(R, R->child[RIGHT]);
-        R->child[RIGHT] = N->child[RIGHT];
-        R->child[RIGHT]->parent = R;
+        _Subtree_shift(R, R->child[_D_right]);
+        R->child[_D_right] = N->child[_D_right];
+        R->child[_D_right]->parent = R;
       }
       _Subtree_shift(N, R);
-      R->child[LEFT] = N->child[LEFT];
-      if (R->child[LEFT] != NULL) R->child[LEFT]->parent = R;
-    } else if (N->color == RED) {
+      R->child[_D_left] = N->child[_D_left];
+      if (R->child[_D_left] != NULL) R->child[_D_left]->parent = R;
+    } else if (N->color == _S_red) {
       _Subtree_shift(N, NULL);
     } else {
-      if (N->child[LEFT] != NULL || N->child[RIGHT] != NULL) {
+      if (N->child[_D_left] != NULL || N->child[_D_right] != NULL) {
         _Link_type R =
-            N->child[LEFT] != NULL ? N->child[LEFT] : N->child[RIGHT];
+            N->child[_D_left] != NULL ? N->child[_D_left] : N->child[_D_right];
 
-        R->color = BLACK;
+        R->color = _S_black;
         _Subtree_shift(N, R);
       } else {
         _Rb_erase2(N);
@@ -483,15 +483,15 @@ class _Rb_tree {
   _Link_type _Rb_find1(_Link_type N, const _Key &__k) const {
     if (N == NULL) return (NULL);
     if (_M_header._M_key_compare(__k, _KeyOfValue()(*N->val)))
-      return (_Rb_find1(N->child[LEFT], __k));
+      return (_Rb_find1(N->child[_D_left], __k));
     if (_M_header._M_key_compare(_KeyOfValue()(*N->val), __k))
-      return (_Rb_find1(N->child[RIGHT], __k));
+      return (_Rb_find1(N->child[_D_right], __k));
     return (N);
   }
   void _Rb_clear1(_Link_type N) {
     if (N == NULL) return;
-    _Rb_clear1(N->child[LEFT]);
-    _Rb_clear1(N->child[RIGHT]);
+    _Rb_clear1(N->child[_D_left]);
+    _Rb_clear1(N->child[_D_right]);
     _M_drop_node(N);
   }
 
@@ -540,10 +540,10 @@ class _Rb_tree {
   }
   _Link_type &_M_root() { return (_M_header.parent); }
   _Const_Link_type _M_root() const { return (_M_header.parent); }
-  _Link_type &_M_leftmost() { return (_M_header.child[LEFT]); }
-  _Const_Link_type _M_leftmost() const { return (_M_header.child[LEFT]); }
-  _Link_type &_M_rightmost() { return (_M_header.child[RIGHT]); }
-  _Const_Link_type _M_rightmost() const { return (_M_header.child[RIGHT]); }
+  _Link_type &_M_leftmost() { return (_M_header.child[_D_left]); }
+  _Const_Link_type _M_leftmost() const { return (_M_header.child[_D_left]); }
+  _Link_type &_M_rightmost() { return (_M_header.child[_D_right]); }
+  _Const_Link_type _M_rightmost() const { return (_M_header.child[_D_right]); }
   size_type size() const { return (_M_header._M_node_count); }
   size_type max_size() const {
     size_t div = sizeof(_Link_type) * 4 + (sizeof(value_type) / 8) * 8;
@@ -555,23 +555,23 @@ class _Rb_tree {
   _Link_type _M_end() { return (&_M_header); }
   _Const_Link_type _M_end() const { return (&_M_header); }
   _Link_type _S_left(_Link_type __x) {
-    return (static_cast<_Link_type>(__x->child[LEFT]));
+    return (static_cast<_Link_type>(__x->child[_D_left]));
   }
   _Const_Link_type _S_left(_Const_Link_type __x) {
-    return static_cast<_Const_Link_type>(__x->child[LEFT]);
+    return static_cast<_Const_Link_type>(__x->child[_D_left]);
   }
   _Link_type _S_right(_Link_type __x) {
-    return static_cast<_Link_type>(__x->child[RIGHT]);
+    return static_cast<_Link_type>(__x->child[_D_right]);
   }
   _Const_Link_type _S_right(_Const_Link_type __x) {
-    return static_cast<_Const_Link_type>(__x->child[RIGHT]);
+    return static_cast<_Const_Link_type>(__x->child[_D_right]);
   }
   template <typename _NodeGen>
   _Link_type _M_clone_node(_Const_Link_type __x, _NodeGen &__node_gen) {
     _Link_type __tmp = __node_gen(*__x->val);
     __tmp->color = __x->color;
-    __tmp->child[LEFT] = 0;
-    __tmp->child[RIGHT] = 0;
+    __tmp->child[_D_left] = 0;
+    __tmp->child[_D_right] = 0;
     return (__tmp);
   }
   template <typename _NodeGen>
@@ -583,19 +583,19 @@ class _Rb_tree {
 
     try {
       // copy right side
-      if (__x->child[RIGHT])
-        _top->child[RIGHT] = _M_copy(__x->child[RIGHT], _top, __node_gen);
+      if (__x->child[_D_right])
+        _top->child[_D_right] = _M_copy(__x->child[_D_right], _top, __node_gen);
       __p = _top;
-      __x = __x->child[LEFT];
+      __x = __x->child[_D_left];
 
       while (__x != 0) {
         _Link_type _y = _M_clone_node(__x, __node_gen);
-        __p->child[LEFT] = _y;
+        __p->child[_D_left] = _y;
         _y->parent = __p;
-        if (__x->child[RIGHT])
-          _y->child[RIGHT] = _M_copy(__x->child[RIGHT], _y, __node_gen);
+        if (__x->child[_D_right])
+          _y->child[_D_right] = _M_copy(__x->child[_D_right], _y, __node_gen);
         __p = _y;
-        __x = __x->child[LEFT];
+        __x = __x->child[_D_left];
       }
     } catch (...) {
       _M_erase(_top);
@@ -630,9 +630,9 @@ class _Rb_tree {
     while (__x != NULL) {
       // _x >= k
       if (!_M_header._M_key_compare(_KeyOfValue()(*__x->val), k))
-        __y = __x, __x = __x->child[LEFT];
+        __y = __x, __x = __x->child[_D_left];
       else
-        __x = __x->child[RIGHT];
+        __x = __x->child[_D_right];
     }
     return (iterator(__y));
   }
@@ -640,9 +640,9 @@ class _Rb_tree {
                                 const _Key &k) const {
     while (__x != NULL) {
       if (!_M_header._M_key_compare(_KeyOfValue()(*__x->val), k))
-        __y = __x, __x = __x->child[LEFT];
+        __y = __x, __x = __x->child[_D_left];
       else
-        __x = __x->child[RIGHT];
+        __x = __x->child[_D_right];
     }
     return (const_iterator(__y));
   }
@@ -651,9 +651,9 @@ class _Rb_tree {
     while (__x != NULL) {
       // k < _x
       if (_M_header._M_key_compare(__k, _KeyOfValue()(*__x->val)))
-        __y = __x, __x = __x->child[LEFT];
+        __y = __x, __x = __x->child[_D_left];
       else
-        __x = __x->child[RIGHT];
+        __x = __x->child[_D_right];
     }
     return (__y);
   }
@@ -661,9 +661,9 @@ class _Rb_tree {
                                 const _Key &__k) const {
     while (__x != NULL) {
       if (_M_header._M_key_compare(__k, _KeyOfValue()(*__x->val)))
-        __y = __x, __x = __x->child[LEFT];
+        __y = __x, __x = __x->child[_D_left];
       else
-        __x = __x->child[RIGHT];
+        __x = __x->child[_D_right];
     }
     return (__y);
   }
@@ -676,15 +676,15 @@ class _Rb_tree {
 
     while (_x != NULL) {
       if (_M_header._M_key_compare(_KeyOfValue()(*_x->val), __k))
-        _x = _x->child[RIGHT];
+        _x = _x->child[_D_right];
       else if (_M_header._M_key_compare(__k, _KeyOfValue()(*_x->val)))
-        _y = _x, _x = _x->child[LEFT];
+        _y = _x, _x = _x->child[_D_left];
       else {
         _Link_type _xu(_x);
         _Link_type _yu(_y);
 
-        _y = _x, _x = _x->child[LEFT];
-        _xu = _xu->child[RIGHT];
+        _y = _x, _x = _x->child[_D_left];
+        _xu = _xu->child[_D_right];
         // ((_y >= k), (_yu > _k))
         return pair<iterator, iterator>(_M_lower_bound(_x, _y, __k),
                                         _M_upper_bound(_xu, _yu, __k));
@@ -699,15 +699,15 @@ class _Rb_tree {
 
     while (_x != NULL) {
       if (_M_header._M_key_compare(_KeyOfValue()(*_x->val), _k))
-        _x = _x->child[RIGHT];
+        _x = _x->child[_D_right];
       else if (_M_header._M_key_compare(_k, _KeyOfValue()(*_x->val)))
-        _y = _x, _x = _x->child[LEFT];
+        _y = _x, _x = _x->child[_D_left];
       else {
         _Const_Link_type _xu(_x);
         _Const_Link_type _yu(_y);
 
-        _y = _x, _x = _x->child[LEFT];
-        _xu = _xu->child[RIGHT];
+        _y = _x, _x = _x->child[_D_left];
+        _xu = _xu->child[_D_right];
         // ((_y >= k), (_yu > _k))
         return pair<const_iterator, const_iterator>(
             _M_lower_bound(_x, _y, _k), _M_upper_bound(_xu, _yu, _k));
@@ -725,8 +725,8 @@ class _Rb_tree {
       return (pair<iterator, bool>(treeNode, false));
     }
     ++_M_header._M_node_count;
-    _M_header.child[RIGHT] = _Tree_maximum(_M_header.parent);
-    _M_header.child[LEFT] = _Tree_minimum(_M_header.parent);
+    _M_header.child[_D_right] = _Tree_maximum(_M_header.parent);
+    _M_header.child[_D_left] = _Tree_minimum(_M_header.parent);
     return (pair<iterator, bool>(iterator(treeNode), true));
   }
   // set's iterator == const_iterator,
@@ -737,8 +737,8 @@ class _Rb_tree {
     if (_pos == begin()) {
       if (size() > 0 &&
           _M_header._M_key_compare(_KeyOfValue()(__v), _KeyOfValue()(*_pos))) {
-        inserted = _Rb_insert2(_M_create_node(__v), _M_header.child[LEFT], LEFT);
-        _M_header.child[LEFT] = inserted;
+        inserted = _Rb_insert2(_M_create_node(__v), _M_header.child[_D_left], _D_left);
+        _M_header.child[_D_left] = inserted;
       } else {
         return (_Rb_insert(__v).first);
       }
@@ -746,8 +746,8 @@ class _Rb_tree {
       if (_M_header._M_key_compare(_KeyOfValue()(*_M_rightmost()->val),
                                    _KeyOfValue()(__v))) {
         inserted =
-            _Rb_insert2(_M_create_node(__v), _M_header.child[RIGHT], RIGHT);
-        _M_header.child[RIGHT] = inserted;
+            _Rb_insert2(_M_create_node(__v), _M_header.child[_D_right], _D_right);
+        _M_header.child[_D_right] = inserted;
       } else {
         return (_Rb_insert(__v).first);
       }
@@ -758,10 +758,10 @@ class _Rb_tree {
       if (_M_header._M_key_compare(_KeyOfValue()(__v), _KeyOfValue()(*_pos)) &&
           _M_header._M_key_compare(_KeyOfValue()(*(--before)),
                                    _KeyOfValue()(__v))) {
-        if (before._M_node->child[RIGHT] == NULL)
-          inserted = _Rb_insert2(_M_create_node(__v), before._M_node, RIGHT);
+        if (before._M_node->child[_D_right] == NULL)
+          inserted = _Rb_insert2(_M_create_node(__v), before._M_node, _D_right);
         else
-          inserted = _Rb_insert2(_M_create_node(__v), _pos._M_node, LEFT);
+          inserted = _Rb_insert2(_M_create_node(__v), _pos._M_node, _D_left);
       } else {
         return (_Rb_insert(__v).first);
       }
@@ -806,8 +806,8 @@ class _Rb_tree {
 
     _Rb_erase_aux(__pos._M_node);
     if (_M_header.parent == NULL) {
-      _M_header.child[RIGHT] = &_M_header;
-      _M_header.child[LEFT] = &_M_header;
+      _M_header.child[_D_right] = &_M_header;
+      _M_header.child[_D_left] = &_M_header;
     } else if (_leftmost) {
       _M_leftmost() = _Tree_minimum(_M_header.parent);
     } else if (_rightmost) {
@@ -826,11 +826,11 @@ class _Rb_tree {
         __first = _iter;
       }
       if (_M_header.parent == NULL) {
-        _M_header.child[RIGHT] = &_M_header;
-        _M_header.child[LEFT] = &_M_header;
+        _M_header.child[_D_right] = &_M_header;
+        _M_header.child[_D_left] = &_M_header;
       } else {
-        _M_header.child[RIGHT] = _Tree_maximum(_M_header.parent);
-        _M_header.child[LEFT] = _Tree_minimum(_M_header.parent);
+        _M_header.child[_D_right] = _Tree_maximum(_M_header.parent);
+        _M_header.child[_D_left] = _Tree_minimum(_M_header.parent);
       }
     }
   }
@@ -843,18 +843,18 @@ class _Rb_tree {
     size_type old_size = size();
     _Rb_erase_aux(N);
     if (_M_header.parent == NULL) {
-      _M_header.child[RIGHT] = &_M_header;
-      _M_header.child[LEFT] = &_M_header;
+      _M_header.child[_D_right] = &_M_header;
+      _M_header.child[_D_left] = &_M_header;
     } else if (_leftmost) {
-      _M_header.child[LEFT] = _Tree_minimum(_M_header.parent);
+      _M_header.child[_D_left] = _Tree_minimum(_M_header.parent);
     } else if (_rightmost) {
-      _M_header.child[RIGHT] = _Tree_maximum(_M_header.parent);
+      _M_header.child[_D_right] = _Tree_maximum(_M_header.parent);
     }
     return (old_size - size());
   }
   _Compare key_comp() const { return (_M_header._M_key_compare); }
-  const_iterator begin() const { return (_M_header.child[LEFT]); }
-  iterator begin() { return (_M_header.child[LEFT]); }
+  const_iterator begin() const { return (_M_header.child[_D_left]); }
+  iterator begin() { return (_M_header.child[_D_left]); }
   const_iterator end() const { return (&_M_header); }
   iterator end() { return (&_M_header); }
   reverse_iterator rbegin() { return (reverse_iterator(end())); }
