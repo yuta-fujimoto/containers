@@ -119,7 +119,7 @@ class vector {
     return (const_reverse_iterator(first_.base()));
   }
   size_type size() const { return (last_ - first_); }
-  bool empty() const { return (begin() == end()); }
+  bool empty() const { return (first_ == last_); }
   size_type capacity() const { return (reserved_last_ - first_); }
   const_reference operator[](size_type __i) const { return (first_[__i]); }
   reference operator[](size_type __i) { return (first_[__i]); }

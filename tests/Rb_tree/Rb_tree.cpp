@@ -9,7 +9,7 @@
 #define left child[0]
 #define right child[1]
 
-#define KeyOfValue_ ft::_Select1st<ft::pair<int, int> >
+#define KeyOfValue_ ft::_Select1st<ft::pair<int, int>>
 
 template <typename _Val>
 void printTree1(ft::_RB_tree_node<_Val> *N, int level) {
@@ -78,19 +78,19 @@ int main() {
   int repeat = 1000;
   for (int i = 0; i < repeat; i++) a.push_back(rand() % repeat);
   for (int i = 0; i < repeat; i++) b.push_back(rand() % repeat);
-  ft::_Rb_tree<int, ft::pair<int, int>, KeyOfValue_, std::less<int> > T;
+  ft::_Rb_tree<int, ft::pair<int, int>, KeyOfValue_, std::less<int>> T;
 
-  for (auto i : a) {
-    ofs << i << ", ";
-    T._Rb_insert(ft::pair<int, int>(i, i));
+  for (std::vector<int>::iterator i = a.begin(); i != a.end(); ++i) {
+    ofs << *i << ", ";
+    T._Rb_insert(ft::pair<int, int>(*i, *i));
   }
   ofs << std::endl;
   if (!checkTree(T._M_root())) {
     return (0);
   }
-  for (auto i : b) {
-    ofs << i << ", ";
-    T._Rb_erase(i);
+  for (std::vector<int>::iterator i = b.begin(); i != b.end(); ++i) {
+    ofs << *i << ", ";
+    T._Rb_erase(*i);
   }
   ofs << std::endl;
   if (!checkTree(T._M_root())) {
