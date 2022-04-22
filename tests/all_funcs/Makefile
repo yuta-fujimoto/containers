@@ -1,4 +1,4 @@
-NAME := tester
+NAME := a.out
 CXX := clang++
 CXXFLAGS := -Wall -Werror -Wextra -std=c++98 -pedantic-errors -MMD -MP -DDEBUG -g -fsanitize=address
 SRCS :=	$(wildcard *.cpp)
