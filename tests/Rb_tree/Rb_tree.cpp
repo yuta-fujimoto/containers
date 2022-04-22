@@ -9,7 +9,7 @@
 #define left child[0]
 #define right child[1]
 
-#define KeyOfValue_ ft::_Select1st<ft::pair<int, int>>
+#define KeyOfValue_ ft::_Select1st<ft::pair<int, int> >
 
 template <typename _Val>
 void printTree1(ft::_RB_tree_node<_Val> *N, int level) {
@@ -78,7 +78,7 @@ int main() {
   int repeat = 1000;
   for (int i = 0; i < repeat; i++) a.push_back(rand() % repeat);
   for (int i = 0; i < repeat; i++) b.push_back(rand() % repeat);
-  ft::_Rb_tree<int, ft::pair<int, int>, KeyOfValue_, std::less<int>> T;
+  ft::_Rb_tree<int, ft::pair<int, int>, KeyOfValue_, std::less<int> > T;
 
   for (std::vector<int>::iterator i = a.begin(); i != a.end(); ++i) {
     ofs << *i << ", ";
@@ -110,8 +110,7 @@ int main() {
   T._Rb_erase(1);
   // printTree(T._M_root());  // noting would be printed
 
-  // in coverage test, Case_D2 doesn't be passed, but(TODO)
-  ft::_Rb_tree_iterator<ft::pair<int, int>> it;
+  ft::_Rb_tree_iterator<ft::pair<int, int> > it;
   int i = 0;
   int check_size = 100;
   for (i = 0; i < check_size; ++i) {

@@ -1,3 +1,3 @@
 make -C all_funcs
 
-bash ./all_funcs/a.out
+./all_funcs/a.out
