@@ -15,9 +15,6 @@ $(BINDIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -o $@ -c $<
 
 config:
-	@if [ -e $(BINDIR) ]; then\
-		mkdir -p $(BINDIR);\
-	fi
 	@if [ -e .doctest ]; then\
 		git submodule update --init --recursive;\
 	fi
@@ -34,3 +31,5 @@ fclean: clean
 re: fclean all
 
 FORCE:
+
+-include $(BINDIR)/*.d

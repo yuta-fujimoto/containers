@@ -16,9 +16,6 @@ $(NAME): $(OBJS)
 $(BINDIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-$(BINDIR):
-	mkir -p $@
-
 leak: CXXFLAGS+= -fsanitize=address
 leak: re
 
@@ -43,3 +40,5 @@ cover:
 	genhtml cov_test.info -o cov_test
 	rm *.png
 	rm -rf cov_test.info *.png tester *.gcda *.gcno *.info
+
+-include $(BINDIR)/*.d
