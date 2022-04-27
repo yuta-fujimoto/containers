@@ -2,7 +2,8 @@
 #define VECTOR_HPP
 
 #include <exception>
-#include <iostream>
+// #include <iostream>
+#include <cstring>
 #include <limits>
 #include <memory>
 
@@ -59,6 +60,48 @@ class vector {
     if (size() + __n > capacity() * 2) return (size() + __n);
     return (capacity() * 2 + (__n == 0));
   }
+    // Trivial types can have deleted copy constructor, but the std::copy
+    // optimization that uses memmove would happily "copy" them anyway.
+  template <typename _InputIterator, typename _ForwardIterator>
+  inline _ForwardIterator vector_uninitialized_copy(_InputIterator __first,
+                                                    _InputIterator __last,
+                                                    _ForwardIterator __result) {
+    if (_is_trivial<typename _ForwardIterator::value_type>::value) {
+      // _InputIterator may be reverse iterator
+      for (; __first != __last; ++__first, ++__result) {
+        std::memmove(&*__result, &*__first, sizeof(typename _ForwardIterator::value_type));
+      }
+      return (__result);
+    }
+    return (std::uninitialized_copy(__first, __last, __result));
+  }
+  template <typename _InputIterator, typename _ForwardIterator>
+  inline void vector_uninitialized_copy_backward(_InputIterator __first,
+                                                 _InputIterator __last,
+                                                 _ForwardIterator __result) {
+    if (_is_trivial<typename _ForwardIterator::value_type>::value) {
+      // definetely vector::iterator
+      difference_type dist = std::distance(__first, __last);
+      std::memmove(&*__result - dist, &*__first,
+                   sizeof(typename _ForwardIterator::value_type) * dist);
+      return;
+    }
+    while (__first != __last) construct(--__result, *--__last);
+  }
+  template <typename _ForwardIterator, typename _T>
+  inline void vector_uninitialized_fill(_ForwardIterator __first,
+                                        _ForwardIterator __last,
+                                        const _T& __x) {
+    // Trivial types can have deleted copy constructor, but the std::copy
+    // optimization that uses memmove would happily "copy" them anyway.
+    if (_is_trivial<_T>::value) {
+      for (; __first != __last; ++__first) {
+        std::memmove(&*__first, &__x, sizeof(_T));
+      }
+      return;
+    }
+    std::uninitialized_fill(__first, __last, __x);
+  }
 
  public:
   explicit vector(const allocator_type& __a = Allocator())
@@ -66,8 +109,7 @@ class vector {
   explicit vector(std::size_t __size, const value_type& __v = value_type(),
                   Allocator __a = Allocator())
       : alloc(__a), last_(first_), reserved_last_(first_) {
-    if (__size > max_size())
-      throw std::length_error("vector");
+    if (__size > max_size()) throw std::length_error("vector");
     resize(__size, __v);
   }
   template <typename InputIterator>
@@ -91,7 +133,7 @@ class vector {
     if (len > capacity()) {
       iterator ptr = allocate(len);
 
-      std::uninitialized_copy(__x.begin(), __x.end(), ptr);
+      vector_uninitialized_copy(__x.begin(), __x.end(), ptr);
       destroy_until((last_ - 1), (first_ - 1));
       alloc.deallocate(first_.base(), capacity());
 
@@ -100,7 +142,7 @@ class vector {
       last_ = reserved_last_;
     } else {
       destroy_until((last_ - 1), (first_ - 1));
-      std::uninitialized_copy(__x.begin(), __x.end(), first_);
+      vector_uninitialized_copy(__x.begin(), __x.end(), first_);
       last_ = first_ + __x.size();
     }
     return (*this);
@@ -135,17 +177,15 @@ class vector {
   const_reference front() const { return (*begin()); }
   reference back() { return (*(end() - 1)); }
   const_reference back() const { return (*(end() - 1)); }
-  void clear() {
-    _M_erase_at_end(first_);
-  }
-  // may need to reallocate memory, so change all member var
+  void clear() { _M_erase_at_end(first_); }
+  // may need to reallocate memory, so change all member variables
   void reserve(size_type __sz) {
     if (max_size() < __sz) throw std::length_error("vector::reserve");
     if (__sz <= capacity()) return;
     iterator ptr = allocate(__sz);
     size_type old_size = size();
 
-    std::uninitialized_copy(first_, last_, ptr);
+    vector_uninitialized_copy(first_, last_, ptr);
     destroy_until(last_ - 1, first_ - 1);
     alloc.deallocate(first_.base(), capacity());
 
@@ -165,7 +205,10 @@ class vector {
       size_type len = _M_check_len(1, "vector");
       reserve(len);
     }
-    construct(last_, __value);
+    if (_is_trivial<value_type>::value)
+      *last_ = __value;
+    else
+      construct(last_, __value);
     ++last_;
   }
   // std's pop back requires empty() = false and if this is not achieved, segv
@@ -196,7 +239,7 @@ class vector {
       vector __tmp(__n, __val, get_allocator());
       swap(__tmp);
     } else if (__n > size()) {
-      std::uninitialized_fill(begin(), begin() + __n, __val);
+      vector_uninitialized_fill(begin(), begin() + __n, __val);
       last_ = begin() + __n;
     } else {
       _M_erase_at_end(std::fill_n(first_, __n, __val));
@@ -224,10 +267,10 @@ class vector {
       iterator new_first = allocate(len);
       iterator new_last;
 
-      // ex: std::string
-      std::uninitialized_fill_n(new_first + elems_before, __n, __x);
-      new_last = std::uninitialized_copy(first_, __position, new_first);
-      new_last = std::uninitialized_copy(__position, last_, new_last + __n);
+      vector_uninitialized_fill(new_first + elems_before,
+                                new_first + elems_before + __n, __x);
+      new_last = vector_uninitialized_copy(first_, __position, new_first);
+      new_last = vector_uninitialized_copy(__position, last_, new_last + __n);
 
       destroy_until(last_ - 1, first_ - 1);
       alloc.deallocate(first_.base(), capacity());
@@ -237,12 +280,9 @@ class vector {
       reserved_last_ = first_ + len;
     } else {
       if (__position != last_) {
-        iterator it = last_ - 1;
-        for (; it != __position; --it)
-          construct(it.base() + __n, *it);
-        construct(it.base() + __n, *it);
+        vector_uninitialized_copy_backward(__position, last_, last_ + __n);
       }
-      std::uninitialized_fill(__position, __position + __n, __x);
+      vector_uninitialized_fill(__position, __position + __n, __x);
       last_ = last_ + __n;
     }
   }
@@ -258,9 +298,9 @@ class vector {
       iterator new_first = allocate(len);
       iterator new_last;
 
-      std::uninitialized_copy(__first, __last, new_first + elems_before);
-      new_last = std::uninitialized_copy(first_, __position, new_first);
-      new_last = std::uninitialized_copy(__position, last_, new_last + n);
+      vector_uninitialized_copy(__first, __last, new_first + elems_before);
+      new_last = vector_uninitialized_copy(first_, __position, new_first);
+      new_last = vector_uninitialized_copy(__position, last_, new_last + n);
 
       if (last_ != first_) {
         destroy_until(last_ - 1, first_ - 1);
@@ -272,12 +312,9 @@ class vector {
       reserved_last_ = first_ + len;
     } else {
       if (__position != last_) {
-        iterator it = last_ - 1;
-        for (; it != __position; --it)
-          construct(it.base() + n, *it);
-        construct(it.base() + n, *it);
+        vector_uninitialized_copy_backward(__position, last_, last_ + n);
       }
-      std::uninitialized_copy(__first, __last, __position);
+      vector_uninitialized_copy(__first, __last, __position);
       last_ = last_ + n;
     }
   }

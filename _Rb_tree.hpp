@@ -441,7 +441,7 @@ class _Rb_tree {
     D = S;
     S = C;
     // now: D red && S black
-    // fall through to Case_d&
+    // fall through to Case_d6
   Case_D6:
     _Rotate_dir_root(P, dir);
     S->color = P->color;

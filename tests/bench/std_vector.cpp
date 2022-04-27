@@ -1,6 +1,6 @@
 #include <vector>
 #include "timer.hpp"
-
+#include <string>
 int main() {
   int a;
   std::vector<int> v;
@@ -114,17 +114,39 @@ int main() {
   }
   t.record("POP_BACK");
 
+  {
+    std::vector<std::string> v_str(1);
+    std::vector<std::string> temp_str;
+    temp_str.push_back("HELLO");
+
+    t.start();
+    for (int i = 0; i < REPEAT; ++i) {
+      v_str.insert(v_str.begin(), "HELLO");
+    }
+    t.record("INSERT-1-S");
+
+    for (int i = 0; i < REPEAT; ++i) {
+      v_str.insert(v_str.begin(), 5, "HELLO");
+    }
+    t.record("INSERT-2-S");
+    for (int i = 0; i < REPEAT; ++i) {
+      v_str.insert(v_str.begin(), temp_str.begin(), temp_str.end());
+    }
+    t.record("INSERT-3-S");
+  }
+  t.start();
+
   for (int i = 0; i < REPEAT; ++i) {
-    v.insert(v.end(), i);
+    v.insert(v.begin(), i);
   }
   t.record("INSERT-1");
 
   for (int i = 0; i < REPEAT; ++i) {
-    v.insert(v.end(), 5, i);
+    v.insert(v.begin(), 5, i);
   }
   t.record("INSERT-2");
   for (int i = 0; i < REPEAT; ++i) {
-    v.insert(v.end(), temp.begin(), temp.end());
+    v.insert(v.begin(), temp.begin(), temp.end());
   }
   t.record("INSERT-3");
 

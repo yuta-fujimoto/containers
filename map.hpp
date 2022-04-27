@@ -22,10 +22,6 @@ class map {
   typedef Compare key_compare;
   typedef _Alloc allocator_type;
 
-  // value_compare ??
-  // node_type node_handle ??
-  // insert_return_type
-
  private:
   typedef _Rb_tree<key_type, value_type, _Select1st<value_type>, Compare>
       _Rep_type;
@@ -35,7 +31,7 @@ class map {
  public:
   class value_compare
       : public std::binary_function<value_type, value_type, bool> {
-    // get first/second value type with baluebinary funtion
+    // get first/second value type with binary funtion
     friend class map<Key, _Tp, Compare, _Alloc>;
 
    protected:

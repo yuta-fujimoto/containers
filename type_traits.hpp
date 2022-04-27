@@ -105,6 +105,55 @@ struct enable_if<true, _Tp> {
   typedef _Tp type;
 };
 
+/*
+ is_trivially_constructible
+*/
+template <typename>
+struct _is_trivial_helper : false_type {};
+
+// partial specializations
+template <>
+struct _is_trivial_helper<bool> : public true_type {};
+
+template <>
+struct _is_trivial_helper<char> : public true_type {};
+
+template <>
+struct _is_trivial_helper<signed char> : public true_type {};
+
+template <>
+struct _is_trivial_helper<unsigned char> : public true_type {};
+
+template <>
+struct _is_trivial_helper<wchar_t> : public true_type {};
+
+template <>
+struct _is_trivial_helper<short> : public true_type {};
+
+template <>
+struct _is_trivial_helper<unsigned short> : public true_type {};
+
+template <>
+struct _is_trivial_helper<int> : public true_type {};
+
+template <>
+struct _is_trivial_helper<unsigned int> : public true_type {};
+
+template <>
+struct _is_trivial_helper<long> : public true_type {};
+
+template <>
+struct _is_trivial_helper<unsigned long> : public true_type {};
+
+template <>
+struct _is_trivial_helper<float> : public true_type {};
+
+template <>
+struct _is_trivial_helper<double> : public true_type {};
+
+template <class _Tp>
+struct _is_trivial : _is_trivial_helper<typename remove_cv<_Tp>::type> {};
+
 }  // namespace ft
 
 #endif
