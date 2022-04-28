@@ -206,8 +206,8 @@ class vector {
     if (div == 0)
       div = 1;
     const size_t diffmax =
-        std::numeric_limits<ptrdiff_t>::max() / sizeof(value_type);
-    return (std::min(alloc_max, diffmax * 2));
+        std::numeric_limits<ptrdiff_t>::max() / div;
+    return (std::min(alloc_max, diffmax));
   }
   iterator insert(iterator __position, const value_type& __x) {
     const size_type diff = __position - first_;

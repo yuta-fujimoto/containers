@@ -285,24 +285,24 @@ TEST_CASE("MAP") {
 
   map_check_all_value(ft_test, test);
 
-  // SUBTITLE("MAX SIZE");
-  // ft::map<char, char> ft_charchar;
-  // std::map<char, char> charchar;
+  SUBTITLE("MAX SIZE");
+  ft::map<char, char> ft_charchar;
+  std::map<char, char> charchar;
 
-  // ft::map<char, const char*> ft_charcchar;
-  // std::map<char, const char*> charcchar;
+  ft::map<char, const char*> ft_charcchar;
+  std::map<char, const char*> charcchar;
 
-  // ft::map<double, char> ft_doublechar;
-  // std::map<double, char> doublechar;
+  ft::map<double, char> ft_doublechar;
+  std::map<double, char> doublechar;
 
-  // ft::map<int, char> ft_intchar;
-  // std::map<int, char> intchar;
+  ft::map<int, char> ft_intchar;
+  std::map<int, char> intchar;
 
-  // CHECK_EQ(ft_charchar.max_size(), charchar.max_size());
-  // CHECK_EQ(ft_charcchar.max_size(), charcchar.max_size());
-  // CHECK_EQ(ft_intchar.max_size(), intchar.max_size());
-  // CHECK_EQ(ft_doublechar.max_size(), doublechar.max_size());
-  // CHECK_EQ(ft_test.max_size(), test.max_size());
+  CHECK_EQ(ft_charchar.max_size(), charchar.max_size());
+  CHECK_EQ(ft_charcchar.max_size(), charcchar.max_size());
+  CHECK_EQ(ft_intchar.max_size(), intchar.max_size());
+  CHECK_EQ(ft_doublechar.max_size(), doublechar.max_size());
+  CHECK_EQ(ft_test.max_size(), test.max_size());
 
   SUBTITLE("VALUE COMP");
   std::map<Key, Value>::key_compare comp = test.key_comp();
@@ -324,8 +324,6 @@ TEST_CASE("MAP") {
            ft_val_comp(ft::make_pair(2.0, s1), ft::make_pair(1.0, s2)));
 
   SUBTITLE("GET ALLOCATOR");
-  std::map<int, char> intchar;
-  ft::map<int, char> ft_intchar;
 
   std::pair<const int, char>* pointer = intchar.get_allocator().allocate(2);
   ft::pair<const int, char>* ft_pointer =
