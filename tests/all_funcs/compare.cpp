@@ -2,14 +2,17 @@
 
 bool compare_test(ft::vector<int>& ft_v1, ft::vector<int>& ft_v2,
                   std::vector<int>& v1, std::vector<int>& v2) {
-  const bool ft_re = ft::lexicographical_compare(ft_v1.begin(), ft_v1.end(),
+  const bool ft_lexi_comp = ft::lexicographical_compare(ft_v1.begin(), ft_v1.end(),
                                                  ft_v2.begin(), ft_v2.end());
-  const bool re =
+  const bool std_lexi_comp =
       std::lexicographical_compare(v1.begin(), v1.end(), v2.begin(), v2.end());
-  return (ft_re == re);
+
+  const bool ft_equal = ft::equal(ft_v1.begin(), ft_v1.end(), ft_v2.begin(), std::less<int>());
+  const bool std_equal = std::equal(v1.begin(), v1.end(), v2.begin(), std::less<int>());
+  return ((ft_lexi_comp == std_lexi_comp) && (ft_equal == std_equal));
 }
 
-TEST_CASE("lexicographical_compare") {
+TEST_CASE("lexicographical_compare/equal") {
   ft::vector<int> ft_v1;
   ft::vector<int> ft_v2;
   std::vector<int> v1;

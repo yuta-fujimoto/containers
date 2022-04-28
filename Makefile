@@ -1,5 +1,5 @@
 NAME := a.out
-CXX := clang++
+CXX := g++
 CXXFLAGS := -Wall -Werror -Wextra -std=c++98  -pedantic-errors -MMD -MP 
 SRCS :=	main.cpp
 BINDIR := bin

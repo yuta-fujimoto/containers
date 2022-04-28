@@ -6,24 +6,24 @@
 
 namespace ft {
 template <class InputIterator1, class InputIterator2>
-bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
-                             InputIterator2 first2, InputIterator2 last2) {
-  for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
-    if (*first1 < *first2) return (true);
-    if (*first2 < *first1) return (false);
+bool lexicographical_compare(InputIterator1 __first1, InputIterator1 __last1,
+                             InputIterator2 __first2, InputIterator2 __last2) {
+  for (; __first1 != __last1 && __first2 != __last2; ++__first1, ++__first2) {
+    if (*__first1 < *__first2) return (true);
+    if (*__first2 < *__first1) return (false);
   }
-  return (first1 == last1 && first2 != last2);
+  return (__first1 == __last1 && __first2 != __last2);
 }
 
 template <class InputIterator1, class InputIterator2, class Compare>
-bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
-                             InputIterator2 first2, InputIterator2 last2,
+bool lexicographical_compare(InputIterator1 __first1, InputIterator1 __last1,
+                             InputIterator2 __first2, InputIterator2 __last2,
                              Compare comp) {
-  for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
-    if (comp(*first1, *first2)) return (true);
-    if (comp(*first2, *first1)) return (false);
+  for (; __first1 != __last1 && __first2 != __last2; ++__first1, ++__first2) {
+    if (comp(*__first1, *__first2)) return (true);
+    if (comp(*__first2, *__first1)) return (false);
   }
-  return (first1 == last1 && first2 != last2);
+  return (__first1 == __last1 && __first2 != __last2);
 }
 }  // namespace ft
 

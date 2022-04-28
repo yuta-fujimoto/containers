@@ -5,12 +5,12 @@
 // #include <iostream>
 #include <cstring>
 #include <limits>
-#include <memory>
 
 #include "common.hpp"
 #include "lexicographical_compare.hpp"
 #include "normal_iterator.hpp"
 #include "reverse_iterator.hpp"
+#include "vector_utils.hpp"
 
 namespace ft {
 template <typename _Tp, typename Allocator = std::allocator<_Tp> >
@@ -23,9 +23,9 @@ class vector {
   typedef const _Tp* const_pointer;
   typedef _normal_iterator<pointer, vector> iterator;
   typedef _normal_iterator<const_pointer, vector> const_iterator;
-  // _reverse_iterator can accept iterator
-  typedef _reverse_iterator<const_iterator> const_reverse_iterator;
-  typedef _reverse_iterator<iterator> reverse_iterator;
+  // reverse_iterator can accept iterator
+  typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+  typedef ft::reverse_iterator<iterator> reverse_iterator;
   typedef Allocator allocator_type;
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
@@ -59,48 +59,6 @@ class vector {
 
     if (size() + __n > capacity() * 2) return (size() + __n);
     return (capacity() * 2 + (__n == 0));
-  }
-    // Trivial types can have deleted copy constructor, but the std::copy
-    // optimization that uses memmove would happily "copy" them anyway.
-  template <typename _InputIterator, typename _ForwardIterator>
-  inline _ForwardIterator vector_uninitialized_copy(_InputIterator __first,
-                                                    _InputIterator __last,
-                                                    _ForwardIterator __result) {
-    if (_is_trivial<typename _ForwardIterator::value_type>::value) {
-      // _InputIterator may be reverse iterator
-      for (; __first != __last; ++__first, ++__result) {
-        std::memmove(&*__result, &*__first, sizeof(typename _ForwardIterator::value_type));
-      }
-      return (__result);
-    }
-    return (std::uninitialized_copy(__first, __last, __result));
-  }
-  template <typename _InputIterator, typename _ForwardIterator>
-  inline void vector_uninitialized_copy_backward(_InputIterator __first,
-                                                 _InputIterator __last,
-                                                 _ForwardIterator __result) {
-    if (_is_trivial<typename _ForwardIterator::value_type>::value) {
-      // definetely vector::iterator
-      difference_type dist = std::distance(__first, __last);
-      std::memmove(&*__result - dist, &*__first,
-                   sizeof(typename _ForwardIterator::value_type) * dist);
-      return;
-    }
-    while (__first != __last) construct(--__result, *--__last);
-  }
-  template <typename _ForwardIterator, typename _T>
-  inline void vector_uninitialized_fill(_ForwardIterator __first,
-                                        _ForwardIterator __last,
-                                        const _T& __x) {
-    // Trivial types can have deleted copy constructor, but the std::copy
-    // optimization that uses memmove would happily "copy" them anyway.
-    if (_is_trivial<_T>::value) {
-      for (; __first != __last; ++__first) {
-        std::memmove(&*__first, &__x, sizeof(_T));
-      }
-      return;
-    }
-    std::uninitialized_fill(__first, __last, __x);
   }
 
  public:
@@ -202,13 +160,14 @@ class vector {
   }
   void push_back(const_reference __value) {
     if (size() + 1 > capacity()) {
-      size_type len = _M_check_len(1, "vector");
-      reserve(len);
+      reserve(_M_check_len(1, "vector"));
     }
-    if (_is_trivial<value_type>::value)
-      *last_ = __value;
-    else
-      construct(last_, __value);
+    vector_uninitialized_fill(last_, last_ + 1, __value);
+    // if (_is_trivial<value_type>::value) {
+    //   std::memmove(&*last_, &__value, sizeof(value_type));
+    // } else {
+    //   construct(last_, __value);
+    // }
     ++last_;
   }
   // std's pop back requires empty() = false and if this is not achieved, segv
@@ -322,8 +281,6 @@ class vector {
     return (erase(__position, __position + 1));
   }
   iterator erase(iterator __first, iterator __last) {
-    iterator old_last = last_;
-
     if (__first != __last) {
       if (__last != end()) std::copy(__last, end(), __first);
       last_ = __first.base() + (end() - __last);

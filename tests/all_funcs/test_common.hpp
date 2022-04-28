@@ -8,6 +8,7 @@
 #include "lexicographical_compare.hpp"
 #include "vector.hpp"
 #include "type_traits.hpp"
+#include "equal.hpp"
 #include <vector>
 #include <cstddef>
 #include <iostream>

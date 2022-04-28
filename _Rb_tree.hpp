@@ -14,6 +14,7 @@
 #include "lexicographical_compare.hpp"
 #include "pair.hpp"
 #include "reverse_iterator.hpp"
+#include "equal.hpp"
 
 namespace ft {
 enum _RB_tree_color { _S_black = 0, _S_red = 1, _S_head = 2 };
@@ -510,8 +511,8 @@ class _Rb_tree {
  public:
   typedef _Rb_tree_iterator<_Val> iterator;
   typedef _Rb_tree_const_iterator<_Val> const_iterator;
-  typedef _reverse_iterator<iterator> reverse_iterator;
-  typedef _reverse_iterator<const_iterator> const_reverse_iterator;
+  typedef ft::reverse_iterator<iterator> reverse_iterator;
+  typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
 
   typedef _Key key_type;
   typedef _Val value_type;
@@ -836,8 +837,8 @@ class _Rb_tree {
   }
   size_type _Rb_erase(_Key _k) {
     _Link_type N = _Rb_find(_k);
-    bool _leftmost = (N == _M_leftmost());
-    bool _rightmost = (N == _M_rightmost());
+    const bool _leftmost = (N == _M_leftmost());
+    const bool _rightmost = (N == _M_rightmost());
 
     if (N == _M_end()) return (0);
     size_type old_size = size();
@@ -900,7 +901,7 @@ template <typename _Tp, typename U, typename C, typename A>
 bool operator==(const _Rb_tree<_Tp, U, C, A> &__left,
                 const _Rb_tree<_Tp, U, C, A> &__right) {
   return (__left.size() == __right.size() &&
-          std::equal(__left.begin(), __left.end(), __right.begin()));
+          ft::equal(__left.begin(), __left.end(), __right.begin()));
 }
 
 template <typename _Tp, typename U, typename C, typename A>
@@ -918,7 +919,6 @@ bool operator<(const _Rb_tree<_Tp, U, C, A> &__left,
 }
 
 template <typename _Tp, typename U, typename C, typename A>
-// not equal to lexicographical_compare
 bool operator>=(const _Rb_tree<_Tp, U, C, A> &__left,
                 const _Rb_tree<_Tp, U, C, A> &__right) {
   return (!(__left < __right));
