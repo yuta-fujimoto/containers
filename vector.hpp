@@ -163,11 +163,6 @@ class vector {
       reserve(_M_check_len(1, "vector"));
     }
     vector_uninitialized_fill(last_, last_ + 1, __value);
-    // if (_is_trivial<value_type>::value) {
-    //   std::memmove(&*last_, &__value, sizeof(value_type));
-    // } else {
-    //   construct(last_, __value);
-    // }
     ++last_;
   }
   // std's pop back requires empty() = false and if this is not achieved, segv
@@ -207,6 +202,9 @@ class vector {
   // return max_size vector can store
   size_type max_size() const {
     const size_t alloc_max = alloc.max_size();
+    size_t div = sizeof(value_type) / 2;
+    if (div == 0)
+      div = 1;
     const size_t diffmax =
         std::numeric_limits<ptrdiff_t>::max() / sizeof(value_type);
     return (std::min(alloc_max, diffmax * 2));
