@@ -15,7 +15,7 @@ $(BINDIR)/%.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -o $@ -c $<
 
 config:
-	@if [ -e .doctest ]; then\
+	@if [ -e ../../.doctest ]; then\
 		git submodule update --init --recursive;\
 	fi
 
